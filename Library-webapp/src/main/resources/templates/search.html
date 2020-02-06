@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Rechercher un Livre</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container">
+            <div class="searchDiv my-3 p-3 rounded">
+                <!-- Underlined search bars -->
+                <form th:action="@{/books}" method="get">
+                    <div class="input-group mt-2 mb-3">
+                        <input type="text" placeholder="Rechercher un livre par titre" name="title" class="form-control form-control-underlined mx-1" th:value="${title}">
+                        <input type="text" placeholder="Rechercher un livre par auteur" name="author" class="form-control form-control-underlined mx-1" th:value="${author}">
+                        <div class="input-group-append">
+                            <button id="buttonSearch" type="submit" class="btn btn-link"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <a th:href="@{/books}" style="font-size: 0.9rem;">Réinitialiser la recherche</a>
+                    </div>
+                </form>
+            </div>
+            <div class="searchDiv my-3 p-3 rounded">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Titre</th>
+                        <th scope="col">Auteur</th>
+                        <th scope="col">Isbn</th>
+                        <th scope="col">Exemplaires disponibles</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="book:${books}">
+                        <td th:text="${book.getTitle()}"></td>
+                        <td>
+                            <span th:each="author, iterStat:${book.getAuthors()}"
+                                  th:with="authorName=${author.getFirstName()} + ' ' + ${author.getLastName()}  + ${iterStat.count != iterStat.size ? ', ' : ''}"
+                                  th:text="${authorName}">
+                            </span>
+                        </td>
+                        <td th:text="${book.getIsbn()}"></td>
+                        <td th:text="${book.getCopiesAvailable() == null}? 0 : ${book.getCopiesAvailable()} "></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

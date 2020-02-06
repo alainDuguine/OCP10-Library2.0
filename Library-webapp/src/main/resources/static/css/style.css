@@ -1,0 +1,174 @@
+body{
+    background-image: url('../img/background.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: top;
+    background-size: cover;
+    font-family: 'Literata', serif;
+}
+
+.svg-logo{
+    height: 3.5em;
+}
+
+.navbar{
+    background-color: #364259;
+    opacity: 0.85;
+    box-shadow: 0 2px 2px #1b1e21;
+    line-height: 2;
+}
+
+.navbar-center{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navbar-brand, .navbar-nav{
+    opacity: 1;
+}
+
+.hover-underline:hover{
+    border-right: 1px solid #ced4da;
+    border-left: 1px solid #ced4da;
+}
+
+.hover-underline:hover:after{
+    width: 95%;
+}
+
+.hover-underline:after{
+    content: "";
+    display: block;
+    width: 0;
+    margin-left: 3px;
+    margin-right: 2px;
+    padding-top: 2px;
+    border-bottom: 1px solid #ced4da;
+    transition: 0.8s;
+}
+
+@media (min-width: 768px) {
+    .h-md-100 {height: 100vh;}
+}
+
+.btn-round { border-radius: 30px;}
+
+.logo{
+    width: 10rem;
+    position: relative;
+    top: 10px;
+}
+
+.logoArea{
+    background-color:  rgba(54, 66, 89, 0.75);
+}
+
+.logoArea h1{
+    text-decoration: underline;
+}
+
+a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
+    color: #364259;
+}
+
+.loginForm{
+    background-color: rgba(242, 242, 240, 0.75);
+    box-shadow: 0 0 5px #364259;
+}
+
+.loginArea > label{
+    color: #364259;
+}
+
+.loginArea button, .registerForm .btnSubmit, .btnLoan{
+    background-color: #f2f2f0;
+    color: #735C60;
+    border: 1px solid #735C60;
+}
+
+.registerForm .btnCancel, .registerForm .btnSubmit{
+    margin-top: 0;
+}
+
+.registerForm .btnCancel{
+    background-color: #735C60;
+    color: #f2f2f0;
+}
+
+.registerForm .btnCancel:hover{
+    background-color: #f2f2f0;
+    color: #735C60;
+    border: 1px solid #735C60;
+}
+
+.loginArea button:hover, .registerForm .btnSubmit:hover, .btnLoan:hover{
+    background-color: #735C60;
+    color: #f2f2f0;
+}
+
+.modal-content{
+    background-color: rgba(242, 242, 240, 0.75);
+    box-shadow: 0 0 5px #364259;
+    padding: 1.5em 3em;
+}
+
+.modal-title{
+    margin: 0 auto;
+}
+
+.modal-header, .modal-footer{
+    border: 0;
+}
+
+.loanDiv, .searchDiv{
+    background-color: rgba(242, 242, 240, 0.90);
+    box-shadow: 0 0 5px #364259;
+    padding: 1.5em 3em;
+}
+
+.form-control:focus {
+    background-color: rgba(242, 242, 240, 0.75);
+    transition: 1s;
+    border-color: #364259;
+    border-bottom-width: 1px;
+    box-shadow: none;
+}
+
+.form-control-underlined {
+    background-color: rgba(242, 242, 240, 0);
+    border-width: 0;
+    border-bottom-width: 1px;
+    border-color: #364259;
+    border-radius: 0;
+    padding-left: 0;
+}
+
+.form-control::placeholder {
+    font-size: 1rem;
+    color: #364259;
+    font-style: italic;
+}
+
+#buttonSearch{
+    color: #364259;
+}
+
+.table thead th{
+    border-top: 2px solid #364259;
+    border-bottom: 2px solid #364259;
+}
+
+th, td, tbody{
+    border-top: 1px solid #364259;
+    border-bottom: 1px solid #364259;
+}
+
+.extendButton{
+    color: #735C60;
+    text-decoration: none;
+}
+
+.extendButton:hover{
+    color: white;
+    text-decoration: none;
+}

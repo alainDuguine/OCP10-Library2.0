@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Emprunts</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container">
+            <div th:if="${loanList.isEmpty()}" class="loanDiv my-3 p-3 rounded">
+                <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vous n'avez aucun emprunt enregistré</h4>
+            </div>
+            <div th:if="${not loanList.isEmpty()}"  class="loanDiv my-3 p-3 rounded">
+                <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vos emprunts</h4>
+                <div class="media pt-3" th:each="loan:${loanList}"
+                                        th:with="bookCopy=${loan.getBookCopy()}">
+                    <i class="far fa-bookmark fa-2x"></i>
+
+                    <div class="media-body pl-2 pb-2 mb-0 small lh-125 border-bottom border-dark">
+
+                        <p class="h4 d-block text-capitalize text-gray-dark pb-2">
+                            <u th:each="author:${loan.getBookCopy().getBook().getAuthors()}"
+                               th:with="authorName=${author.getFirstName()} + ' ' + ${author.getLastName()}  + ${authorStat.count != authorStat.size ? ', ' : ''}"
+                               th:text="|${loan.getBookCopy().getBook().getTitle()} - ${authorName}|">Titre livre - Auteur</u>
+                        </p>
+
+                        <p th:if="${#strings.equals(param.loanId, loan.getId())}" class="text-center p-2 m-2">
+                            <span th:if="${param.error}" class="alert alert-danger">
+                                Impossible de prolonger l'emprunt
+                            </span>
+
+                            <span th:if="${param.success}" class="alert alert-success">
+                                L'emprunt a été prolongé !
+                            </span>
+                        </p>
+
+                        <p class="lead" th:text="|Emprunté le ${loan.getStartDate()}. Retour prévu avant le ${loan.getEndDate()}|"></p>
+
+                        <div th:switch="${loan.currentStatus}">
+                            <p th:case="LOANED"><em> Vous avez la possibilité de prolonger cet emprunt de 4 semaines supplémentaires</em><br/>
+                                <button class="align-middle btn btn-round mt-2 mb-0 btnLoan"><a class="extendButton" th:href="@{/extend(loanId=${loan.getId()})}">Prolonger</a></button>
+                            </p>
+                            <p class="lead" th:case="RETURNED" th:classappend="alert-success" th:text="|Livre rendu le ${loan.getCurrentStatusDate()}|">
+                            </p>
+                            <p class="lead" th:case="PROLONGED"
+                               th:text="|Emprunt prolongé le ${loan.getCurrentStatusDate()}|">
+                            </p>
+                            <p class="lead" th:case="LATE"
+                               th:classappend="alert-danger"
+                               th:text="|En retard. Le retour était prévu avant le ${loan.getEndDate()}|"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

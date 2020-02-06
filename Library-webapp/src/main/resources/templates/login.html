@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <div th:replace="layout.html :: headerfiles"></div>
+    <title>Open Library</title>
+</head>
+<body>
+
+<div class="d-md-flex h-md-100 align-items-center">
+
+    <!-- Logo Area   -->
+    <div class="col-md-6 p-0 h-md-100 logoArea">
+        <div class="text-white d-md-flex align-items-center h-100 p-5 text-center justify-content-center">
+            <div class="pt-5 pb-5">
+                <p>
+                    <img class="logo" th:src="@{~/img/LogoTransparent.png}" alt="Logo" src="../static/img/LogoTransparent.png"/>
+                </p>
+                <h1 class="mb-0 mt-3 display-4">Open Library</h1>
+                <h5 class="mb-4 font-weight-light">Manage your book loans freely</h5>
+                <a target="_blank" class="btn btn-outline-light btn-lg btn-round" data-toggle="modal" data-target="#registerModal">Register now !</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Register -->
+    <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Register</h3>
+                </div>
+                <form th:action="@{/login}" method="post" class="registerForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="email" class="form-control" id="registerEmail" aria-describedby="emailHelp" placeholder="E-mail" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="registerPassword" placeholder="Password" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="confirmationPassword" placeholder="Password confirmation" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="firstName" placeholder="First Name" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="lastName" placeholder="Last Name" required="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-round btn-block shadow-sm btnCancel" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-round btn-block shadow-sm btnSubmit">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Area -->
+    <div class="col-md-6 p-0 h-md-100 loginArea">
+        <div class="d-md-flex align-items-center h-md-100 p-5 justify-content-center">
+            <form class="border rounded p-5 loginForm" th:action="@{/signin}" method="post">
+                <h3 class="mb-4 text-center">Sign In</h3>
+
+                <div th:if="${param.error}" class="alert alert-danger">
+                    Invalid username and password.
+                </div>
+
+                <div th:if="${param.logout}" class="alert alert-success">
+                    You have been logged out.
+                </div>
+
+                <div class="form-group">
+                    <input type="email" class="form-control" id="username" name="username" aria-describedby="emailHelp" placeholder="E-mail" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                    <label class="form-check-label small" for="rememberMe">Remember me</label>
+                </div>
+                <div class="form-action">
+                    <button type="submit" class="btn btn-round btn-block shadow-sm">Sign in</button>
+                    <small class="d-block mt-4 text-center"><a class="text-gray" href="#">Forgot your password?</a></small>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="layout.html :: linkscripts"></footer>
+</body>
+</html>
