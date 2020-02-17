@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "LibraryUser")
+@Table(name = "library_user")
 @PasswordMatches
 @Builder
 @AllArgsConstructor

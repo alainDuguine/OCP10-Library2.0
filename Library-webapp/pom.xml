@@ -143,7 +143,7 @@
                             <language>java</language>
                             <configOptions>
                                 <output>src/gen/java/main</output>
-                                <generateApis>false</generateApis>
+                                <generateApis>true</generateApis>
                                 <generateApiTests>false</generateApiTests>
                                 <generateApiDocumentation>false</generateApiDocumentation>
                                 <generateModels>false</generateModels>
