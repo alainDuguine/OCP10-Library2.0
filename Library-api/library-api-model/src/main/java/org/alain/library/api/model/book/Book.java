@@ -2,6 +2,8 @@ package org.alain.library.api.model.book;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.alain.library.api.model.exceptions.FullReservationListException;
+import org.alain.library.api.model.reservation.Reservation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.Formula;
 
@@ -15,6 +17,8 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Book {
 
@@ -26,16 +30,26 @@ public class Book {
     private String title;
 
     @JsonIgnore
+    @Builder.Default
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookCopy> copyList = new ArrayList<>();
 
-    //Owning side
+    @Builder.Default
+    @OneToMany(
+            mappedBy = "book",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Reservation> reservations=new ArrayList<>();
+
     @NotNull
+    @Builder.Default
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "book_author",
                joinColumns = @JoinColumn(name = "book_id"),
                inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<Author> authors = new HashSet<>();
+
 
     @Formula("(SELECT COUNT(bc.id) FROM book b left join book_copy bc on bc.book_id = b.id WHERE bc.available = 'true' and b.id = id)")
     private Long nbCopiesAvailable;
@@ -64,6 +78,21 @@ public class Book {
         this.copyList.remove(bookCopy);
         bookCopy.setBook(null);
     }
+
+    public void addReservation(Reservation reservation){
+        if (this.getReservations().size() == this.nbCopiesAvailable * 2){
+            throw new FullReservationListException("Reservation List full : "+this.getReservations().size()+", book copies "+ this.nbCopiesAvailable);
+        }else{
+            this.reservations.add(reservation);
+            reservation.setBook(this);
+        }
+    }
+
+    public void removeReservation(Reservation reservation){
+        this.reservations.remove(reservation);
+        reservation.setBook(null);
+    }
+
 
     @Override
     public String toString() {
