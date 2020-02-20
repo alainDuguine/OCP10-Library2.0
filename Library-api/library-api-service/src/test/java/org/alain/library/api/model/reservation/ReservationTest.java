@@ -50,8 +50,8 @@ class ReservationTest {
 
     @Test
     void removeStatus() {
-        reservation.addStatus(ReservationStatus.builder().id(1L).build());
-        reservation.addStatus(ReservationStatus.builder().id(2L).build());
+        reservation.addStatus(ReservationStatus.builder().id(1L).status(StatusEnum.NOTIFIED).date(LocalDateTime.now()).build());
+        reservation.addStatus(ReservationStatus.builder().id(2L).status(StatusEnum.NOTIFIED).date(LocalDateTime.now()).build());
 
         ReservationStatus status = reservation.getStatuses().get(0);
 
