@@ -22,8 +22,6 @@ public class ReservationStatus {
 
     @Builder.Default
     private LocalDateTime date = LocalDateTime.now();
-    private String currentStatus;
-    private LocalDateTime currentStatusDate;
 
     @NotNull
     @Enumerated(value = EnumType.STRING)

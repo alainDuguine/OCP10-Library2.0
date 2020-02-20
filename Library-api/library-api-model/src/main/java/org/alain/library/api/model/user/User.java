@@ -69,6 +69,7 @@ public class User {
             mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
+    @OrderBy("currentStatusDate desc")
     private List<Reservation> reservations = new ArrayList<>();
 
     public User(@NotNull @Email String email, @NotNull String password, @NotNull String passwordConfirmation, @NotNull @Size(min = 2, max = 30) String firstName, @NotNull @Size(min = 2, max = 30) String lastName) {

@@ -9,6 +9,7 @@ import org.alain.library.api.model.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class Reservation {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
+
+    private String currentStatus;
+    private LocalDateTime currentStatusDate;
 
     @NotNull
     @Builder.Default

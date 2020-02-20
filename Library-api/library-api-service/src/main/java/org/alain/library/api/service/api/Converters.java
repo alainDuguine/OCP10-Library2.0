@@ -7,6 +7,8 @@ import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
 import org.alain.library.api.model.loan.Loan;
 import org.alain.library.api.model.loan.LoanStatus;
+import org.alain.library.api.model.reservation.Reservation;
+import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.user.User;
 import org.alain.library.api.service.dto.*;
 
@@ -76,6 +78,7 @@ class Converters {
         List<Author> authorsList = new ArrayList<>(bookModel.getAuthors());
         bookDto.setAuthors(convertListAuthorModelToListAuthorDto(authorsList));
         bookDto.setCopiesAvailable(bookModel.getNbCopiesAvailable());
+        bookDto.setReservations(convertListReservationModelToListReservationDto(bookModel.getReservations()));
         return bookDto;
     }
 
@@ -115,7 +118,7 @@ class Converters {
 
 /*
     ===============================================================
-    ========== BOOK COPIE =========================================
+    ========== BOOK COPY ==========================================
     ===============================================================
  */
 
@@ -210,7 +213,7 @@ class Converters {
 
 /*
     ===============================================================
-    ========== Users ============================================
+    ========== USER ===============================================
     ===============================================================
  */
 
@@ -223,6 +226,7 @@ class Converters {
         userDto.setLastName(userModel.getLastName());
         userDto.setRoles(userModel.getRoles());
         userDto.setLoans(convertListLoanModelToListLoanDto(userModel.getLoans()));
+        userDto.setReservations(convertListReservationModelToListReservationDto(userModel.getReservations()));
         return userDto;
     }
 
@@ -248,4 +252,45 @@ class Converters {
         userModel.setLastName(userFormUpdate.getLastName());
         return userModel;
     }
+
+/*
+    ===============================================================
+    ========== RESERVATION ========================================
+    ===============================================================
+ */
+
+    static ReservationDto convertReservationModelToReservationDto(Reservation reservation){
+        ReservationDto reservationDto = new ReservationDto();
+        reservationDto.setId(reservation.getId());
+        reservationDto.setUser(convertUserModelToUserDto(reservation.getUser()));
+        reservationDto.setBook(convertBookModelToBookDto(reservation.getBook()));
+        reservationDto.setStatuses(convertListReservationStatusModelToListReservationStatusDto(reservation.getStatuses()));
+        return reservationDto;
+    }
+
+    static List<ReservationDto> convertListReservationModelToListReservationDto(List<Reservation> reservationList){
+        List<ReservationDto> reservationDtoList = new ArrayList<>();
+        reservationList.forEach(reservation -> reservationDtoList.add(convertReservationModelToReservationDto(reservation)));
+        return reservationDtoList;
+    }
+
+/*
+    ===============================================================
+    ========== RESERVATION STATUS =================================
+    ===============================================================
+ */
+    static ReservationStatusDto convertReservationStatusModelToReservationStatusDto(ReservationStatus reservationStatus){
+        ReservationStatusDto reservationStatusDto = new ReservationStatusDto();
+        reservationStatusDto.setId(reservationStatus.getId());
+        reservationStatusDto.setDate(dateFormatter.format(reservationStatus.getDate()));
+        reservationStatusDto.setStatus(reservationStatus.getStatus().name());
+        return reservationStatusDto;
+    }
+
+    static List<ReservationStatusDto> convertListReservationStatusModelToListReservationStatusDto(List<ReservationStatus> statuses) {
+        List<ReservationStatusDto> reservationStatusDtoList = new ArrayList<>();
+        statuses.forEach(status -> reservationStatusDtoList.add(convertReservationStatusModelToReservationStatusDto(status)));
+        return reservationStatusDtoList;
+    }
+
 }
