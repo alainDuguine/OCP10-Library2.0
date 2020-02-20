@@ -19,8 +19,8 @@ import java.util.List;
 @Slf4j
 class Converters {
 
-    private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY 'à' HH:mm");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY 'à' HH:mm");
 
     private Converters() {
     }
@@ -262,8 +262,9 @@ class Converters {
     static ReservationDto convertReservationModelToReservationDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();
         reservationDto.setId(reservation.getId());
-        reservationDto.setUser(convertUserModelToUserDto(reservation.getUser()));
-        reservationDto.setBook(convertBookModelToBookDto(reservation.getBook()));
+        reservationDto.setUserId(reservation.getUser().getId());
+        reservationDto.setUserEmail(reservation.getUser().getEmail());
+        reservationDto.setBookTitle(reservation.getBook().getTitle());
         reservationDto.setStatuses(convertListReservationStatusModelToListReservationStatusDto(reservation.getStatuses()));
         return reservationDto;
     }

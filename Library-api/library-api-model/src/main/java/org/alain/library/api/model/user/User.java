@@ -91,6 +91,7 @@ public class User {
     }
 
     public void addReservation(Reservation reservation){
+        // check if user does not have already a copy of the book
         this.getLoans().forEach(loan -> {
             if(loan.getBookCopy().getBook().getId().equals(reservation.getBook().getId()) && !loan.getCurrentStatus().equals(StatusDesignation.RETURNED.toString())){
                 throw new BookAlreadyLoanedException("User has already a copy of the book");

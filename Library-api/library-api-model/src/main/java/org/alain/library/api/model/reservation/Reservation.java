@@ -42,9 +42,17 @@ public class Reservation {
             orphanRemoval = true)
     private List<ReservationStatus> statuses = new ArrayList<>();
 
+    public void setStatuses(List<ReservationStatus> statuses){
+        statuses.forEach(this::addStatus);
+    }
+
     public void addStatus(ReservationStatus status){
         statuses.add(status);
         status.setReservation(this);
+        if(this.currentStatus == null || status.getDate().isAfter(currentStatusDate)){
+            this.currentStatus = status.getStatus().name();
+            this.currentStatusDate = status.getDate();
+        }
     }
 
     public void removeStatus(ReservationStatus status){
