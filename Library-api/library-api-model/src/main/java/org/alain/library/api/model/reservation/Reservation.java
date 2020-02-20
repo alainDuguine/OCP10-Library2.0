@@ -9,6 +9,7 @@ import org.alain.library.api.model.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
+    private String currentStatus;
+    private LocalDateTime currentStatusDate;
+
     @NotNull
     @Builder.Default
     @OneToMany(
@@ -38,9 +42,17 @@ public class Reservation {
             orphanRemoval = true)
     private List<ReservationStatus> statuses = new ArrayList<>();
 
+    public void setStatuses(List<ReservationStatus> statuses){
+        statuses.forEach(this::addStatus);
+    }
+
     public void addStatus(ReservationStatus status){
         statuses.add(status);
         status.setReservation(this);
+        if(this.currentStatus == null || status.getDate().isAfter(currentStatusDate)){
+            this.currentStatus = status.getStatus().name();
+            this.currentStatusDate = status.getDate();
+        }
     }
 
     public void removeStatus(ReservationStatus status){

@@ -40,6 +40,7 @@ public class Book {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @OrderBy("currentStatusDate desc")
     private List<Reservation> reservations=new ArrayList<>();
 
     @NotNull

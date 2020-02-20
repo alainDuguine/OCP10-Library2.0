@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Data
@@ -21,7 +21,7 @@ public class ReservationStatus {
     private Long id;
 
     @Builder.Default
-    private LocalDate date = LocalDate.now();
+    private LocalDateTime date = LocalDateTime.now();
 
     @NotNull
     @Enumerated(value = EnumType.STRING)

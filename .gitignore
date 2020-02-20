@@ -139,4 +139,6 @@ Desktop.ini
 # ESLint
 ######################
 .eslintcache
-
+*/logs/*
+logs\
+/Library-api/library-api-service/logs/
