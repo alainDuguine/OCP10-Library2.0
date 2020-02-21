@@ -15,6 +15,7 @@ import org.alain.library.api.model.user.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +86,15 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
 
     @Override
     public List<Reservation> updateAndGetExpiredReservation() {
-        return null;
+        List<Reservation> reservationList = reservationRepository.findByCurrentStatusAndUserIdAndBookId(StatusEnum.RESERVED.name(), null, null);
+        List<Reservation> reservationListExpired = new ArrayList<>();
+        reservationList.forEach(reservation -> {
+            if(reservation.getCurrentStatusDate().plusDays(2).isAfter(LocalDateTime.now())){
+                reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.CANCELED).build());
+                reservationRepository.save(reservation);
+                reservationListExpired.add(reservation);
+            }
+        });
+        return reservationListExpired;
     }
 }

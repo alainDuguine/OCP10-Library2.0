@@ -2,9 +2,13 @@ package org.alain.library.api.consumer.repository;
 
 import org.alain.library.api.model.reservation.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    List<Reservation> findByCurrentStatusAndUserIdAndBookId(String status, Long bookId, Long userId);
+    @Query("Select r from Reservation r WHERE (:status is null or r.currentStatus = :status)" +
+            "and (:bookId is null or r.book.id = :bookId) and (:userId is null or r.user.id = :userId)")
+    List<Reservation> findByCurrentStatusAndUserIdAndBookId(@Param("status") String status,@Param("bookId") Long bookId,@Param("userId") Long userId);
 }

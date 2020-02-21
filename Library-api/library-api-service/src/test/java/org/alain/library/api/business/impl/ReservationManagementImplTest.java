@@ -9,6 +9,7 @@ import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
 import org.alain.library.api.model.loan.Loan;
 import org.alain.library.api.model.reservation.Reservation;
+import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -182,5 +185,25 @@ class ReservationManagementImplTest {
 
     @Test
     void updateAndGetExpiredReservation() {
+        ReservationStatus reservationStatusOk = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now()).build();
+        ReservationStatus reservationStatusExpired = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now().minusDays(2)).build();
+
+        Reservation reservation1 = Reservation.builder().id(1L).build();
+        reservation1.addStatus(reservationStatusOk);
+
+        Reservation reservation2 = Reservation.builder().id(2L).build();
+        reservation2.addStatus(reservationStatusExpired);
+
+        List<Reservation> reservationList = new ArrayList<>();
+        reservationList.add(reservation1);
+        reservationList.add(reservation2);
+
+        given(reservationRepository.findByCurrentStatusAndUserIdAndBookId(anyString(), any(), any())).willReturn(reservationList);
+
+        List<Reservation> reservationListResult = service.updateAndGetExpiredReservation();
+
+        assertThat(reservationListResult.size()).isEqualTo(1);
+        assertThat(reservationListResult.get(0).getCurrentStatus()).isEqualTo(StatusEnum.CANCELED.name());
+        assertThat(reservationListResult.get(0).getCurrentStatusDate().isAfter(reservationStatusExpired.getDate())).isTrue();
     }
 }
