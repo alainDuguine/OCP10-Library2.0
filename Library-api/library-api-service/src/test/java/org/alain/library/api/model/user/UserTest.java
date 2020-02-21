@@ -9,6 +9,10 @@ import org.alain.library.api.model.reservation.Reservation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,8 +61,11 @@ class UserTest {
 
     @Test
     void removeReservation() {
-        user.addReservation(Reservation.builder().id(1L).build());
-        user.addReservation(Reservation.builder().id(2L).build());
+        List<Reservation> reservationList = new ArrayList<>();
+        reservationList.add(Reservation.builder().id(1L).build());
+        reservationList.add(Reservation.builder().id(2L).build());
+
+        user.setReservations(reservationList);
 
         Reservation reservation = user.getReservations().get(0);
         user.removeReservation(reservation);

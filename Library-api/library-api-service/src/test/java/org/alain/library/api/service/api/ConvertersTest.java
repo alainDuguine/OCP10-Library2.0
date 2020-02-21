@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +34,7 @@ class ConvertersTest {
         book = Book.builder().id(1L).title("Test Book").nbCopiesAvailable(2L).build();
 
         List<ReservationStatus> statuses = new ArrayList<>(Arrays.asList(
-                ReservationStatus.builder().id(1L).date(LocalDateTime.now().minusDays(2L)).status(StatusEnum.RESERVED).build(),
+                ReservationStatus.builder().id(1L).date(LocalDateTime.now().minusDays(2L)).status(StatusEnum.TERMINATED).build(),
                 ReservationStatus.builder().id(2L).date(LocalDateTime.now()).status(StatusEnum.RESERVED).build()
         ));
 
@@ -79,8 +80,10 @@ class ConvertersTest {
         Reservation reservation2 = Reservation.builder().id(1L).build();
         reservation2.addStatus(ReservationStatus.builder().id(3L).date(LocalDateTime.now()).status(StatusEnum.RESERVED).build());
 
+        Book book2 = Book.builder().id(4L).title("Test Book").nbCopiesAvailable(2L).build();
+
+        book2.addReservation(reservation2);
         user.addReservation(reservation2);
-        book.addReservation(reservation2);
 
         reservations.add(reservation);
         reservations.add(reservation2);
