@@ -54,7 +54,7 @@ public interface ReservationsApi {
     @RequestMapping(value = "/reservations",
         produces = { "application/json" },
         method = RequestMethod.GET)
-    ResponseEntity<List<ReservationDto>> getReservations(@ApiParam(value = "Status values as filter in research", allowableValues = "reserved, notified, terminated, canceled") @Valid @RequestParam(value = "currentStatus", required = false) String currentStatus, @ApiParam(value = "User id as filter in research") @Valid @RequestParam(value = "user", required = false) Long user, @ApiParam(value = "Book id as filter in research") @Valid @RequestParam(value = "book", required = false) Long book);
+    ResponseEntity<List<ReservationDto>> getReservations(@ApiParam(value = "Status values as filter in research", allowableValues = "pending, reserved, terminated, canceled") @Valid @RequestParam(value = "currentStatus", required = false) String currentStatus, @ApiParam(value = "User id as filter in research") @Valid @RequestParam(value = "user", required = false) Long user, @ApiParam(value = "Book id as filter in research") @Valid @RequestParam(value = "book", required = false) Long book);
 
 
     @ApiOperation(value = "Update a reservation by adding a status to it", nickname = "updateReservation", notes = "", tags={ "reservation", })

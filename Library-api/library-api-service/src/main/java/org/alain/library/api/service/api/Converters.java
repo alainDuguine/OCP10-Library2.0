@@ -264,6 +264,7 @@ class Converters {
         reservationDto.setId(reservation.getId());
         reservationDto.setUserId(reservation.getUser().getId());
         reservationDto.setUserEmail(reservation.getUser().getEmail());
+        reservationDto.setBookId(reservation.getBook().getId());
         reservationDto.setBookTitle(reservation.getBook().getTitle());
         reservationDto.setStatuses(convertListReservationStatusModelToListReservationStatusDto(reservation.getStatuses()));
         return reservationDto;

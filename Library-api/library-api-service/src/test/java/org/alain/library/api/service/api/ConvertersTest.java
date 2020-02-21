@@ -33,7 +33,7 @@ class ConvertersTest {
         book = Book.builder().id(1L).title("Test Book").nbCopiesAvailable(2L).build();
 
         List<ReservationStatus> statuses = new ArrayList<>(Arrays.asList(
-                ReservationStatus.builder().id(1L).date(LocalDateTime.now().minusDays(2L)).status(StatusEnum.NOTIFIED).build(),
+                ReservationStatus.builder().id(1L).date(LocalDateTime.now().minusDays(2L)).status(StatusEnum.RESERVED).build(),
                 ReservationStatus.builder().id(2L).date(LocalDateTime.now()).status(StatusEnum.RESERVED).build()
         ));
 
@@ -77,7 +77,7 @@ class ConvertersTest {
     @Test
     void convertListReservationModelToListReservationDto() {
         Reservation reservation2 = Reservation.builder().id(1L).build();
-        reservation2.addStatus(ReservationStatus.builder().id(3L).date(LocalDateTime.now()).status(StatusEnum.NOTIFIED).build());
+        reservation2.addStatus(ReservationStatus.builder().id(3L).date(LocalDateTime.now()).status(StatusEnum.RESERVED).build());
 
         user.addReservation(reservation2);
         book.addReservation(reservation2);
@@ -95,7 +95,7 @@ class ConvertersTest {
 
     @Test
     void convertReservationStatusModelToReservationStatusDto() {
-        ReservationStatus reservationStatus = ReservationStatus.builder().id(1L).status(StatusEnum.NOTIFIED).date(LocalDateTime.now()).build();
+        ReservationStatus reservationStatus = ReservationStatus.builder().id(1L).status(StatusEnum.RESERVED).date(LocalDateTime.now()).build();
 
         ReservationStatusDto reservationStatusDto = Converters.convertReservationStatusModelToReservationStatusDto(reservationStatus);
 
@@ -105,7 +105,7 @@ class ConvertersTest {
 
     @Test
     void convertListReservationStatusModelToListReservationStatusDto() {
-        ReservationStatus reservationStatus = ReservationStatus.builder().id(1L).status(StatusEnum.NOTIFIED).date(LocalDateTime.now()).build();
+        ReservationStatus reservationStatus = ReservationStatus.builder().id(1L).status(StatusEnum.RESERVED).date(LocalDateTime.now()).build();
         ReservationStatus reservationStatus2 = ReservationStatus.builder().id(2L).status(StatusEnum.RESERVED).date(LocalDateTime.now()).build();
 
         List<ReservationStatus> reservationStatusList = new ArrayList<>();
