@@ -82,7 +82,7 @@ public class Book {
 
     public void addReservation(Reservation reservation){
         if (this.getReservations().size() == this.nbCopiesAvailable * 2){
-            throw new FullReservationListException("Reservation List full : "+this.getReservations().size()+", book copies "+ this.nbCopiesAvailable);
+            throw new FullReservationListException("Reservation List full : size:"+this.getReservations().size()+", book copies:"+ this.nbCopiesAvailable);
         }else{
             this.reservations.add(reservation);
             reservation.setBook(this);

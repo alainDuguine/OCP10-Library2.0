@@ -21,7 +21,7 @@ class ReservationTest {
 
     @Test
     void addStatus() {
-        ReservationStatus status = ReservationStatus.builder().status(StatusEnum.NOTIFIED).build();
+        ReservationStatus status = ReservationStatus.builder().status(StatusEnum.RESERVED).build();
 
         int nbStatuses = reservation.getStatuses().size();
         reservation.addStatus(status);
@@ -35,12 +35,12 @@ class ReservationTest {
 
     @Test
     void addStatusWithOldDate() {
-        ReservationStatus status = ReservationStatus.builder().status(StatusEnum.NOTIFIED).build();
+        ReservationStatus status = ReservationStatus.builder().status(StatusEnum.RESERVED).build();
 
         reservation.addStatus(status);
         int nbStatuses = reservation.getStatuses().size();
 
-        ReservationStatus oldStatus = ReservationStatus.builder().status(StatusEnum.NOTIFIED).date(LocalDateTime.of(2019, 01,01,00,00)).build();
+        ReservationStatus oldStatus = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.of(2019, 01,01,00,00)).build();
         reservation.addStatus(oldStatus);
 
         assertThat(reservation.getStatuses().size()).isEqualTo(nbStatuses+1);
@@ -50,8 +50,8 @@ class ReservationTest {
 
     @Test
     void removeStatus() {
-        reservation.addStatus(ReservationStatus.builder().id(1L).status(StatusEnum.NOTIFIED).date(LocalDateTime.now()).build());
-        reservation.addStatus(ReservationStatus.builder().id(2L).status(StatusEnum.NOTIFIED).date(LocalDateTime.now()).build());
+        reservation.addStatus(ReservationStatus.builder().id(1L).status(StatusEnum.RESERVED).date(LocalDateTime.now()).build());
+        reservation.addStatus(ReservationStatus.builder().id(2L).status(StatusEnum.RESERVED).date(LocalDateTime.now()).build());
 
         ReservationStatus status = reservation.getStatuses().get(0);
 
