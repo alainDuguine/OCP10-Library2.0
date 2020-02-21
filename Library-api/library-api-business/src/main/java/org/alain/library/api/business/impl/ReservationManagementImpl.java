@@ -59,18 +59,27 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
                 user.get().addReservation(reservation);
                 reservationRepository.save(reservation);
             }catch (Exception e){
-                log.warn("Wrong parameter on create NewReservation : " + e.getMessage());
+                log.warn("Wrong parameter while creating new reservation : " + e.getMessage());
                 throw new ReservationException(e.getMessage());
             }
         }else{
             log.error("Unexpected request for creating reservation : " + userPrincipal.getUsername());
             throw new UnauthorizedException("Impossible to create reservation");
         }
+        log.info("New reservation created : " + reservation.toString());
         return reservation;
     }
 
     @Override
-    public Optional<ReservationStatus> updateReservation(Long reservationId, String status, UserPrincipal userPrincipal) {
+    public Optional<Reservation> updateReservation(Long reservationId, String status, UserPrincipal userPrincipal) {
+        log.info("updateReservation : (reservationId:" + reservationId + ", status:" + status + ", UserPrincipal: " + userPrincipal.getUsername());
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        if (reservation.isPresent() && (userPrincipal.hasRole("ADMIN") || userPrincipal.getId().equals(reservation.get().getUser().getId()))){
+            ReservationStatus reservationStatus = ReservationStatus.builder().status(StatusEnum.valueOf(status.toUpperCase())).date(LocalDateTime.now()).build();
+            reservation.get().addStatus(reservationStatus);
+            return Optional.of(reservationRepository.save(reservation.get()));
+        }
+        log.warn("Reservation update failed");
         return Optional.empty();
     }
 

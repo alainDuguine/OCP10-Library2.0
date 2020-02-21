@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.business.impl.UserPrincipal;
 import org.alain.library.api.model.reservation.Reservation;
-import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.service.dto.ReservationDto;
 import org.alain.library.api.service.dto.ReservationForm;
 import org.springframework.http.HttpStatus;
@@ -78,7 +77,7 @@ public class ReservationsApiController implements ReservationsApi {
                                                   @ApiParam(value = "Status values to add to reservation history" ,required=true )  @Valid @RequestBody String status) {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("Requesting updating reservation :" + id + ", status: "+ status +"user:" + userPrincipal.toString());
-        Optional<ReservationStatus> reservationStatus = reservationManagement.updateReservation(id, status, userPrincipal);
+        Optional<Reservation> reservationStatus = reservationManagement.updateReservation(id, status, userPrincipal);
         if(reservationStatus.isPresent()){
             log.info("Reservation update :" + reservationStatus.get().toString());
             return new ResponseEntity<Void>(HttpStatus.OK);

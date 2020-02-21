@@ -9,6 +9,7 @@ import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
 import org.alain.library.api.model.loan.Loan;
 import org.alain.library.api.model.reservation.Reservation;
+import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,7 +68,23 @@ class ReservationManagementImplTest {
 
     @Test
     void createNewReservationOk() {
-//        UserPrincipal userPrincipal = new User
+        Book book = Book.builder().id(1L).nbCopiesAvailable(2L).title("test title").build();
+        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+
+        User user = User.builder().id(1L).roles("USER").email("test@emmail.com").build();
+        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+
+        Reservation reservation = service.createNewReservation(book.getId(), userPrincipal.getId(), userPrincipal);
+
+        assertThat(reservation).isNotNull();
+        assertThat(reservation.getUser()).isEqualTo(user);
+        assertThat(reservation.getBook()).isEqualTo(book);
+        assertThat(reservation.getCurrentStatus()).isEqualTo(StatusEnum.PENDING.name());
+        assertThat(reservation.getCurrentStatusDate()).isNotNull();
+        assertThat(reservation.getStatuses().size()).isEqualTo(1);
+        assertThat(user.getReservations().size()).isEqualTo(1);
     }
 
     @Test
@@ -136,6 +153,31 @@ class ReservationManagementImplTest {
 
     @Test
     void updateReservation() {
+        User user = User.builder().id(1L).roles("USER").email("test@email.com").build();
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+
+        user.addReservation(reservation);
+        given(reservationRepository.findById(anyLong())).willReturn(Optional.of(reservation));
+        given(reservationRepository.save(any())).willReturn(reservation);
+
+        Optional<Reservation> reservationResult = service.updateReservation(1L, "terminated", userPrincipal);
+
+        assertThat(reservationResult.isPresent()).isTrue();
+    }
+
+    @Test
+    void updateReservation_withWrongUser_returnEmpty() {
+        User user = User.builder().id(1L).roles("USER").email("test@email.com").build();
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+
+        User user2 = User.builder().id(2L).roles("USER").email("wronguser@email.com").build();
+        user2.addReservation(reservation);
+
+        given(reservationRepository.findById(anyLong())).willReturn(Optional.of(reservation));
+
+        Optional<Reservation> reservationResult = service.updateReservation(1L, "terminated", userPrincipal);
+
+        assertThat(reservationResult.isPresent()).isFalse();
     }
 
     @Test
