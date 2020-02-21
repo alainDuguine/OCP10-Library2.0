@@ -8,47 +8,43 @@ import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
+import org.alain.library.api.service.dto.ReservationForm;
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
-class ReservationsApiControllerTest {
+//@ExtendWith(SpringExtension.class)
+//@WebMvcTest(ReservationsApiController.class)
+public class ReservationsApiControllerTestWithSpringSecurity {
 
+    @Autowired
+    private MockMvc mockMvc;
     @Mock
     ReservationManagement service;
-    @Mock
-    ObjectMapper objectMapper;
-    @Mock
-    HttpServletRequest request;
-    @Mock
-    Converters converter;
-    @InjectMocks
+    @Autowired
     ReservationsApiController controller;
 
-    MockMvc mockMvc;
 
     Reservation reservation;
     List<Reservation> reservationList = new ArrayList<>();
@@ -75,46 +71,22 @@ class ReservationsApiControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
-    @Test
-    void getReservation() throws Exception {
-        given(service.findOne(anyLong())).willReturn(Optional.of(reservation));
+//    @WithMockUser(value = "spring")
+//    @Test
+    void addReservation() throws Exception {
+        ReservationForm form = new ReservationForm();
+        form.setBookId(1L);
+        form.setUserId(1L);
+//        given(service.createNewReservation(anyLong(),anyLong(), any())).willReturn(Optional.of(reservation));
 
-        ResultActions result = mockMvc.perform(get("/reservations/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+        mockMvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(form))
+                .header("Authorization", "authorization"))
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.userId").value(1))
-                .andExpect(jsonPath("$.bookId").value(1))
-                .andExpect(jsonPath("$.statuses[0].status", equalTo("RESERVED")));
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
-        verify(service).findOne(anyLong());
+                .andExpect(jsonPath("$.bookId").value(1));
     }
 
-    @Test
-    void getReservationStatusNotFoundOnEmptyOptional() throws Exception {
-        given(service.findOne(anyLong())).willReturn(Optional.empty());
-
-        mockMvc.perform(get("/reservations/1"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void getReservations() throws Exception {
-        given(service.getReservationsByStatusAndUserIdAndBookId(any(), any(), any())).willReturn(reservationList);
-
-        ResultActions result = mockMvc.perform(get("/reservations?status=pending&user=1&book=1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
-    }
-
-
-    @Test
-    void updateReservation() {
-    }
-
-    @Test
-    void checkAndGetExpiredReservation() {
-    }
 }
