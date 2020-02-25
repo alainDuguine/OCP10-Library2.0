@@ -1,6 +1,7 @@
 package org.alain.library.api.service.api;
 
 import org.alain.library.api.model.book.Book;
+import org.alain.library.api.model.book.BookCopy;
 import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
@@ -31,7 +32,9 @@ class ConvertersTest {
     @BeforeEach
     void setUp() {
         user = User.builder().id(1L).email("testuser@email.com").build();
-        book = Book.builder().id(1L).title("Test Book").nbCopiesAvailable(2L).build();
+        book = Book.builder().id(1L).title("Test Book").nbCopiesAvailable(0L).build();
+        BookCopy copy = BookCopy.builder().id(1L).build();
+        book.addCopy(copy);
 
         List<ReservationStatus> statuses = new ArrayList<>(Arrays.asList(
                 ReservationStatus.builder().id(1L).date(LocalDateTime.now().minusDays(2L)).status(StatusEnum.TERMINATED).build(),
@@ -80,7 +83,9 @@ class ConvertersTest {
         Reservation reservation2 = Reservation.builder().id(1L).build();
         reservation2.addStatus(ReservationStatus.builder().id(3L).date(LocalDateTime.now()).status(StatusEnum.RESERVED).build());
 
-        Book book2 = Book.builder().id(4L).title("Test Book").nbCopiesAvailable(2L).build();
+        Book book2 = Book.builder().id(4L).title("Test Book").nbCopiesAvailable(0L).build();
+        BookCopy copy = BookCopy.builder().id(1L).build();
+        book2.addCopy(copy);
 
         book2.addReservation(reservation2);
         user.addReservation(reservation2);

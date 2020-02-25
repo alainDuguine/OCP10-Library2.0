@@ -71,7 +71,10 @@ class ReservationManagementImplTest {
 
     @Test
     void createNewReservationOk() {
-        Book book = Book.builder().id(1L).nbCopiesAvailable(2L).title("test title").build();
+        Book book = Book.builder().id(1L).nbCopiesAvailable(0L).title("test title").build();
+        BookCopy copy = BookCopy.builder().id(1L).build();
+        book.addCopy(copy);
+
         given(bookManagement.findOne(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@emmail.com").build();
@@ -109,7 +112,10 @@ class ReservationManagementImplTest {
 
     @Test
     void RG2API_createNewReservation_WithUserHavingLoanOfTheBook_throwsReservationException() {
-        Book book = Book.builder().id(1L).nbCopiesAvailable(2L).title("test title").build();
+        Book book = Book.builder().id(1L).nbCopiesAvailable(0L).title("test title").build();
+        BookCopy bookCopy = BookCopy.builder().id(1L).build();
+        book.addCopy(bookCopy);
+
         given(bookManagement.findOne(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@emmail.com").build();
@@ -133,7 +139,9 @@ class ReservationManagementImplTest {
 
     @Test
     void RG2API_createNewReservation_WithUserHavingReservationOfTheBook_throwsReservationException() {
-        Book book = Book.builder().id(1L).nbCopiesAvailable(2L).title("test title").build();
+        Book book = Book.builder().id(1L).nbCopiesAvailable(0L).title("test title").build();
+        BookCopy bookCopy = BookCopy.builder().id(1L).build();
+        book.addCopy(bookCopy);
         given(bookManagement.findOne(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@email.com").build();

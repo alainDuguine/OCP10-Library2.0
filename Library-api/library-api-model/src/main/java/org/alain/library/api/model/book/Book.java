@@ -2,6 +2,7 @@ package org.alain.library.api.model.book;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.alain.library.api.model.exceptions.BookStillAvailableException;
 import org.alain.library.api.model.exceptions.FullReservationListException;
 import org.alain.library.api.model.reservation.Reservation;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -81,8 +82,11 @@ public class Book {
     }
 
     public void addReservation(Reservation reservation){
-        if (this.getReservations().size() == this.nbCopiesAvailable * 2){
-            throw new FullReservationListException("Reservation List full : size:"+this.getReservations().size()+", book copies:"+ this.nbCopiesAvailable);
+        if (this.getNbCopiesAvailable() != 0){
+            throw new BookStillAvailableException("Impossible to add reservation, book id " + this.getId() + " has " + this.getNbCopiesAvailable() + " copies available");
+        }
+        if (this.getReservations().size() == this.getCopyList().size() * 2){
+            throw new FullReservationListException("Reservation List full : size:"+this.getReservations().size()+", book copies:"+ this.getCopyList().size());
         }else{
             this.reservations.add(reservation);
             reservation.setBook(this);

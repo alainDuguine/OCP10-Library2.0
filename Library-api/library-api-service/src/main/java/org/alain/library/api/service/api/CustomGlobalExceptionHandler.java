@@ -42,8 +42,15 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
     }
 
-    @ExceptionHandler({ConstraintViolationException.class, ReservationException.class})
+    @ExceptionHandler({ConstraintViolationException.class})
     public void constraintViolationException(HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
+
+    @ExceptionHandler({ReservationException.class})
+    public ResponseEntity<Object> handleReservationException(RuntimeException ex, WebRequest request){
+        String body = ex.getMessage();
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
 }

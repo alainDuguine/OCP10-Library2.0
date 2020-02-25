@@ -1,11 +1,14 @@
 package org.alain.library.api.model.book;
 
+import org.alain.library.api.model.exceptions.BookStillAvailableException;
 import org.alain.library.api.model.exceptions.FullReservationListException;
 import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +19,8 @@ class BookTest {
 
     @BeforeEach
     void setUp() {
-        book = Book.builder().id(1L).title("Titre Test").nbCopiesAvailable(1L).build();
+        book = Book.builder().id(1L).title("Titre Test").nbCopiesAvailable(0L).build();
+        book.setCopyList(Arrays.asList(BookCopy.builder().id(1L).build()));
     }
 
     @Test
@@ -40,6 +44,16 @@ class BookTest {
                 () -> book.addReservation(Reservation.builder().id(3L).build()));
 
         assertThat(book.getReservations().size()).isEqualTo(nbReservations);
+    }
+
+    @Test
+    void addReservationWhenBookCopiesAvailable() {
+        book.setNbCopiesAvailable(2L);
+
+        assertThrows(BookStillAvailableException.class,
+                () -> book.addReservation(Reservation.builder().id(3L).build()));
+
+        assertThat(book.getReservations().size()).isEqualTo(0);
     }
 
     @Test
