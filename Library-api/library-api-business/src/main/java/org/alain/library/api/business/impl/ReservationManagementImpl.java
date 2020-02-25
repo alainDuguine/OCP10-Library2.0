@@ -5,7 +5,9 @@ import org.alain.library.api.business.contract.BookManagement;
 import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.business.contract.UserManagement;
 import org.alain.library.api.business.exceptions.ReservationException;
+import org.alain.library.api.business.exceptions.ReservationStatusException;
 import org.alain.library.api.business.exceptions.UnauthorizedException;
+import org.alain.library.api.business.exceptions.UnknowStatusException;
 import org.alain.library.api.consumer.repository.ReservationRepository;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.reservation.Reservation;
@@ -76,7 +78,13 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         log.info("updateReservation : (reservationId:" + reservationId + ", status:" + status + ", UserPrincipal: " + userPrincipal.getUsername());
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
         if (reservation.isPresent() && (userPrincipal.hasRole("ADMIN") || userPrincipal.getId().equals(reservation.get().getUser().getId()))){
-            ReservationStatus reservationStatus = ReservationStatus.builder().status(StatusEnum.valueOf(status.toUpperCase())).date(LocalDateTime.now()).build();
+            StatusEnum statusEnum;
+            try{
+               statusEnum = StatusEnum.valueOf(status.toUpperCase());
+            }catch (Exception ex){
+                throw new UnknowStatusException("Status " + status + " doesn't exists");
+            }
+            ReservationStatus reservationStatus = ReservationStatus.builder().status(statusEnum).date(LocalDateTime.now()).build();
             reservation.get().addStatus(reservationStatus);
             return Optional.of(reservationRepository.save(reservation.get()));
         }

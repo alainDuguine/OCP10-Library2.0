@@ -17,7 +17,7 @@ import java.util.List;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-02-19T16:47:31.241+01:00")
 
 @Api(value = "reservations", description = "the reservations API")
-public interface ReservationsApi {
+public interface  ReservationsApi {
 
     @ApiOperation(value = "Add a new reservation", nickname = "addReservation", notes = "", response = ReservationDto.class, tags={ "reservation", })
     @ApiResponses(value = { 

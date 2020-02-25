@@ -74,10 +74,11 @@ public class ReservationsApiController implements ReservationsApi {
 
     public ResponseEntity<Void> updateReservation(@ApiParam(value = "User identification" ,required=true) @RequestHeader(value="Authorization", required=true) String authorization,
                                                   @ApiParam(value = "Id of reservation to update",required=true) @PathVariable("id") Long id,
-                                                  @ApiParam(value = "Status values to add to reservation history" ,required=true )  @Valid @RequestBody String status) {
+                                                  @ApiParam(value = "Status values to add to reservation history", required=true )  @Valid @RequestBody String status) {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("Requesting updating reservation :" + id + ", status: "+ status +"user:" + userPrincipal.toString());
-        Optional<Reservation> reservationStatus = reservationManagement.updateReservation(id, status, userPrincipal);
+        log.info("Requesting updating reservation :" + id + ", status: "+ status +", user:" + userPrincipal.toString());
+        String cleanedStatus = status.substring(1, status.length()-1);
+        Optional<Reservation> reservationStatus = reservationManagement.updateReservation(id, cleanedStatus, userPrincipal);
         if(reservationStatus.isPresent()){
             log.info("Reservation update :" + reservationStatus.get().toString());
             return new ResponseEntity<Void>(HttpStatus.OK);

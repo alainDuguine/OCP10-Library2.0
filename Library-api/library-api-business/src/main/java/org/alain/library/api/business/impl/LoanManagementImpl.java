@@ -9,6 +9,7 @@ import org.alain.library.api.model.loan.Loan;
 import org.alain.library.api.model.loan.LoanStatus;
 import org.alain.library.api.model.loan.Status;
 import org.alain.library.api.model.loan.StatusDesignation;
+import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +80,9 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
     public Optional<LoanStatus> updateLoan(Long id, String status) {
         try {
             Optional<Loan> loan = loanRepository.findById(id);
-            StatusDesignation statusDesignation = StatusDesignation.valueOf(status.toUpperCase());
+            String cleanedStatus = status.substring(1, status.length()-1);
+            StatusDesignation statusDesignation;
+            statusDesignation = StatusDesignation.valueOf(cleanedStatus.toUpperCase());
             return loan.map(value -> this.addLoanStatusToLoan(value, statusDesignation));
         }catch(IllegalArgumentException ex){
             log.warn("Wrong status on updateLoan : " + status + " - " + ex.getMessage());

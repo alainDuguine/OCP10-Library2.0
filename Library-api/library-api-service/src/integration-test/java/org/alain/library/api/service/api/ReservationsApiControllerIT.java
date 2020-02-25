@@ -7,6 +7,7 @@ import org.alain.library.api.consumer.repository.ReservationRepository;
 import org.alain.library.api.consumer.repository.ReservationStatusRepository;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.exceptions.FullReservationListException;
+import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
 import org.alain.library.api.service.dto.ReservationDto;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,12 +68,6 @@ class ReservationsApiControllerIT {
         apiURL = "http://localhost:" + randomServerPort;
     }
 
-    @AfterEach
-    void tearDown() {
-        reservationRepository.deleteAll();
-        reservationStatusRepository.deleteAll();
-    }
-
     @Test
     void addReservation() {
         Book book = bookManagement.findOne(7L).get();
@@ -93,6 +89,8 @@ class ReservationsApiControllerIT {
         assertThat(result.getBody().getStatuses()).isNotNull();
         assertThat(result.getBody().getStatuses().get(0).getStatus()).isEqualTo(StatusEnum.PENDING.name());
         assertThat(result.getBody().getStatuses().get(0).getDate()).isNotNull();
+
+        reservationRepository.deleteById(result.getBody().getId());
     }
 
     @Test
@@ -111,13 +109,13 @@ class ReservationsApiControllerIT {
         reservationForm.setUserId(user1.getId());
         reservationForm.setBookId(book.getId());
 
-        restTemplate.postForEntity(apiURL+"/reservations", reservationForm, ReservationDto.class);
+        ResponseEntity<ReservationDto> responseEntity1 = restTemplate.postForEntity(apiURL + "/reservations", reservationForm, ReservationDto.class);
 
         ReservationForm reservationForm2 = new ReservationForm();
         reservationForm2.setUserId(user2.getId());
         reservationForm2.setBookId(book.getId());
 
-        restTemplate.postForEntity(apiURL+"/reservations", reservationForm2, ReservationDto.class);
+        ResponseEntity<ReservationDto> responseEntity2 = restTemplate.postForEntity(apiURL+"/reservations", reservationForm2, ReservationDto.class);
 
         ReservationForm reservationForm3 = new ReservationForm();
         reservationForm3.setUserId(user3.getId());
@@ -126,22 +124,88 @@ class ReservationsApiControllerIT {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiURL+"/reservations", reservationForm2, String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(responseEntity.getBody()).isEqualTo("Reservation List full : size:2, book copies:1");
+
+        reservationRepository.deleteById(responseEntity1.getBody().getId());
+        reservationRepository.deleteById(responseEntity2.getBody().getId());
+
+    }
+
+    @Test
+    void checkRG2Failed_addReservation_shouldNotBePersisted() {
+
+        Book book = bookManagement.findOne(7L).get();
+        User user = userManagement.findOne(1L).get();
+
+        ReservationForm reservationForm = new ReservationForm();
+        reservationForm.setUserId(user.getId());
+        reservationForm.setBookId(book.getId());
+
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiURL+"/reservations", reservationForm, String.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(responseEntity.getBody()).isEqualTo("User has already a copy of the book 7");
     }
 
     @Test
     void getReservation() {
+        Book book = bookManagement.findOne(7L).get();
+        User user = userManagement.findAll().get(0);
+
+        ReservationForm reservationForm = new ReservationForm();
+        reservationForm.setUserId(user.getId());
+        reservationForm.setBookId(book.getId());
+
+        ResponseEntity<ReservationDto> result = restTemplate.postForEntity(apiURL+"/reservations", reservationForm, ReservationDto.class);
+        Long id = result.getBody().getId();
+
+        ResponseEntity<ReservationDto> reservation = restTemplate.getForEntity(apiURL+"/reservations/"+id, ReservationDto.class);
+
+        assertThat(reservation).isNotNull();
+        assertThat(reservation.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(reservation.getBody().getId()).isEqualTo(id);
     }
 
     @Test
     void getReservations() {
+        ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations", ReservationDto[].class);
+
+        assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(reservations.getBody().length).isEqualTo(2);
+    }
+
+    @Test
+    void getReservations_withParameters() {
+        ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations?currentStatus=pending&user=3&book=16", ReservationDto[].class);
+
+        assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(reservations.getBody().length).isEqualTo(1);
     }
 
     @Test
     void updateReservation() {
+        Book book = bookManagement.findOne(7L).get();
+        User user = userManagement.findAll().get(0);
+
+        ReservationForm reservationForm = new ReservationForm();
+        reservationForm.setUserId(user.getId());
+        reservationForm.setBookId(book.getId());
+
+//        ResponseEntity<ReservationDto> result = restTemplate.postForEntity(apiURL+"/reservations", reservationForm, ReservationDto.class);
+
+        HttpEntity<String> status = new HttpEntity<>(StatusEnum.RESERVED.name());
+
+//        restTemplate.put(apiURL+"/reservations/"+result.getBody().getId(),status);
+        ResponseEntity<String> result = restTemplate.exchange(apiURL+"/reservations/1", HttpMethod.PUT, status, String.class);
+
+//        Optional<Reservation> reservation = reservationRepository.findById(result.getBody().getId());
+
+//        assertThat(reservation.get().getCurrentStatus()).isEqualTo(StatusEnum.RESERVED);
+
+//        reservationRepository.deleteById(result.getBody().getId());
     }
 
     @Test
     void checkAndGetExpiredReservation() {
+
     }
 }
 

@@ -12,6 +12,7 @@ import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

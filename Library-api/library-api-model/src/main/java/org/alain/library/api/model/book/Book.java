@@ -62,6 +62,9 @@ public class Book {
     }
 
     public void addAuthor(Author author){
+        if(this.authors==null){
+            this.authors= new HashSet<>();
+        }
         this.authors.add(author);
         author.getBooks().add(this);
     }

@@ -1,6 +1,8 @@
 package org.alain.library.api.service.api;
 
 import org.alain.library.api.business.exceptions.ReservationException;
+import org.alain.library.api.business.exceptions.ReservationStatusException;
+import org.alain.library.api.business.exceptions.UnknowStatusException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,7 +49,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
 
-    @ExceptionHandler({ReservationException.class})
+    @ExceptionHandler(value = {ReservationException.class, UnknowStatusException.class,})
     public ResponseEntity<Object> handleReservationException(RuntimeException ex, WebRequest request){
         String body = ex.getMessage();
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
