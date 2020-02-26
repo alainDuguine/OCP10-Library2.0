@@ -7,7 +7,7 @@ services:
       - "127.0.0.1:9032:5432"
     volumes:
 #      - "./data/db:/var/lib/postgresql/data"
-       - "./init/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
+       - "./init/db/docker-entrypoint-initdb.d/v1.1.0:/docker-entrypoint-initdb.d"
     environment:
       - POSTGRES_DB=db_library
       - POSTGRES_USER=usr_library

@@ -80,14 +80,29 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
     color: #364259;
 }
 
-.loginArea button, .registerForm .btnSubmit, .btnLoan{
+.loginArea button, .registerForm .btnSubmit, .btnLoan, .btnReservation{
     background-color: #f2f2f0;
     color: #735C60;
     border: 1px solid #735C60;
 }
 
+.btnReservation{
+    margin: 0;
+    padding: 0.15rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
 .registerForm .btnCancel, .registerForm .btnSubmit{
     margin-top: 0;
+}
+
+.tableLineWithButton{
+    position: relative;
+    top: 1px;
+    display: flex;
+    vertical-align: middle;
+    justify-content: space-between;
 }
 
 .registerForm .btnCancel{
@@ -101,7 +116,7 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
     border: 1px solid #735C60;
 }
 
-.loginArea button:hover, .registerForm .btnSubmit:hover, .btnLoan:hover{
+.loginArea button:hover, .registerForm .btnSubmit:hover, .btnLoan:hover, .btnReservation:hover{
     background-color: #735C60;
     color: #f2f2f0;
 }

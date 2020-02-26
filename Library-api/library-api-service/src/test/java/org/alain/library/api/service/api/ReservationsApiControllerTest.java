@@ -2,6 +2,7 @@ package org.alain.library.api.service.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alain.library.api.business.contract.ReservationManagement;
+import org.alain.library.api.business.impl.UserPrincipal;
 import org.alain.library.api.model.book.Author;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.reservation.Reservation;
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -109,12 +111,4 @@ class ReservationsApiControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
-
-    @Test
-    void updateReservation() {
-    }
-
-    @Test
-    void checkAndGetExpiredReservation() {
-    }
 }

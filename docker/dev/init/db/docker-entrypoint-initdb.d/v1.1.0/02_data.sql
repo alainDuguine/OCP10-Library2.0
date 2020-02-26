@@ -5,7 +5,7 @@
 -- Dumped from database version 11.6
 -- Dumped by pg_dump version 11.6
 
--- Started on 2020-02-26 08:05:01
+-- Started on 2020-02-26 08:40:25
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -53,6 +53,7 @@ INSERT INTO public.book VALUES (13, 'IYUiN3WGqB', 'Les misérables');
 INSERT INTO public.book VALUES (14, 'LcMoaXTDFe', 'Notre Dame de Paris');
 INSERT INTO public.book VALUES (15, 'HYTFW02rE2', 'Le dernier jour d''un condamné');
 INSERT INTO public.book VALUES (16, 'VSVR4WvyEa', 'Quatrevingt-treize');
+INSERT INTO public.book VALUES (17, 'YSKmGHI00Y', 'La Mare au diable');
 
 
 --
@@ -77,6 +78,7 @@ INSERT INTO public.book_author VALUES (13, 4);
 INSERT INTO public.book_author VALUES (14, 4);
 INSERT INTO public.book_author VALUES (15, 4);
 INSERT INTO public.book_author VALUES (16, 4);
+INSERT INTO public.book_author VALUES (17, 5);
 
 
 --
@@ -155,6 +157,7 @@ INSERT INTO public.book_copy VALUES (68, true, '0956736388254', 'Editions du seu
 INSERT INTO public.book_copy VALUES (40, false, '6058924221907', 'Editions du seuil', 7);
 INSERT INTO public.book_copy VALUES (69, false, '1193379266239', 'Editions du seuil', 16);
 INSERT INTO public.book_copy VALUES (70, false, '5649883972521', 'Pléiade', 16);
+INSERT INTO public.book_copy VALUES (71, false, '0774689167280', 'La pléïade', 17);
 
 
 --
@@ -186,6 +189,7 @@ INSERT INTO public.loan VALUES (8, 'LOANED', '2019-11-27 09:30:22.722', '2019-12
 INSERT INTO public.loan VALUES (9, 'LOANED', '2020-02-25 10:57:27.744', '2020-03-24', '2020-02-25', 40, 1);
 INSERT INTO public.loan VALUES (10, 'LOANED', '2020-02-25 16:17:10.24', '2020-03-24', '2020-02-25', 69, 1);
 INSERT INTO public.loan VALUES (11, 'LOANED', '2020-02-25 16:17:19.902', '2020-03-24', '2020-02-25', 70, 2);
+INSERT INTO public.loan VALUES (12, 'LOANED', '2020-02-26 08:31:59.575', '2020-03-25', '2020-02-26', 71, 2);
 
 
 --
@@ -224,6 +228,7 @@ INSERT INTO public.loan_status VALUES (8, 1, '2019-11-27 09:30:23.509');
 INSERT INTO public.loan_status VALUES (9, 1, '2020-02-25 10:57:27.744');
 INSERT INTO public.loan_status VALUES (10, 1, '2020-02-25 16:17:10.241');
 INSERT INTO public.loan_status VALUES (11, 1, '2020-02-25 16:17:19.902');
+INSERT INTO public.loan_status VALUES (12, 1, '2020-02-26 08:31:59.575');
 
 
 --
@@ -233,7 +238,8 @@ INSERT INTO public.loan_status VALUES (11, 1, '2020-02-25 16:17:19.902');
 --
 
 INSERT INTO public.reservation VALUES (83, 'PENDING', '2020-02-26 07:49:29.177', 16, 4);
-INSERT INTO public.reservation VALUES (84, 'RESERVED', '2020-02-26 07:56:09.148', 16, 3);
+INSERT INTO public.reservation VALUES (84, 'RESERVED', '2020-02-26 08:08:21.002', 16, 3);
+INSERT INTO public.reservation VALUES (89, 'PENDING', '2020-02-26 08:36:49.74', 17, 3);
 
 
 --
@@ -245,6 +251,7 @@ INSERT INTO public.reservation VALUES (84, 'RESERVED', '2020-02-26 07:56:09.148'
 INSERT INTO public.reservation_status VALUES (86, '2020-02-26 07:49:29.177', 'PENDING', 83);
 INSERT INTO public.reservation_status VALUES (87, '2020-02-26 07:52:20.021', 'PENDING', 84);
 INSERT INTO public.reservation_status VALUES (92, '2020-02-26 07:56:09.148', 'RESERVED', 84);
+INSERT INTO public.reservation_status VALUES (94, '2020-02-26 08:36:49.74', 'PENDING', 89);
 
 
 --
@@ -262,7 +269,7 @@ SELECT pg_catalog.setval('public.author_id_seq', 5, true);
 -- Name: book_copy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
-SELECT pg_catalog.setval('public.book_copy_id_seq', 70, true);
+SELECT pg_catalog.setval('public.book_copy_id_seq', 71, true);
 
 
 --
@@ -271,7 +278,7 @@ SELECT pg_catalog.setval('public.book_copy_id_seq', 70, true);
 -- Name: book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
-SELECT pg_catalog.setval('public.book_id_seq', 16, true);
+SELECT pg_catalog.setval('public.book_id_seq', 17, true);
 
 
 --
@@ -289,7 +296,7 @@ SELECT pg_catalog.setval('public.library_user_id_seq', 4, true);
 -- Name: loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
-SELECT pg_catalog.setval('public.loan_id_seq', 11, true);
+SELECT pg_catalog.setval('public.loan_id_seq', 12, true);
 
 
 --
@@ -298,7 +305,7 @@ SELECT pg_catalog.setval('public.loan_id_seq', 11, true);
 -- Name: reservation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
-SELECT pg_catalog.setval('public.reservation_id_seq', 88, true);
+SELECT pg_catalog.setval('public.reservation_id_seq', 89, true);
 
 
 --
@@ -307,7 +314,7 @@ SELECT pg_catalog.setval('public.reservation_id_seq', 88, true);
 -- Name: reservation_status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
-SELECT pg_catalog.setval('public.reservation_status_id_seq', 92, true);
+SELECT pg_catalog.setval('public.reservation_status_id_seq', 94, true);
 
 
 --
@@ -319,7 +326,7 @@ SELECT pg_catalog.setval('public.reservation_status_id_seq', 92, true);
 SELECT pg_catalog.setval('public.status_id_seq', 4, true);
 
 
--- Completed on 2020-02-26 08:05:02
+-- Completed on 2020-02-26 08:40:26
 
 --
 -- PostgreSQL database dump complete

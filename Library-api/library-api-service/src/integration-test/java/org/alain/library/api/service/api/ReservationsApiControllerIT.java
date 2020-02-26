@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
@@ -193,7 +190,10 @@ class ReservationsApiControllerIT {
         String status = StatusEnum.RESERVED.name();
 
 //        restTemplate.put(apiURL+"/reservations/"+result.getBody().getId(),status);
-        restTemplate.put(apiURL+"/reservations/1",status);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "authorization");
+        HttpEntity<String> request = new HttpEntity<>(status, headers);
+        restTemplate.put(apiURL+"/reservations/1",request);
 
 //        Optional<Reservation> reservation = reservationRepository.findById(result.getBody().getId());
 

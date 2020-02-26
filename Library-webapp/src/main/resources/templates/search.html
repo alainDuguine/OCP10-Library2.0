@@ -44,7 +44,13 @@
                             </span>
                         </td>
                         <td th:text="${book.getIsbn()}"></td>
-                        <td th:text="${book.getCopiesAvailable() == null}? 0 : ${book.getCopiesAvailable()} "></td>
+                        <div th:switch="${book.getCopiesAvailable()}">
+                            <td th:case="${0}" class="tableLineWithButton">
+                                <span th:text="0"></span>
+                                <span><button class="mt-0 mb-0 btn-round btnReservation">Réserver</button></span>
+                            </td>
+                            <td th:case="*" th:text="${book.getCopiesAvailable()}"></td>
+                        </div>
                     </tr>
                     </tbody>
                 </table>
