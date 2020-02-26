@@ -1,7 +1,6 @@
 package org.alain.library.api.service.api;
 
 import org.alain.library.api.business.exceptions.ReservationException;
-import org.alain.library.api.business.exceptions.ReservationStatusException;
 import org.alain.library.api.business.exceptions.UnknowStatusException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +40,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         body.put("errors", errors);
 
         return new ResponseEntity<>(body, headers, status);
-
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
