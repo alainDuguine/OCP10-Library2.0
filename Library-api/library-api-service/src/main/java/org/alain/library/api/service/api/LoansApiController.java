@@ -90,7 +90,8 @@ public class LoansApiController implements LoansApi {
                                            @ApiParam(value = "Status values to add to loan history" ,required=true )  @Valid @RequestBody String status) {
         try {
             log.info("Update loan : " + id + " - " + status);
-            Optional<LoanStatus> loanStatus = loanManagement.updateLoan(id, status);
+            String cleanedStatus = status.substring(1, status.length()-1);
+            Optional<LoanStatus> loanStatus = loanManagement.updateLoan(id, cleanedStatus);
             return new ResponseEntity<Void>(HttpStatus.OK);
         }catch (UnknowStatusException ex){
             log.info("Impossible to update loan : " + id + " - " + status);

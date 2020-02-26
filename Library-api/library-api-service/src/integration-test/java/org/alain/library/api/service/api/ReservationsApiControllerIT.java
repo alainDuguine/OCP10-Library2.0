@@ -2,17 +2,15 @@ package org.alain.library.api.service.api;
 
 import org.alain.library.api.business.contract.BookManagement;
 import org.alain.library.api.business.contract.UserManagement;
-import org.alain.library.api.business.exceptions.ReservationException;
 import org.alain.library.api.consumer.repository.ReservationRepository;
 import org.alain.library.api.consumer.repository.ReservationStatusRepository;
 import org.alain.library.api.model.book.Book;
-import org.alain.library.api.model.exceptions.FullReservationListException;
 import org.alain.library.api.model.reservation.Reservation;
+import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
 import org.alain.library.api.service.dto.ReservationDto;
 import org.alain.library.api.service.dto.ReservationForm;
-import org.alain.library.api.model.book.Author;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,11 +25,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = {"classpath:/ReservationIT.properties","classpath:/application.properties"})
@@ -71,7 +68,7 @@ class ReservationsApiControllerIT {
     @Test
     void addReservation() {
         Book book = bookManagement.findOne(7L).get();
-        User user = userManagement.findAll().get(0);
+        User user = userManagement.findOne(2L).get();
 
         ReservationForm reservationForm = new ReservationForm();
         reservationForm.setUserId(user.getId());
@@ -162,6 +159,8 @@ class ReservationsApiControllerIT {
         assertThat(reservation).isNotNull();
         assertThat(reservation.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(reservation.getBody().getId()).isEqualTo(id);
+
+        reservationRepository.deleteById(result.getBody().getId());
     }
 
     @Test
@@ -169,12 +168,12 @@ class ReservationsApiControllerIT {
         ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations", ReservationDto[].class);
 
         assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(reservations.getBody().length).isEqualTo(2);
+        assertThat(reservations.getBody().length).isEqualTo(3);
     }
 
     @Test
     void getReservations_withParameters() {
-        ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations?currentStatus=pending&user=3&book=16", ReservationDto[].class);
+        ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations?currentStatus=pending&user=3&book=17", ReservationDto[].class);
 
         assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(reservations.getBody().length).isEqualTo(1);
@@ -191,10 +190,10 @@ class ReservationsApiControllerIT {
 
 //        ResponseEntity<ReservationDto> result = restTemplate.postForEntity(apiURL+"/reservations", reservationForm, ReservationDto.class);
 
-        HttpEntity<String> status = new HttpEntity<>(StatusEnum.RESERVED.name());
+        String status = StatusEnum.RESERVED.name();
 
 //        restTemplate.put(apiURL+"/reservations/"+result.getBody().getId(),status);
-        ResponseEntity<String> result = restTemplate.exchange(apiURL+"/reservations/1", HttpMethod.PUT, status, String.class);
+        restTemplate.put(apiURL+"/reservations/1",status);
 
 //        Optional<Reservation> reservation = reservationRepository.findById(result.getBody().getId());
 
@@ -204,8 +203,35 @@ class ReservationsApiControllerIT {
     }
 
     @Test
-    void checkAndGetExpiredReservation() {
+    void checkAndGetExpiredReservationWithNoExpired() {
+        ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations/expired", ReservationDto[].class);
 
+        assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(reservations.getBody().length).isEqualTo(0);
     }
+
+    @Test
+    void checkAndGetExpiredReservationWithExpired() {
+
+        Reservation reservation = reservationRepository.findById(89L).get();
+        reservation.setCurrentStatus("RESERVED");
+        reservation.setCurrentStatusDate(LocalDateTime.now().minusDays(3));
+
+        reservationRepository.save(reservation);
+
+        ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations/expired", ReservationDto[].class);
+
+        Reservation reservationAfterUpdate = reservationRepository.findById(89L).get();
+
+        assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(reservations.getBody().length).isEqualTo(1);
+        assertThat(reservationAfterUpdate.getCurrentStatus()).isEqualTo(StatusEnum.CANCELED.name());
+
+        // Putting back to original state
+        reservationAfterUpdate.setCurrentStatus(StatusEnum.PENDING.name());
+        reservationAfterUpdate.setCurrentStatusDate(LocalDateTime.now());
+        reservationRepository.save(reservationAfterUpdate);
+    }
+
 }
 

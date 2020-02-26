@@ -5,7 +5,6 @@ import org.alain.library.api.business.contract.BookManagement;
 import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.business.contract.UserManagement;
 import org.alain.library.api.business.exceptions.ReservationException;
-import org.alain.library.api.business.exceptions.ReservationStatusException;
 import org.alain.library.api.business.exceptions.UnauthorizedException;
 import org.alain.library.api.business.exceptions.UnknowStatusException;
 import org.alain.library.api.consumer.repository.ReservationRepository;
@@ -97,7 +96,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         List<Reservation> reservationList = reservationRepository.findByCurrentStatusAndUserIdAndBookId(StatusEnum.RESERVED.name(), null, null);
         List<Reservation> reservationListExpired = new ArrayList<>();
         reservationList.forEach(reservation -> {
-            if(reservation.getCurrentStatusDate().plusDays(2).isAfter(LocalDateTime.now())){
+            if(reservation.getCurrentStatusDate().plusDays(2).isBefore(LocalDateTime.now())){
                 reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.CANCELED).build());
                 reservationRepository.save(reservation);
                 reservationListExpired.add(reservation);
