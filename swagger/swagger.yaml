@@ -1000,8 +1000,6 @@ paths:
       operationId: "updateReservation"
       produces:
       - "application/json"
-      consumes:
-      - "application/json"
       parameters:
         - name: "Authorization"
           in: "header"
@@ -1144,6 +1142,8 @@ definitions:
         type: integer
         format: int64
         description: Number of copies available for loan
+      reservationListFull:
+        type: boolean
       reservations:
         type: array
         items:
