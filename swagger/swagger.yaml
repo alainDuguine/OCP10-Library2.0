@@ -1014,7 +1014,7 @@ paths:
           required: true
           type: "integer"
           format: "int64"
-        - name: "Status"
+        - name: "status"
           in: "query"
           description: "Status values as filter in research"
           required: true
