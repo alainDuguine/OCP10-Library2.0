@@ -54,6 +54,9 @@ public class Book {
     @Formula("(SELECT COUNT(bc.id) FROM book b left join book_copy bc on bc.book_id = b.id WHERE bc.available = 'true' and b.id = id)")
     private Long nbCopiesAvailable;
 
+    @Formula("(SELECT COUNT(r.id) FROM book b left join reservation r on r.book_id = b.id WHERE (r.current_status = 'PENDING' or r.current_status = 'RESERVED') and b.id = id)")
+    private Long nbActiveReservations;
+
     public Book(String title) {
         this.title = title;
         this.isbn = RandomStringUtils.randomAlphanumeric(10);
@@ -92,6 +95,9 @@ public class Book {
         reservation.setBook(null);
     }
 
+    public boolean isReservationListFull(){
+        return nbActiveReservations >= (nbCopiesAvailable * 2);
+    }
 
     @Override
     public String toString() {

@@ -16,11 +16,9 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ConvertersTest {
 
@@ -32,7 +30,7 @@ class ConvertersTest {
     @BeforeEach
     void setUp() {
         user = User.builder().id(1L).email("testuser@email.com").build();
-        book = Book.builder().id(1L).title("Test Book").nbCopiesAvailable(0L).build();
+        book = Book.builder().id(1L).nbActiveReservations(0L).title("Test Book").nbCopiesAvailable(0L).build();
         BookCopy copy = BookCopy.builder().id(1L).build();
         book.addCopy(copy);
 

@@ -79,6 +79,8 @@ class Converters {
         bookDto.setAuthors(convertListAuthorModelToListAuthorDto(authorsList));
         bookDto.setCopiesAvailable(bookModel.getNbCopiesAvailable());
         bookDto.setReservations(convertListReservationModelToListReservationDto(bookModel.getReservations()));
+        bookDto.setReservationListFull(bookModel.isReservationListFull());
+        bookDto.setReservationListFull(bookModel.getReservations().size() >= (bookModel.getCopyList().size()*2));
         return bookDto;
     }
 
