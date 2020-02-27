@@ -43,7 +43,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
 
     @Override
     public List<Reservation> getReservationsByStatusAndUserIdAndBookId(String status, Long userId, Long bookId) {
-        log.info("getReservation : (status:" + status + ", userId:" + userId + ", bookId: " + bookId);
+        log.info("GetReservation : status: {}, userId: {}, bookId: {}", status, userId, bookId);
         if(status != null)
             status = status.toUpperCase();
         return reservationRepository.findByCurrentStatusAndUserIdAndBookId(status, bookId, userId);
@@ -51,7 +51,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
 
     @Override
     public Reservation createNewReservation(Long bookId, Long userId, UserPrincipal userPrincipal) {
-        log.info("createNewReservation : (bookId:" + bookId + ", userId:" + userId + ", UserPrincipal: " + userPrincipal.getUsername());
+        log.info("CreateNewReservation : bookId: {}, userId: {}, UserPrincipal: {}", bookId, userId, userPrincipal.getUsername());
         Optional<Book> book = bookManagement.findOne(bookId);
         Optional<User> user = userManagement.findOne(userId);
         Reservation reservation = new Reservation();
@@ -70,27 +70,32 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
 
                 reservationRepository.save(reservation);
             }catch (Exception e){
-                log.warn("Wrong parameter while creating new reservation : " + e.getMessage());
+                log.warn("Wrong parameter while creating new reservation : {}", e.getMessage());
                 throw new ReservationException(e.getMessage());
             }
         }else{
-            log.error("Unexpected request for creating reservation : " + userPrincipal.getUsername());
+            log.error("Unexpected request for creating reservation : {}", userPrincipal.getUsername());
             throw new UnauthorizedException("Impossible to create reservation");
         }
-        log.info("New reservation created : " + reservation.toString());
+        log.info("New reservation created : {}", reservation.toString());
         return reservation;
     }
 
     @Override
     public Optional<Reservation> updateReservation(Long reservationId, String status, UserPrincipal userPrincipal) {
-        log.info("updateReservation : (reservationId:" + reservationId + ", status:" + status + ", UserPrincipal: " + userPrincipal.getUsername());
+        log.info("UpdateReservation : reservationId: {}, status: {}, userPrincipal: {}",reservationId, status, userPrincipal.getUsername());
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
         if (reservation.isPresent() && (userPrincipal.hasRole("ADMIN") || userPrincipal.getId().equals(reservation.get().getUser().getId()))){
             StatusEnum statusEnum;
             try{
-               statusEnum = StatusEnum.valueOf(status.toUpperCase());
+                statusEnum = StatusEnum.valueOf(status.toUpperCase());
             }catch (Exception ex){
+                log.error("Unexpected status passed to update reservation status : {}", status);
                 throw new UnknowStatusException("Status " + status + " doesn't exists");
+            }
+            if(!userPrincipal.hasRole("ADMIN") && !statusEnum.equals(StatusEnum.CANCELED)){
+                log.error("Unexpected attempt to update a reservation with wrong status : user : {}, status : {}", userPrincipal.getUsername(), status);
+                throw new UnauthorizedException("Users can't change status of a reservation");
             }
             ReservationStatus reservationStatus = ReservationStatus.builder().status(statusEnum).date(LocalDateTime.now()).build();
             reservation.get().addStatus(reservationStatus);
@@ -102,6 +107,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
 
     @Override
     public List<Reservation> updateAndGetExpiredReservation() {
+        log.info("Request for expired reservations");
         List<Reservation> reservationList = reservationRepository.findByCurrentStatusAndUserIdAndBookId(StatusEnum.RESERVED.name(), null, null);
         List<Reservation> reservationListExpired = new ArrayList<>();
         reservationList.forEach(reservation -> {
@@ -109,16 +115,20 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
                 reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.CANCELED).build());
                 reservationRepository.save(reservation);
                 reservationListExpired.add(reservation);
+                log.info("Reservation expired : {}, status : {}, date : {}", reservation.getId(), reservation.getCurrentStatus(), reservation.getCurrentStatusDate());
             }
         });
+        log.info("{} expired reservations found", reservationListExpired.size());
         return reservationListExpired;
     }
 
     private void checkBookReservation(Book book){
         if (book.getNbCopiesAvailable() != 0){
+            log.warn("Attempt to reserve book with available copies {}", book.getId());
             throw new BookStillAvailableException("Impossible to add reservation, book id " + book.getId() + " has " + book.getNbCopiesAvailable() + " copies available");
         }
         if (book.getReservations().size() == book.getCopyList().size() * 2){
+            log.warn("Attempt to reserve book with full pending list {}", book.getId());
             throw new FullReservationListException("Reservation List full : size:"+book.getReservations().size()+", book copies:"+ book.getCopyList().size());
         }
     }
@@ -128,12 +138,14 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         user.getLoans().forEach(loan -> {
             if(loan.getBookCopy().getBook().getId().equals(bookId)
                     && !loan.getCurrentStatus().equals(StatusDesignation.RETURNED.toString())){
+                log.warn("User attempt to reserve a book already loaned : user : {}, book : {}", user.getId(), bookId);
                 throw new BookAlreadyLoanedException("User has already a copy of the book " + bookId);
             }
         });
         user.getReservations().forEach(userReservations -> {
             if(userReservations.getBook().getId().equals(bookId)
                     && !(userReservations.getCurrentStatus().equals(StatusEnum.CANCELED.name()) || userReservations.getCurrentStatus().equals(StatusEnum.TERMINATED.name()))){
+                log.warn("User attempt to reserve a book already reserved : User : {}, book : {}",user.getId(), bookId);
                 throw new ReservationAlreadyExistsException("User has already a current reservation for the book " + bookId);
             }
         });

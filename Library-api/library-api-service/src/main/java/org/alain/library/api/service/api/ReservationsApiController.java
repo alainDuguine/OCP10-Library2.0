@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-import static org.alain.library.api.service.api.Converters.*;
+import static org.alain.library.api.service.api.Converters.convertListReservationModelToListReservationDto;
+import static org.alain.library.api.service.api.Converters.convertReservationModelToReservationDto;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-02-19T16:47:31.241+01:00")
 
@@ -42,12 +44,12 @@ public class ReservationsApiController implements ReservationsApi {
     }
 
     public ResponseEntity<ReservationDto> getReservation(@ApiParam(value = "Id of reservation to return",required=true) @PathVariable("id") Long id) {
-        log.info("Getting reservation " + id);
+        log.info("Getting reservation {}", id);
         Optional<Reservation> reservation = reservationManagement.findOne(id);
         if(reservation.isPresent()){
             return new ResponseEntity<ReservationDto>((convertReservationModelToReservationDto(reservation.get())), HttpStatus.OK);
         }
-        log.warn("Unknown reservation " + id);
+        log.warn("Unknown reservation {}", id);
         return new ResponseEntity<ReservationDto>(HttpStatus.NOT_FOUND);
     }
 
@@ -55,9 +57,9 @@ public class ReservationsApiController implements ReservationsApi {
                                                                 @Valid @RequestParam(value = "currentStatus", required = false) String currentStatus,
                                                                 @ApiParam(value = "User id as filter in research") @Valid @RequestParam(value = "user", required = false) Long user,
                                                                 @ApiParam(value = "Book id as filter in research") @Valid @RequestParam(value = "book", required = false) Long book) {
-        log.info("Requesting reservation list with params : [(currentStatus: " + currentStatus + ")(userId: " + user + ")(bookId: " + book +")]");
+        log.info("Requesting reservation list with params : currentStatus: {}, userId: {}, bookId: {}",currentStatus, user, book);
         List<Reservation> reservationList = reservationManagement.getReservationsByStatusAndUserIdAndBookId(currentStatus,user,book);
-        log.info("Reservation resultSet :" + reservationList.size());
+        log.info("Reservation resultSet : {}", reservationList.size());
         return new ResponseEntity<List<ReservationDto>>(convertListReservationModelToListReservationDto(reservationList), HttpStatus.OK);
     }
 
@@ -66,24 +68,24 @@ public class ReservationsApiController implements ReservationsApi {
                                                          @ApiParam(value = "reservation to add to database" ,required=true )
                                                          @Valid @RequestBody ReservationForm reservationForm) {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("Requesting create new reservation :" + reservationForm.toString() + ", user:" + userPrincipal.toString());
+        log.info("Requesting create new reservation : {}, user: {}", reservationForm.toString(), userPrincipal.getId());
         Reservation reservation = reservationManagement.createNewReservation(reservationForm.getBookId(), reservationForm.getUserId(), userPrincipal);
-        log.info("Reservation created :" + reservation.toString());
+        log.info("Reservation created : {}", reservation.toString());
         return new ResponseEntity<ReservationDto>(convertReservationModelToReservationDto(reservation), HttpStatus.CREATED);
     }
 
     public ResponseEntity<Void> updateReservation(@ApiParam(value = "User identification" ,required=true) @RequestHeader(value="Authorization", required=true) String authorization,
                                                   @ApiParam(value = "Id of reservation to update",required=true) @PathVariable("id") Long id,
-                                                  @ApiParam(value = "Status values to add to reservation history", required=true )  @Valid @RequestBody String status) {
+                                                  @NotNull @ApiParam(value = "Status values as filter in research", required = true, allowableValues = "pending, reserved, terminated, canceled")
+                                                  @Valid @RequestParam(value = "status", required = true) String status) {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("Requesting updating reservation :" + id + ", status: "+ status +", user:" + userPrincipal.toString());
-        String cleanedStatus = status.substring(1, status.length()-1);
-        Optional<Reservation> reservationStatus = reservationManagement.updateReservation(id, cleanedStatus, userPrincipal);
+        log.info("Requesting updating reservation : {}, status: {}, user: {}", id, status, userPrincipal.getId());
+        Optional<Reservation> reservationStatus = reservationManagement.updateReservation(id, status, userPrincipal);
         if(reservationStatus.isPresent()){
-            log.info("Reservation update :" + reservationStatus.get().toString());
+            log.info("Reservation update : {}", reservationStatus.get().toString());
             return new ResponseEntity<Void>(HttpStatus.OK);
         }else{
-            log.warn("Unauthorized :" + userPrincipal.getId());
+            log.warn("Unauthorized update request : {}", userPrincipal.getId());
             return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -93,10 +95,10 @@ public class ReservationsApiController implements ReservationsApi {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(userPrincipal.hasRole("ADMIN")){
             List<Reservation> reservationList = reservationManagement.updateAndGetExpiredReservation();
-            log.info("Reservation List :" + reservationList.size());
+            log.info("Reservation List : {}", reservationList.size());
             return new ResponseEntity<List<ReservationDto>>(convertListReservationModelToListReservationDto(reservationList),HttpStatus.OK);
         }else{
-            log.warn("Unauthorized batch call " + userPrincipal.getId());
+            log.warn("Unauthorized batch call : {}", userPrincipal.getId());
             return new ResponseEntity<List<ReservationDto>>(HttpStatus.UNAUTHORIZED);
         }
 

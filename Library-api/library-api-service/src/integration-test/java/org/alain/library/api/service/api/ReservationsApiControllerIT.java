@@ -17,14 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -180,27 +179,22 @@ class ReservationsApiControllerIT {
     @Test
     void updateReservation() {
         Book book = bookManagement.findOne(7L).get();
-        User user = userManagement.findAll().get(0);
+        User user = userManagement.findOne(2L).get();
 
         ReservationForm reservationForm = new ReservationForm();
         reservationForm.setUserId(user.getId());
         reservationForm.setBookId(book.getId());
 
-//        ResponseEntity<ReservationDto> result = restTemplate.postForEntity(apiURL+"/reservations", reservationForm, ReservationDto.class);
-
+        ResponseEntity<ReservationDto> result = restTemplate.postForEntity(apiURL+"/reservations", reservationForm, ReservationDto.class);
         String status = StatusEnum.RESERVED.name();
 
-//        restTemplate.put(apiURL+"/reservations/"+result.getBody().getId(),status);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "authorization");
-        HttpEntity<String> request = new HttpEntity<>(status, headers);
-        restTemplate.put(apiURL+"/reservations/1",request);
+        restTemplate.put(apiURL+"/reservations/"+result.getBody().getId()+"?status="+status, null);
 
-//        Optional<Reservation> reservation = reservationRepository.findById(result.getBody().getId());
+        Optional<Reservation> reservation = reservationRepository.findById(result.getBody().getId());
 
-//        assertThat(reservation.get().getCurrentStatus()).isEqualTo(StatusEnum.RESERVED);
+        assertThat(reservation.get().getCurrentStatus()).isEqualTo(StatusEnum.RESERVED.name());
 
-//        reservationRepository.deleteById(result.getBody().getId());
+        reservationRepository.deleteById(result.getBody().getId());
     }
 
     @Test

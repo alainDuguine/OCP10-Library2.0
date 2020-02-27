@@ -12,12 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-02-19T16:47:31.241+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-02-27T14:03:25.319+01:00")
 
 @Api(value = "reservations", description = "the reservations API")
-public interface  ReservationsApi {
+public interface ReservationsApi {
 
     @ApiOperation(value = "Add a new reservation", nickname = "addReservation", notes = "", response = ReservationDto.class, tags={ "reservation", })
     @ApiResponses(value = { 
@@ -62,8 +63,7 @@ public interface  ReservationsApi {
         @ApiResponse(code = 200, message = "Loan updated") })
     @RequestMapping(value = "/reservations/{id}",
         produces = { "application/json" },
-        consumes = { "application/json" },
         method = RequestMethod.PUT)
-    ResponseEntity<Void> updateReservation(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "Id of reservation to update", required = true) @PathVariable("id") Long id, @ApiParam(value = "Status values to add to reservation history", required = true) @Valid @RequestBody String status);
+    ResponseEntity<Void> updateReservation(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "Id of reservation to update", required = true) @PathVariable("id") Long id, @NotNull @ApiParam(value = "Status values as filter in research", required = true, allowableValues = "pending, reserved, terminated, canceled") @Valid @RequestParam(value = "status", required = true) String status);
 
 }

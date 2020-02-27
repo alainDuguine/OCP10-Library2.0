@@ -3,6 +3,7 @@ package org.alain.library.api.business.impl;
 import org.alain.library.api.business.contract.BookManagement;
 import org.alain.library.api.business.contract.UserManagement;
 import org.alain.library.api.business.exceptions.ReservationException;
+import org.alain.library.api.business.exceptions.UnauthorizedException;
 import org.alain.library.api.consumer.repository.ReservationRepository;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
@@ -121,7 +122,7 @@ class ReservationManagementImplTest {
 
         Exception exception = assertThrows(ReservationException.class, () -> service.createNewReservation(book.getId(), user.getId(), userPrincipal));
 
-        String expectedMessage = "Reservation List full : size:"+book.getReservations().size()+", book copies:"+ book.getNbCopiesAvailable();
+        String expectedMessage = "Reservation List full : size:" + book.getReservations().size() + ", book copies:" + book.getNbCopiesAvailable();
         String actualMessage = exception.getMessage();
         assertThat(actualMessage).isEqualTo(expectedMessage);
     }
@@ -207,8 +208,8 @@ class ReservationManagementImplTest {
     }
 
     @Test
-    void updateReservation() {
-        User user = User.builder().id(1L).roles("USER").email("test@email.com").build();
+    void updateReservation_withAdminRole() {
+        User user = User.builder().id(1L).roles("USER").email("test@email.com").roles("ADMIN").build();
         UserPrincipal userPrincipal = new UserPrincipal(user);
 
         user.addReservation(reservation);
@@ -236,6 +237,19 @@ class ReservationManagementImplTest {
     }
 
     @Test
+    void updateReservation_withStatusNotEqualsToCanceled_withSimpleUser_returnEmpty() {
+        User user = User.builder().id(1L).roles("USER").email("test@email.com").build();
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+
+        user.addReservation(reservation);
+
+        given(reservationRepository.findById(anyLong())).willReturn(Optional.of(reservation));
+
+        assertThrows(UnauthorizedException.class, () ->
+                service.updateReservation(1L, "reserved", userPrincipal));
+    }
+
+    @Test
     void updateAndGetExpiredReservation() {
         ReservationStatus reservationStatusOk = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now()).build();
         ReservationStatus reservationStatusExpired = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now().minusDays(2)).build();
@@ -258,20 +272,5 @@ class ReservationManagementImplTest {
         assertThat(reservationListResult.get(0).getCurrentStatus()).isEqualTo(StatusEnum.CANCELED.name());
         assertThat(reservationListResult.get(0).getCurrentStatusDate().isAfter(reservationStatusExpired.getDate())).isTrue();
     }
-
-    @Test
-    void testGetReservationsByStatusAndUserIdAndBookId() {
-    }
-
-    @Test
-    void createNewReservation() {
-    }
-
-    @Test
-    void testUpdateReservation() {
-    }
-
-    @Test
-    void testUpdateAndGetExpiredReservation() {
-    }
 }
+
