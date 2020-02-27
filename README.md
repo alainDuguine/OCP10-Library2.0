@@ -1,6 +1,6 @@
 # Open Library Project
 
-Ce repository est la mise en application du projet numéro 7 du parcours Java d'OpenClassrooms [Développez le nouveau système d’information de la bibliothèque d’une grande ville.](https://openclassrooms.com/fr/projects/124/assignment)
+Ce repository est la mise à jour du projet numéro 7 du parcours Java d'OpenClassrooms [Développez le nouveau système d’information de la bibliothèque d’une grande ville.](https://openclassrooms.com/fr/projects/124/assignment)
 
 ## Spécifications
 
@@ -14,7 +14,7 @@ Projet Spring-boot maven multi module contenant :
 
   * Prérequis :
     * Java Jdk 8
-    * Spring Boot 2.1.9
+    * Spring Boot 2.2.4
     * Spring Security
     * Apache Maven 3.6.1
     * PostgreSql 11
@@ -24,17 +24,14 @@ Projet Spring-boot maven multi module contenant :
 
 ## Déploiement
 
-  Création de la base de donnée :
-  
-  * Création de la base de données :
-    * Créer un utilisateur username : "adm_library", password : "admin"
-    * Créer une base de donnée "DB_LIBRARY" en utf-8
-    * Exécuter le script "01_Schema.sql" (présent dans le dossier sql)
-    * Exécuter le script "02_Data.sql" (présent dans le dossier sql)
+ Déploiement de la base de données avec Docker:
+ 
+  à partir du répertoire : ```/docker/dev/```
+  exécutez la commande : ```docker-compose up```
 
   Variables d'environnement :
   
-   Pour l'exécution via Intelli-j Ultimate plusieurs variables d'environnement sont nécessaires :
+   Pour l'exécution via Maven plusieurs variables d'environnement sont nécessaires :
    
    * Pour le module Library-api :
     
@@ -64,6 +61,18 @@ Projet Spring-boot maven multi module contenant :
    
    ```WEBAPP_PORT```: par exemple 9090
    
-    
+## Démarrage des applications :
    
-    
+   * Pour l'api rest - Library-api :
+   
+       exécuter la commande ```mvn spring-boot:run``` depuis ```/Library-api/library-api-service/```
+       
+   * Pour les batchs - Library-batch :
+   
+       exécuter la commande ```mvn spring-boot:run``` depuis ```/Library-batch/```
+       
+   * Pour la webapp - Library-webapp :
+   
+       exécuter la commande ```mvn spring-boot:run``` depuis ```/Library-webapp/```
+       
+ *Les commandes ```mvn``` peuvent être remplacées par le wrapper Maven ```mvnw```*
