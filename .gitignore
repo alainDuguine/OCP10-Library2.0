@@ -140,5 +140,5 @@ Desktop.ini
 ######################
 .eslintcache
 */logs/*
-logs\
-/Library-api/library-api-service/logs/
+logs/
+target/
