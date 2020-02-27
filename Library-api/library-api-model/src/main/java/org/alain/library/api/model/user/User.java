@@ -1,13 +1,8 @@
 package org.alain.library.api.model.user;
 
 import lombok.*;
-import org.alain.library.api.model.exceptions.BookAlreadyLoanedException;
-import org.alain.library.api.model.exceptions.ReservationAlreadyExistsException;
 import org.alain.library.api.model.loan.Loan;
-import org.alain.library.api.model.loan.StatusDesignation;
 import org.alain.library.api.model.reservation.Reservation;
-import org.alain.library.api.model.reservation.ReservationStatus;
-import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.validation.PasswordMatches;
 
 import javax.persistence.*;
@@ -94,19 +89,6 @@ public class User {
     }
 
     public void addReservation(Reservation reservation){
-        // check if user does not have already a copy of the book
-        this.getLoans().forEach(loan -> {
-            if(loan.getBookCopy().getBook().getId().equals(reservation.getBook().getId())
-                && !loan.getCurrentStatus().equals(StatusDesignation.RETURNED.toString())){
-                throw new BookAlreadyLoanedException("User has already a copy of the book " + reservation.getBook().getId());
-            }
-        });
-        this.getReservations().forEach(reservationInList -> {
-            if(reservationInList.getBook().getId().equals(reservation.getBook().getId())
-                && (!reservation.getCurrentStatus().equals("CANCELED") || !reservation.getCurrentStatus().equals("TERMINATED"))){
-                throw new ReservationAlreadyExistsException("User has already a current reservation for the book " + reservation.getBook().getId());
-            }
-        });
         this.reservations.add(reservation);
         reservation.setUser(this);
     }

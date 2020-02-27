@@ -9,6 +9,11 @@ import org.alain.library.api.business.exceptions.UnauthorizedException;
 import org.alain.library.api.business.exceptions.UnknowStatusException;
 import org.alain.library.api.consumer.repository.ReservationRepository;
 import org.alain.library.api.model.book.Book;
+import org.alain.library.api.model.exceptions.BookAlreadyLoanedException;
+import org.alain.library.api.model.exceptions.BookStillAvailableException;
+import org.alain.library.api.model.exceptions.FullReservationListException;
+import org.alain.library.api.model.exceptions.ReservationAlreadyExistsException;
+import org.alain.library.api.model.loan.StatusDesignation;
 import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
@@ -56,9 +61,13 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
                 status.setDate(LocalDateTime.now());
                 status.setStatus(StatusEnum.PENDING);
                 reservation.addStatus(status);
-                // MUST ADD BOOK TO RESERVATION BEFORE USER TO CHECK IF USER ALREADY HAS BOOK
+
+                checkBookReservation(book.get());
                 book.get().addReservation(reservation);
+
+                checkUserReservation(user.get(), bookId);
                 user.get().addReservation(reservation);
+
                 reservationRepository.save(reservation);
             }catch (Exception e){
                 log.warn("Wrong parameter while creating new reservation : " + e.getMessage());
@@ -103,5 +112,30 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
             }
         });
         return reservationListExpired;
+    }
+
+    private void checkBookReservation(Book book){
+        if (book.getNbCopiesAvailable() != 0){
+            throw new BookStillAvailableException("Impossible to add reservation, book id " + book.getId() + " has " + book.getNbCopiesAvailable() + " copies available");
+        }
+        if (book.getReservations().size() == book.getCopyList().size() * 2){
+            throw new FullReservationListException("Reservation List full : size:"+book.getReservations().size()+", book copies:"+ book.getCopyList().size());
+        }
+    }
+
+    private void checkUserReservation(User user, Long bookId){
+        // check if user does not have already a copy of the book
+        user.getLoans().forEach(loan -> {
+            if(loan.getBookCopy().getBook().getId().equals(bookId)
+                    && !loan.getCurrentStatus().equals(StatusDesignation.RETURNED.toString())){
+                throw new BookAlreadyLoanedException("User has already a copy of the book " + bookId);
+            }
+        });
+        user.getReservations().forEach(userReservations -> {
+            if(userReservations.getBook().getId().equals(bookId)
+                    && !(userReservations.getCurrentStatus().equals(StatusEnum.CANCELED.name()) || userReservations.getCurrentStatus().equals(StatusEnum.TERMINATED.name()))){
+                throw new ReservationAlreadyExistsException("User has already a current reservation for the book " + bookId);
+            }
+        });
     }
 }

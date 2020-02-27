@@ -3,7 +3,6 @@ package org.alain.library.api.business.impl;
 import org.alain.library.api.business.contract.BookManagement;
 import org.alain.library.api.business.contract.UserManagement;
 import org.alain.library.api.business.exceptions.ReservationException;
-import org.alain.library.api.consumer.repository.BookRepository;
 import org.alain.library.api.consumer.repository.ReservationRepository;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
@@ -12,7 +11,6 @@ import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -150,6 +148,7 @@ class ReservationManagementImplTest {
         copy.setBook(book);
 
         reservation.setBook(book);
+        reservation.setCurrentStatus(StatusEnum.PENDING.name());
         user.addReservation(reservation);
 
         given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
@@ -161,6 +160,33 @@ class ReservationManagementImplTest {
         String expectedMessage = "User has already a current reservation for the book " + reservation.getBook().getId();
         String actualMessage = exception.getMessage();
         assertThat(actualMessage).isEqualTo(expectedMessage);
+    }
+
+    @Test
+    void RG2API_createNewReservation_WithUserHavingReservationOfTheBookTerminated_shouldBeOk() {
+        Book book = Book.builder().id(1L).nbCopiesAvailable(0L).title("test title").build();
+        BookCopy bookCopy = BookCopy.builder().id(1L).build();
+        book.addCopy(bookCopy);
+        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+
+        User user = User.builder().id(1L).roles("USER").email("test@email.com").build();
+        BookCopy copy = BookCopy.builder().id(1L).build();
+        copy.setBook(book);
+
+        reservation.setBook(book);
+        reservation.setCurrentStatus(StatusEnum.TERMINATED.name());
+        user.addReservation(reservation);
+
+        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+
+        Reservation reservation = service.createNewReservation(book.getId(), user.getId(), userPrincipal);
+
+        assertThat(reservation).isNotNull();
+        assertThat(reservation.getCurrentStatus()).isEqualTo(StatusEnum.PENDING.name());
+        assertThat(reservation.getUser()).isEqualTo(user);
+        assertThat(reservation.getBook()).isEqualTo(book);
     }
 
     @Test
@@ -214,5 +240,21 @@ class ReservationManagementImplTest {
         assertThat(reservationListResult.size()).isEqualTo(1);
         assertThat(reservationListResult.get(0).getCurrentStatus()).isEqualTo(StatusEnum.CANCELED.name());
         assertThat(reservationListResult.get(0).getCurrentStatusDate().isAfter(reservationStatusExpired.getDate())).isTrue();
+    }
+
+    @Test
+    void testGetReservationsByStatusAndUserIdAndBookId() {
+    }
+
+    @Test
+    void createNewReservation() {
+    }
+
+    @Test
+    void testUpdateReservation() {
+    }
+
+    @Test
+    void testUpdateAndGetExpiredReservation() {
     }
 }
