@@ -1016,7 +1016,7 @@ paths:
           format: "int64"
         - name: "status"
           in: "query"
-          description: "Status values as filter in research"
+          description: "Status value to add"
           required: true
           type: "string"
           enum:
