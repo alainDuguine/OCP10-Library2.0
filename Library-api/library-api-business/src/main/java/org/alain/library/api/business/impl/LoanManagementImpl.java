@@ -3,7 +3,10 @@ package org.alain.library.api.business.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.alain.library.api.business.contract.LoanManagement;
 import org.alain.library.api.business.exceptions.*;
-import org.alain.library.api.consumer.repository.*;
+import org.alain.library.api.consumer.repository.BookCopyRepository;
+import org.alain.library.api.consumer.repository.LoanRepository;
+import org.alain.library.api.consumer.repository.LoanStatusRepository;
+import org.alain.library.api.consumer.repository.StatusRepository;
 import org.alain.library.api.model.book.BookCopy;
 import org.alain.library.api.model.loan.Loan;
 import org.alain.library.api.model.loan.LoanStatus;
@@ -103,7 +106,7 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
         Optional<Loan> loan = loanRepository.findById(id);
         if (loan.isPresent()){
             if( isAdmin || userId.equals(loan.get().getUser().getId())) {
-                if (!loan.get().getCurrentStatus().equals("PROLONGED") && !loan.get().getCurrentStatus().equals("RETURNED")) {
+                if (loan.get().getCurrentStatus().equals(StatusDesignation.LOANED.name())) {
                     loan.get().setEndDate(loan.get().getEndDate().plusWeeks(4));
                     return Optional.of(this.addLoanStatusToLoan(loan.get(), StatusDesignation.PROLONGED));
                 } else {

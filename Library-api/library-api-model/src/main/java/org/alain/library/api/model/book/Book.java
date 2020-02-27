@@ -16,6 +16,8 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Book {
 
     @Id
