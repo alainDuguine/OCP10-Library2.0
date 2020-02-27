@@ -93,7 +93,24 @@ class ReservationManagementImplTest {
     }
 
     @Test
-    void RG1API_createNewReservationWithBookConstraint() {
+    void RG1API_createNewReservationWithBookStillAvailable_throwsReservationException() {
+        Book book = Book.builder().id(1L).nbCopiesAvailable(2L).title("test title").build();
+        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+
+        User user = User.builder().id(1L).roles("USER").email("test@emmail.com").build();
+        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+
+        Exception exception = assertThrows(ReservationException.class, () -> service.createNewReservation(book.getId(), user.getId(), userPrincipal));
+
+        String expectedMessage = "Impossible to add reservation, book id " + book.getId() + " has " + book.getNbCopiesAvailable() + " copies available";
+        String actualMessage = exception.getMessage();
+        assertThat(actualMessage).isEqualTo(expectedMessage);
+    }
+
+    @Test
+    void RG1API_createNewReservationWithListReservationFull_throwsReservationException() {
         Book book = Book.builder().id(1L).nbCopiesAvailable(0L).title("test title").build();
         given(bookManagement.findOne(any())).willReturn(Optional.of(book));
 
