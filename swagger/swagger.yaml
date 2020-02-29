@@ -1071,8 +1071,14 @@ definitions:
       bookTitle:
         type: string
         description: Book title
+      currentStatus:
+        type: string
+        description: Active Status for reservation
+      currentStatusData:
+        type: string
       statuses:
         type: array
+        description: History of statuses
         items:
           $ref: '#/definitions/ReservationStatusDto'
 
