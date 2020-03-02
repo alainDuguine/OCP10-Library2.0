@@ -789,7 +789,7 @@ paths:
       tags:
       - "loan"
       summary: "Get a list of all loans by book id"
-      operationId: "findLoansByBookId"
+      operationId: "getLoansByBookId"
       produces:
       - "application/json"
       parameters:
