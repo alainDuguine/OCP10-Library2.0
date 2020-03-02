@@ -24,7 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static org.alain.library.api.service.api.Converters.*;
 
@@ -108,8 +109,8 @@ public class LoansApiController implements LoansApi {
                 if (loanStatus.isPresent()) {
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 } else {
-                    log.warn("Unauthorized :" + userPrincipal.getId());
-                    return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+                    log.warn("Loan extension impossible : " + id);
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
         }catch(Exception ex){
             log.warn("Unknown loan :" + id);
