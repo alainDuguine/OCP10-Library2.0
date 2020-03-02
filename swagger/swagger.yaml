@@ -459,7 +459,6 @@ paths:
           description: "Parameters are incorrect"
         403:
           description: "You are not allowed to perform this request"
-          
   /books/{bookId}/copies/{copyId}:
     get:
       tags:
@@ -780,6 +779,33 @@ paths:
       responses:
         200:
           description: "Loan found"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/LoanDto'
+
+  /loans/findByBook:
+    get:
+      tags:
+      - "loan"
+      summary: "Get a list of all loans by book id"
+      operationId: "findLoansByBookId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "User identification"
+        required: true
+        type: "string"
+      - name: "bookId"
+        in: "query"
+        description: "Status values as filter in research"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Loans found"
           schema:
             type: "array"
             items:
