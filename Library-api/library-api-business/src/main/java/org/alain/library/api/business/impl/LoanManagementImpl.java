@@ -130,4 +130,10 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
         }
         return loanList;
     }
+
+    @Override
+    public List<Loan> findLoansByBookId(Long bookId) {
+        log.info("Service : Retrieving loans for bookId {}", bookId);
+        return loanRepository.findByBookId(bookId);
+    }
 }

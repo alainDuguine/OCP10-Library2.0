@@ -17,4 +17,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     @Query("select l from Loan l where l.endDate < CURRENT_DATE and l.currentStatus <> 'RETURNED'")
     List<Loan> findLateLoans();
+
+    @Query("select l from Loan l join l.bookCopy bc join bc.book b where b.id = :bookId")
+    List<Loan> findByBookId(@Param("bookId") Long bookId);
 }

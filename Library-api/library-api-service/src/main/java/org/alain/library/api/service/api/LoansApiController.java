@@ -75,6 +75,13 @@ public class LoansApiController implements LoansApi {
         }
     }
 
+    public ResponseEntity<List<LoanDto>> getLoansByBookId(@ApiParam(value = "User identification" ,required=true) @RequestHeader(value="Authorization", required=true) String authorization,@ApiParam(value = "BookId as filter in research") @Valid @RequestParam(value = "bookId", required = false) Long bookId) {
+        log.info("Retrieving loans for bookId {}", bookId);
+        List<Loan> loanList = loanManagement.findLoansByBookId(bookId);
+        log.info("Found {} loans for bookId {}", loanList.size(), bookId);
+        return new ResponseEntity<List<LoanDto>>(convertListLoanModelToListLoanDto(loanList),HttpStatus.OK);
+    }
+
     public ResponseEntity<LoanDto> addLoan(@ApiParam(value = "Loan that needs to be added to the database" ,required=true )  @Valid @RequestBody LoanForm loanForm) {
         try {
             log.info("creating new loan : user - " + loanForm.getUserId() + "bookCopy - " + loanForm.getCopyId());

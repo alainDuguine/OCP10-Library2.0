@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-11-25T07:35:05.950+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-03-02T08:23:40.643+01:00")
 
 @Api(value = "loans", description = "the loans API")
 public interface LoansApi {
@@ -82,6 +82,15 @@ public interface LoansApi {
         produces = { "application/json" },
         method = RequestMethod.GET)
     ResponseEntity<List<LoanDto>> getLoans(@ApiParam(value = "Status values as filter in research", allowableValues = "loaned, returned, prolonged, late") @Valid @RequestParam(value = "status", required = false) String status, @ApiParam(value = "User id as filter in research") @Valid @RequestParam(value = "user", required = false) Long user);
+
+
+    @ApiOperation(value = "Get a list of all loans by book id", nickname = "getLoansByBookId", notes = "", response = LoanDto.class, responseContainer = "List", tags={ "loan", })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Loans found", response = LoanDto.class, responseContainer = "List") })
+    @RequestMapping(value = "/loans/findByBook",
+        produces = { "application/json" },
+        method = RequestMethod.GET)
+    ResponseEntity<List<LoanDto>> getLoansByBookId(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "BookId as filter in research") @Valid @RequestParam(value = "bookId", required = false) Long bookId);
 
 
     @ApiOperation(value = "Update a loan by adding a status to it", nickname = "updateLoan", notes = "", tags={ "loan", })
