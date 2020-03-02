@@ -4,6 +4,7 @@ import io.swagger.client.api.BookApi;
 import io.swagger.client.api.LoanApi;
 import io.swagger.client.api.UserApi;
 import io.swagger.client.model.BookDto;
+import io.swagger.client.model.LoanDto;
 import io.swagger.client.model.UserCredentials;
 import io.swagger.client.model.UserDto;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Controller {
 
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final BookApi bookApi;
     private final UserApi userApi;
     private final LoanApi loanApi;
@@ -128,6 +133,11 @@ public class Controller {
                 assert bookDtoList != null;
                 log.info("Book list :" + bookDtoList.size());
                 List<ExtendedBook> extendedBookList = this.getExtendedBookDtoList(bookDtoList);
+                for (ExtendedBook book: extendedBookList){
+                    if (book.getBookDto().getCopiesAvailable() == 0) {
+                        book.setEarliestReturn(getDateNextReturn(session, book.getBookDto()));
+                    }
+                }
                 model.addAttribute("title", title);
                 model.addAttribute("author", author);
                 model.addAttribute("books", extendedBookList);
@@ -136,9 +146,24 @@ public class Controller {
             }
         }catch (Exception ex){
             log.error(CONNEXION_FAILED);
+            log.error(ex.getMessage());
             return CONNEXION_FAILED;
         }
         return "search";
+    }
+
+    private String getDateNextReturn(HttpSession session, BookDto bookDto) throws IOException {
+        LocalDate returnDate = null;
+        List<LoanDto> listLoans = loanApi.getLoansByBookId(getEncodedAuthorization(session), bookDto.getId()).execute().body();
+        if (listLoans != null) {
+            for (LoanDto loan:listLoans){
+                LocalDate dateInLoan = LocalDate.parse(loan.getEndDate(), DATE_FORMATTER);
+                if (returnDate == null || dateInLoan.isBefore(returnDate)) {
+                    returnDate = dateInLoan;
+                }
+            }
+        }
+        return DATE_FORMATTER.format(returnDate);
     }
 
     private List<ExtendedBook> getExtendedBookDtoList(List<BookDto> bookDtoList) {

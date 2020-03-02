@@ -45,20 +45,13 @@
                         </td>
                         <td th:text="${book.getBookDto().getIsbn()}"></td>
                             <td th:if="${book.getBookDto().getCopiesAvailable() == 0}" class="tableLineWithButton">
-                                <div th:if="${!book.getBookDto().isReservationListFull()}">
-                                    <span th:text="|Aucun exemplaire disponible|"></span>
-                                    <span>
-                                        <br>
-                                        <button class="mt-0 mb-0 btn-round btnReservation">Réserver</button>
-                                        <br>
-                                        <span th:text="|${book.getActiveReservations().size() == 1 ? 'Une personne' : book.getActiveReservations().size() + ' personnes'} en attente|">2 personnes en attente</span>
-                                        <br>
-                                        <span th:text="|Prochain retour prévu le ${#dates.format(execInfo.now)}|">Prochain retour prévu le 12 février</span>
-                                    </span>
-                                </div>
-                                <div th:if="${book.getBookDto().isReservationListFull()}">
+                                <div>
                                     <span th:text="|Aucun exemplaire disponible|"></span><br>
-                                    <span th:if="${book.getBookDto().isReservationListFull()}"><i>Liste d'attente complète<br>2 personnes en attente <br> prochain retour prévu le 12 février <br></i></span>
+                                    <span th:if="${!book.getBookDto().isReservationListFull()}"><button class="mt-0 mb-0 btn-round btnReservation">Réserver</button><br></span>
+                                    <span th:if="${book.getBookDto().isReservationListFull()}"><i>Liste d'attente complète</i><br></span>
+                                    <span th:text="|${book.getActiveReservations().size() == 1 ? 'Une personne' : book.getActiveReservations().size() + ' personnes'} en attente|">2 personnes en attente</span>
+                                    <br>
+                                    <span th:text="|Prochain retour prévu le ${book.getEarliestReturn()}|">Prochain retour prévu le 12 février<br></span>
                                 </div>
                             </td>
                             <td th:if="${book.getBookDto().getCopiesAvailable() != 0}" th:text="${book.getBookDto().getCopiesAvailable()}"></td>

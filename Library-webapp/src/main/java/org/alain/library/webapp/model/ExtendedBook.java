@@ -16,6 +16,7 @@ public class ExtendedBook {
     private static List<String> Active_Statuses = Arrays.asList("PENDING","RESERVED");
     private final BookDto bookDto;
     private List<ReservationDto> activeReservations;
+    private String earliestReturn;
 
     public ExtendedBook(BookDto bookDto) {
         this.bookDto = bookDto;
