@@ -802,7 +802,8 @@ paths:
         in: "query"
         description: "BookId as filter in research"
         required: false
-        type: "string"
+        type: "integer"
+        format: "int64"
       responses:
         200:
           description: "Loans found"
