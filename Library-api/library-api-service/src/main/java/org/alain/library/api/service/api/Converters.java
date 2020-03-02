@@ -268,6 +268,8 @@ class Converters {
         reservationDto.setUserEmail(reservation.getUser().getEmail());
         reservationDto.setBookId(reservation.getBook().getId());
         reservationDto.setBookTitle(reservation.getBook().getTitle());
+        reservationDto.setCurrentStatus(reservation.getCurrentStatus());
+        reservationDto.setCurrentStatusData(dateFormatter.format(reservation.getCurrentStatusDate()));
         reservationDto.setStatuses(convertListReservationStatusModelToListReservationStatusDto(reservation.getStatuses()));
         return reservationDto;
     }

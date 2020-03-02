@@ -149,7 +149,7 @@
                             <apiPackage>org.alain.library.api.service.api</apiPackage>
                             <generateApis>false</generateApis>
                             <generateSupportingFiles>false</generateSupportingFiles>
-                            <inputSpec>https://app.swaggerhub.com/apiproxy/schema/file/apis/al26/Library/1.1.0</inputSpec>
+                            <inputSpec>${swagger.file.url}</inputSpec>
                             <language>spring</language>
                             <configOptions>
                                 <dateLibrary>joda</dateLibrary>

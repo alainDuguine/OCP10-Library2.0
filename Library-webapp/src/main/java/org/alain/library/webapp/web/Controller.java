@@ -7,12 +7,17 @@ import io.swagger.client.model.BookDto;
 import io.swagger.client.model.UserCredentials;
 import io.swagger.client.model.UserDto;
 import lombok.extern.slf4j.Slf4j;
+import org.alain.library.webapp.model.ExtendedBookDto;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @org.springframework.stereotype.Controller
@@ -63,11 +68,6 @@ public class Controller {
             if(userApi.login(userCredentials).execute().code() == 200){
                 session.setAttribute(EMAIL_FIELD, username);
                 session.setAttribute(PASSWORD_FIELD, password);
-//                if (rememberMe != null){
-//                    Cookie cookie = new Cookie("username", username);
-//                    cookie.setMaxAge(30 * 24 * 60 * 60);
-//                    cookie.setHttpOnly(true);
-//                }
                 return "redirect:/loans";
             }
         }catch (Exception ex){
@@ -127,9 +127,11 @@ public class Controller {
                 List<BookDto> bookDtoList = bookApi.getBooks(title, author).execute().body();
                 assert bookDtoList != null;
                 log.info("Book list :" + bookDtoList.size());
+                // with composition
+                List<ExtendedBookDto> extendedBookDtoList = this.getExtendedBookDtoList(bookDtoList);
                 model.addAttribute("title", title);
                 model.addAttribute("author", author);
-                model.addAttribute("books", bookDtoList);
+                model.addAttribute("books", extendedBookDtoList);
             }else{
                 return REDIRECT_LOGIN;
             }
@@ -138,6 +140,12 @@ public class Controller {
             return CONNEXION_FAILED;
         }
         return "search";
+    }
+
+    private List<ExtendedBookDto> getExtendedBookDtoList(List<BookDto> bookDtoList) {
+        return bookDtoList.stream()
+                .map(ExtendedBookDto::new)
+                .collect(Collectors.toList());
     }
 
     private String getEncodedAuthorization(HttpSession session){

@@ -35,7 +35,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="book:${books}">
+<!--                    <tr th:each="book:${books}">-->
+                    <tr th:each="book:${booksInheritance}">
                         <td th:text="${book.getTitle()}"></td>
                         <td>
                             <span th:each="author, iterStat:${book.getAuthors()}"
@@ -44,13 +45,25 @@
                             </span>
                         </td>
                         <td th:text="${book.getIsbn()}"></td>
-                        <div th:switch="${book.getCopiesAvailable()}">
-                            <td th:case="${0}" class="tableLineWithButton">
+<!--                        <div th:switch="${book.getCopiesAvailable()}">-->
+<!--                            <td th:case="${0}" class="tableLineWithButton">-->
+<!--                                <span th:text="0"></span>-->
+<!--                                <span><button class="mt-0 mb-0 btn-round btnReservation">Réserver</button></span>-->
+<!--                            </td>-->
+<!--                            <td th:case="*" th:text="${book.getCopiesAvailable()}"></td>-->
+<!--                        </div>-->
+                            <td th:if="${book.getCopiesAvailable() == 0}" class="tableLineWithButton">
                                 <span th:text="0"></span>
-                                <span><button class="mt-0 mb-0 btn-round btnReservation">Réserver</button></span>
+                                <span th:if="${!book.isReservationListFull()}">
+                                    <button class="mt-0 mb-0 btn-round btnReservation">Réserver</button>
+                                    <br>
+                                    <span th:text="|${book.getActiveReservations().size() < 0 ? 'Aucune personne' : book.getActiveReservations().size() + ' personnes'} en attente|">2 personnes en attente</span>
+                                    <br>
+                                    <span th:text="|Prochain retour prévu le ${#dates.format(execInfo.now)}|">Prochain retour prévu le 12 février</span>
+                                </span>
+                                <span th:if="${book.isReservationListFull()}"><i>Liste d'attente complète<br>2 personnes en attente <br> prochain retour prévu le 12 février <br></i></span>
                             </td>
-                            <td th:case="*" th:text="${book.getCopiesAvailable()}"></td>
-                        </div>
+                            <td th:if="${book.getCopiesAvailable() != 0}" th:text="${book.getCopiesAvailable()}"></td>
                     </tr>
                     </tbody>
                 </table>
