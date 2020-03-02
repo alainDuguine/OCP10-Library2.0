@@ -7,7 +7,7 @@ import io.swagger.client.model.BookDto;
 import io.swagger.client.model.UserCredentials;
 import io.swagger.client.model.UserDto;
 import lombok.extern.slf4j.Slf4j;
-import org.alain.library.webapp.model.ExtendedBookDto;
+import org.alain.library.webapp.model.ExtendedBook;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -127,11 +127,10 @@ public class Controller {
                 List<BookDto> bookDtoList = bookApi.getBooks(title, author).execute().body();
                 assert bookDtoList != null;
                 log.info("Book list :" + bookDtoList.size());
-                // with composition
-                List<ExtendedBookDto> extendedBookDtoList = this.getExtendedBookDtoList(bookDtoList);
+                List<ExtendedBook> extendedBookList = this.getExtendedBookDtoList(bookDtoList);
                 model.addAttribute("title", title);
                 model.addAttribute("author", author);
-                model.addAttribute("books", extendedBookDtoList);
+                model.addAttribute("books", extendedBookList);
             }else{
                 return REDIRECT_LOGIN;
             }
@@ -142,9 +141,9 @@ public class Controller {
         return "search";
     }
 
-    private List<ExtendedBookDto> getExtendedBookDtoList(List<BookDto> bookDtoList) {
+    private List<ExtendedBook> getExtendedBookDtoList(List<BookDto> bookDtoList) {
         return bookDtoList.stream()
-                .map(ExtendedBookDto::new)
+                .map(ExtendedBook::new)
                 .collect(Collectors.toList());
     }
 
