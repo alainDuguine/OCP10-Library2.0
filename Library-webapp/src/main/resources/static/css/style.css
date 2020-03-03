@@ -82,8 +82,8 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
 
 .loginArea button, .registerForm .btnSubmit, .btnLoan, .btnReservation{
     background-color: #f2f2f0;
-    color: #735C60;
-    border: 1px solid #735C60;
+    color: #364259;
+    border: 1px solid #364259;
 }
 
 .btnReservation{
@@ -112,12 +112,12 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
 
 .registerForm .btnCancel:hover{
     background-color: #f2f2f0;
-    color: #735C60;
-    border: 1px solid #735C60;
+    color: #364259;
+    border: 1px solid #364259;
 }
 
 .loginArea button:hover, .registerForm .btnSubmit:hover, .btnLoan:hover, .btnReservation:hover{
-    background-color: #735C60;
+    background-color: #364259;
     color: #f2f2f0;
 }
 
@@ -179,7 +179,7 @@ th, td, tbody{
 }
 
 .extendButton{
-    color: #735C60;
+    color: #364259;
     text-decoration: none;
 }
 
