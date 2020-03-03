@@ -24,9 +24,9 @@ public class ReservationManagement {
         List<ExtendedReservation> extendedReservationList = new ArrayList<>();
         for(ReservationDto reservation : reservations){
             BookDto book = bookManagement.getBookDto(reservation.getBookId());
-            ExtendedBook extendedBook = ExtendedBook.builder().bookDto(book).build();
+            ExtendedBook extendedBook = new ExtendedBook(book);
             extendedBook.setEarliestReturn(bookManagement.getDateNextReturn(session, extendedBook.getBookDto()));
-            ExtendedReservation extendedReservation = ExtendedReservation.builder().extendedBook(extendedBook).reservationDto(reservation).build();
+            ExtendedReservation extendedReservation = new ExtendedReservation(extendedBook, reservation);
             extendedReservationList.add(extendedReservation);
         }
         return extendedReservationList;

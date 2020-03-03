@@ -3,6 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
     <meta charset="UTF-8">
     <title>Mes Réservations</title>
 </head>
@@ -17,17 +18,23 @@
             <div th:each="reservation:${reservations}" class="media pt-3" >
                 <i class="far fa-bookmark fa-2x"></i>
                 <div class="media-body pl-2 pb-2 mb-0 small lh-125 border-bottom border-dark">
-                    <p class="h4 d-block text-capitalize text-gray-dark pb-2">
-                        <u th:each="author:${reservation.getExtendedBook().getBookDto().getAuthors()}"
+                    <div>
+                        <u class="h4 d-block text-capitalize text-gray-dark pb-2" th:each="author:${reservation.getExtendedBook().getBookDto().getAuthors()}"
                            th:with="authorName=${author.getFirstName()} + ' ' + ${author.getLastName()}  + ${authorStat.count != authorStat.size ? ', ' : ''}"
                            th:text="|${reservation.getExtendedBook().getBookDto().getTitle()} - ${authorName}|">Titre livre - Auteur</u>
-                        <br>
-                        <span th:case="PENDING" th:text="|En attente depuis le ${reservation.getCurrentStatusDate()}|"></span>
-                        <span th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher avant le ${reservation.getCurrentStatusDate().plusDays(2)}|"></span>
-                        <span th:case="TERMINATED" th:text="|Terminée le ${reservation.getCurrentStatusDate()}|"></span>
-                        <span th:case="CANCELED" th:text="|Annulée le ${reservation.getCurrentStatusDate()}|"></span>
-                    </p>
-
+                        <div class="lead" th:switch="${reservation.getReservationDto().getCurrentStatus()}">
+                            <div th:case="PENDING">
+                                <span th:text="|En attente depuis le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
+                                <br>
+                                <span th:text="|${reservation.getExtendedBook().getActiveReservations().size() == 1 ? 'Une personne' : reservation.getExtendedBook().getActiveReservations().size() + ' personnes'} en attente|"></span>
+                                <br>
+                                <span th:text="|Prochain retour prévu le ${reservation.getExtendedBook().getEarliestReturn()}|">Prochain retour prévu le 12 février<br></span>
+                            </div>
+                            <span class="redBorder" th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher au plus tard le ${#temporals.format(reservation.getCurrentStatusDate().plusDays(2))}.|"></span>
+                            <span th:case="TERMINATED" th:text="|Terminée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
+                            <span th:case="CANCELED" th:text="|Annulée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
+                        </div>
+                    </div>
 <!--                    <div>-->
 <!--                        <span th:text="|${reservation..size() == 1 ? 'Une personne' : book.getActiveReservations().size() + ' personnes'} en attente|">2 personnes en attente</span>-->
 <!--                        <br>-->

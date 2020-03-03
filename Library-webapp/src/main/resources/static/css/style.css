@@ -187,3 +187,9 @@ th, td, tbody{
     color: white;
     text-decoration: none;
 }
+
+.redBorder {
+    border: 2px solid red;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
