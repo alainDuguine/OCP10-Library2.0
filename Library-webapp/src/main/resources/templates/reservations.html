@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Réservations</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <div th:if="${reservations.isEmpty()}" class="loanDiv my-3 p-3 rounded">
+            <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vous n'avez aucune réservation enregistrée</h4>
+        </div>
+        <div th:if="${!reservations.isEmpty()}"  class="loanDiv my-3 p-3 rounded">
+            <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vos Réservations</h4>
+            <div th:each="reservation:${reservations}" class="media pt-3" >
+                <i class="far fa-bookmark fa-2x"></i>
+                <div class="media-body pl-2 pb-2 mb-0 small lh-125 border-bottom border-dark">
+                    <p class="h4 d-block text-capitalize text-gray-dark pb-2">
+                        <u th:each="author:${reservation.getExtendedBook().getBookDto().getAuthors()}"
+                           th:with="authorName=${author.getFirstName()} + ' ' + ${author.getLastName()}  + ${authorStat.count != authorStat.size ? ', ' : ''}"
+                           th:text="|${reservation.getExtendedBook().getBookDto().getTitle()} - ${authorName}|">Titre livre - Auteur</u>
+                        <br>
+                        <span th:case="PENDING" th:text="|En attente depuis le ${reservation.getCurrentStatusDate()}|"></span>
+                        <span th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher avant le ${reservation.getCurrentStatusDate().plusDays(2)}|"></span>
+                        <span th:case="TERMINATED" th:text="|Terminée le ${reservation.getCurrentStatusDate()}|"></span>
+                        <span th:case="CANCELED" th:text="|Annulée le ${reservation.getCurrentStatusDate()}|"></span>
+                    </p>
+
+<!--                    <div>-->
+<!--                        <span th:text="|${reservation..size() == 1 ? 'Une personne' : book.getActiveReservations().size() + ' personnes'} en attente|">2 personnes en attente</span>-->
+<!--                        <br>-->
+<!--                        <span th:text="|Prochain retour prévu le ${book.getEarliestReturn()}|">Prochain retour prévu le 12 février<br></span>-->
+<!--                    </div>-->
+<!--                    </p>-->
+<!--                    <button class="align-middle btn btn-round mt-2 mb-0 btnLoan"><a class="extendButton" th:href="@{/extend(loanId=${loan.getId()})}">Prolonger</a></button>-->
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

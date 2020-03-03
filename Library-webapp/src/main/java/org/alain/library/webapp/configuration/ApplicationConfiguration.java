@@ -1,9 +1,6 @@
 package org.alain.library.webapp.configuration;
 
-import io.swagger.client.api.AuthorApi;
-import io.swagger.client.api.BookApi;
-import io.swagger.client.api.LoanApi;
-import io.swagger.client.api.UserApi;
+import io.swagger.client.api.*;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -46,4 +43,7 @@ public class ApplicationConfiguration {
     public AuthorApi authorApi(Retrofit retrofit) {
         return retrofit.create(AuthorApi.class);
     }
+
+    @Bean
+    public ReservationApi reservationApi(Retrofit retrofit){return retrofit.create(ReservationApi.class);}
 }

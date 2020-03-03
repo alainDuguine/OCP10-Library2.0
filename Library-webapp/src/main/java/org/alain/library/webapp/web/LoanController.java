@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 
-import static org.alain.library.webapp.web.ControllersUtilities.*;
+import static org.alain.library.webapp.WebAppUtilities.*;
 
 @Controller
 @Slf4j
@@ -33,7 +33,7 @@ public class LoanController {
                 log.info("Loans recuperation : " + email);
                 UserDto user = userApi.getUserByEmail(email, getEncodedAuthorization(session)).execute().body();
                 assert user != null;
-                model.addAttribute("loanList", user.getLoans());
+                model.addAttribute("loans", user.getLoans());
                 return "loans";
             }else{
                 return REDIRECT_LOGIN;

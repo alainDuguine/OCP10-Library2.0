@@ -9,12 +9,12 @@
 <body>
     <div layout:fragment="content">
         <div class="container">
-            <div th:if="${loanList.isEmpty()}" class="loanDiv my-3 p-3 rounded">
+            <div th:if="${loans.isEmpty()}" class="loanDiv my-3 p-3 rounded">
                 <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vous n'avez aucun emprunt enregistré</h4>
             </div>
-            <div th:if="${not loanList.isEmpty()}"  class="loanDiv my-3 p-3 rounded">
+            <div th:if="${not loans.isEmpty()}" class="loanDiv my-3 p-3 rounded">
                 <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vos emprunts</h4>
-                <div class="media pt-3" th:each="loan:${loanList}"
+                <div class="media pt-3" th:each="loan:${loans}"
                                         th:with="bookCopy=${loan.getBookCopy()}">
                     <i class="far fa-bookmark fa-2x"></i>
 

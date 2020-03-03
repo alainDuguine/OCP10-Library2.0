@@ -42,6 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/login").permitAll()
                 .antMatchers("/loans/findLate").hasRole(ADMIN_ROLE)
                 .antMatchers(HttpMethod.GET,"/books").permitAll()
+                .antMatchers(HttpMethod.GET,"/books/{id}").permitAll()
                 .antMatchers(HttpMethod.PUT, "/users/{id}").authenticated()
                 .antMatchers("/users/findByEmail").authenticated()
                 .antMatchers("/loans/{id}/extension").authenticated()

@@ -3,6 +3,7 @@ package org.alain.library.webapp.model;
 import io.swagger.client.model.BookDto;
 import io.swagger.client.model.ReservationDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class ExtendedBook {
 
     private static List<String> Active_Statuses = Arrays.asList("PENDING","RESERVED");
