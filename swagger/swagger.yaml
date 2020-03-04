@@ -1098,16 +1098,56 @@ definitions:
       bookTitle:
         type: string
         description: Book title
+      bookAuthors:
+        type: array
+        items:
+          $ref: '#/definitions/AuthorDto'
       currentStatus:
         type: string
         description: Active Status for reservation
-      currentStatusData:
+      currentStatusDate:
+        type: string
+      userPositionInList:
+        type: integer
+      dateNextReturnBook:
         type: string
       statuses:
         type: array
         description: History of statuses
         items:
           $ref: '#/definitions/ReservationStatusDto'
+
+  # ReservationDto:
+  #   type: object
+  #   properties:
+  #     id:
+  #       type: integer
+  #       format: int64
+  #       description: Reservation Id
+  #     userId:
+  #       type: integer
+  #       format: int64
+  #       description: User Id
+  #     userEmail:
+  #       type: string
+  #       description: User email
+  #     bookId:
+  #       type: integer
+  #       format: int64
+  #       description: Book Id
+  #     bookTitle:
+  #       type: string
+  #       description: Book title
+  #     currentStatus:
+  #       type: string
+  #       description: Active Status for reservation
+  #     currentStatusData:
+  #       type: string
+  #     statuses:
+  #       type: array
+  #       description: History of statuses
+  #       items:
+  #         $ref: '#/definitions/ReservationStatusDto'
 
   ReservationStatusDto:
     type: object
