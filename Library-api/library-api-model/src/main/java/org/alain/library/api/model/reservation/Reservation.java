@@ -42,6 +42,9 @@ public class Reservation {
             orphanRemoval = true)
     private List<ReservationStatus> statuses = new ArrayList<>();
 
+    @Transient
+    private int userPositionInList;
+
     public void setStatuses(List<ReservationStatus> statuses){
         statuses.forEach(this::addStatus);
     }

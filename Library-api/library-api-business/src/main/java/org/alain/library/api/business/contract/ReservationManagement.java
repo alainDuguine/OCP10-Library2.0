@@ -11,4 +11,5 @@ public interface ReservationManagement extends CrudManagement<Reservation> {
     Reservation createNewReservation(Long bookId, Long userId, UserPrincipal userPrincipal);
     Optional<Reservation> updateReservation(Long reservationId, String status, UserPrincipal userPrincipal);
     List<Reservation> updateAndGetExpiredReservation();
+    List<Reservation> getReservationsByUser(Long id);
 }

@@ -7,6 +7,7 @@ import org.alain.library.api.business.contract.UserManagement;
 import org.alain.library.api.business.exceptions.ReservationException;
 import org.alain.library.api.business.exceptions.UnauthorizedException;
 import org.alain.library.api.business.exceptions.UnknowStatusException;
+import org.alain.library.api.business.exceptions.UnknownUserException;
 import org.alain.library.api.consumer.repository.ReservationRepository;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.exceptions.BookAlreadyLoanedException;
@@ -22,8 +23,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -120,6 +124,55 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         });
         log.info("{} expired reservations found", reservationListExpired.size());
         return reservationListExpired;
+    }
+
+    /**
+     * Will look for reservations for user with <b>id</b>
+     * Will retrieve all reservations for each book concerned by user's reservations
+     * in order to calculate his position in the reservation book pending list.
+     * @param id user having reservations
+     * @return reservation list
+     */
+    @Override
+    public List<Reservation> getReservationsByUser(Long id) {
+        log.info("Retrieving reservations for user {}", id);
+        Optional<User> user = userManagement.findOne(id);
+        if(user.isPresent()){
+            log.info("One user found : {}", user.get().getEmail());
+            for (Reservation reservation:user.get().getReservations()) {
+                log.info("Retrieving all reservations for book {}, concerned by reservation {}", reservation.getBook().getId(), reservation.getId());
+                List<Reservation> reservationForBook = reservationRepository.findByCurrentStatusAndUserIdAndBookId(null, reservation.getBook().getId(),null);
+                log.info("Calculating user position in reservation pending list");
+                reservation.setUserPositionInList(calculateUserPositionInReservationList(reservationForBook, user.get().getId()));
+            }
+            return user.get().getReservations();
+        }
+        throw new UnknownUserException("User "+id+" doesn't exists");
+    }
+
+    /**
+     * Filter pending reservations, sort them by date ascending
+     * and return the position of <b>userId</b> in this filtered and sorted list
+     * @param reservations list of reservations in which to search for user's position
+     * @param userId id of user that we want the position from the list
+     * @return the user's position
+     */
+    private int calculateUserPositionInReservationList(List<Reservation> reservations, Long userId) {
+        log.info("Filtering and sorting {} active reservations", reservations.size());
+        List<Reservation> activeReservationsSorted = reservations
+                .stream()
+                .filter(reservation -> reservation.getCurrentStatus().equals("PENDING"))
+                .sorted(Comparator.comparing(Reservation::getCurrentStatusDate))
+                .collect(Collectors.toList());
+        log.info("{} reservations still present", reservations.size());
+
+        log.info("Calculating user position");
+        int index  = IntStream.range(0, activeReservationsSorted.size())
+                .filter(i -> activeReservationsSorted.get(i).getUser().getId().equals(userId))
+                .findFirst()
+                .orElse(-1);
+        log.info("User position calculated : {}", index+1);
+        return index+1;
     }
 
     private void checkBookReservation(Book book){

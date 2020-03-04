@@ -15,7 +15,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-02-27T14:03:25.319+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-03-04T15:19:11.738+01:00")
 
 @Api(value = "reservations", description = "the reservations API")
 public interface ReservationsApi {
@@ -49,6 +49,15 @@ public interface ReservationsApi {
     ResponseEntity<ReservationDto> getReservation(@ApiParam(value = "Id of reservation to return", required = true) @PathVariable("id") Long id);
 
 
+    @ApiOperation(value = "Get a list of all reservations for user presente in session", nickname = "getReservationByUser", notes = "", response = ReservationDto.class, responseContainer = "List", tags={ "reservation", })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Reservations found", response = ReservationDto.class, responseContainer = "List") })
+    @RequestMapping(value = "/reservations/findByUser",
+        produces = { "application/json" },
+        method = RequestMethod.GET)
+    ResponseEntity<List<ReservationDto>> getReservationByUser(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization);
+
+
     @ApiOperation(value = "Get a list of all reservations", nickname = "getReservations", notes = "", response = ReservationDto.class, responseContainer = "List", tags={ "reservation", })
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Reservations found", response = ReservationDto.class, responseContainer = "List") })
@@ -64,6 +73,6 @@ public interface ReservationsApi {
     @RequestMapping(value = "/reservations/{id}",
         produces = { "application/json" },
         method = RequestMethod.PUT)
-    ResponseEntity<Void> updateReservation(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "Id of reservation to update", required = true) @PathVariable("id") Long id, @NotNull @ApiParam(value = "Status values as filter in research", required = true, allowableValues = "pending, reserved, terminated, canceled") @Valid @RequestParam(value = "status", required = true) String status);
+    ResponseEntity<Void> updateReservation(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "Id of reservation to update", required = true) @PathVariable("id") Long id, @NotNull @ApiParam(value = "Status value to add", required = true, allowableValues = "pending, reserved, terminated, canceled") @Valid @RequestParam(value = "status", required = true) String status);
 
 }

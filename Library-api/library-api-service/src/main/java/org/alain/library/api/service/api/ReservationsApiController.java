@@ -63,6 +63,14 @@ public class ReservationsApiController implements ReservationsApi {
         return new ResponseEntity<List<ReservationDto>>(convertListReservationModelToListReservationDto(reservationList), HttpStatus.OK);
     }
 
+    public ResponseEntity<List<ReservationDto>> getReservationByUser(@ApiParam(value = "User identification" ,required=true) @RequestHeader(value="Authorization", required=true) String authorization) {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Requesting reservations for user : {}", userPrincipal.getId());
+        List<Reservation> reservationList = reservationManagement.getReservationsByUser(userPrincipal.getId());
+        log.info("Reservation founded : {}", reservationList.size());
+        return new ResponseEntity<List<ReservationDto>>(convertListReservationModelToListReservationDto(reservationList), HttpStatus.OK);
+    }
+
     public ResponseEntity<ReservationDto> addReservation(@ApiParam(value = "User identification" ,required=true)
                                                          @RequestHeader(value="Authorization", required=true) String authorization,
                                                          @ApiParam(value = "reservation to add to database" ,required=true )

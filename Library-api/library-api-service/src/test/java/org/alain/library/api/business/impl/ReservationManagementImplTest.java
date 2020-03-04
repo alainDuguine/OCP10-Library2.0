@@ -20,10 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -271,6 +268,52 @@ class ReservationManagementImplTest {
         assertThat(reservationListResult.size()).isEqualTo(1);
         assertThat(reservationListResult.get(0).getCurrentStatus()).isEqualTo(StatusEnum.CANCELED.name());
         assertThat(reservationListResult.get(0).getCurrentStatusDate().isAfter(reservationStatusExpired.getDate())).isTrue();
+    }
+
+    @Test
+    void getReservationsByUser() {
+        ReservationStatus status1 = ReservationStatus.builder().id(1L).status(StatusEnum.PENDING).date(LocalDateTime.now().minusDays(1)).build();
+        ReservationStatus status2 = ReservationStatus.builder().id(1L).status(StatusEnum.PENDING).date(LocalDateTime.now().minusDays(2)).build();
+        ReservationStatus status3 = ReservationStatus.builder().id(1L).status(StatusEnum.PENDING).date(LocalDateTime.now().minusDays(3)).build();
+        ReservationStatus inactiveStatus = ReservationStatus.builder().id(1L).status(StatusEnum.TERMINATED).date(LocalDateTime.now().minusDays(3)).build();
+
+
+        Book book = Book.builder().id(1L).build();
+
+        User user = User.builder().id(1L).build();
+        User user2 = User.builder().id(2L).build();
+        User user3 = User.builder().id(3L).build();
+        // Reservation we are looking for
+        Reservation reservation1 = Reservation.builder().id(1L).book(book).user(user).build();
+        // user should be first in list
+        reservation1.addStatus(status1);
+
+        // Other reservations in list
+        Reservation reservation2 = Reservation.builder().id(2L).book(book).user(user2).build();
+        reservation2.addStatus(status3);
+        Reservation reservation3 = Reservation.builder().id(3L).book(book).user(user3).build();
+        reservation3.addStatus(status2);
+        Reservation reservation4 = Reservation.builder().id(4L).book(book).user(user3).build();
+        reservation4.addStatus(inactiveStatus);
+        List<Reservation> reservationList = new ArrayList<>(Arrays.asList(reservation1, reservation2, reservation3, reservation4));
+
+        user.addReservation(reservation1);
+
+        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(reservationRepository.findByCurrentStatusAndUserIdAndBookId(any(),any(),any())).willReturn(reservationList);
+
+        List<Reservation> reservationsResultList = service.getReservationsByUser(1L);
+        assertThat(reservationsResultList.get(0).getUserPositionInList()).isEqualTo(3);
+    }
+
+    @Test
+    void getReservationsByUser_WithEmptyList() {
+        User user = User.builder().id(1L).build();
+
+        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+
+        List<Reservation> reservationsResultList = service.getReservationsByUser(1L);
+        assertThat(reservationsResultList.size()).isEqualTo(0);
     }
 }
 
