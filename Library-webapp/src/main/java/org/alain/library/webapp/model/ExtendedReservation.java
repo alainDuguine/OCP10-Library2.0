@@ -20,6 +20,6 @@ public class ExtendedReservation {
     public ExtendedReservation(ExtendedBook extendedBook, ReservationDto reservationDto) {
         this.extendedBook = extendedBook;
         this.reservationDto = reservationDto;
-        this.currentStatusDate = LocalDate.parse(reservationDto.getCurrentStatusData(), DATE_FORMATTER);
+        this.currentStatusDate = LocalDate.parse(reservationDto.getCurrentStatusDate(), DATE_FORMATTER);
     }
 }

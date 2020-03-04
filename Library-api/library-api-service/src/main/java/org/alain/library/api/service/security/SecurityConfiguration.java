@@ -40,6 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/users/login").permitAll()
+                .antMatchers("/reservations/findByUser").authenticated()
                 .antMatchers(HttpMethod.PUT, "/users/{id}").authenticated()
                 .antMatchers("/users/findByEmail").authenticated()
                 .antMatchers(HttpMethod.GET,"/books").permitAll()

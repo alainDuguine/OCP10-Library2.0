@@ -165,7 +165,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
                 .filter(reservation -> reservation.getCurrentStatus().equals("PENDING"))
                 .sorted(Comparator.comparing(Reservation::getCurrentStatusDate))
                 .collect(Collectors.toList());
-        log.info("{} reservations still present", reservations.size());
+        log.info("{} reservations still present", activeReservationsSorted.size());
 
         log.info("Calculating user position");
         int index  = IntStream.range(0, activeReservationsSorted.size())
