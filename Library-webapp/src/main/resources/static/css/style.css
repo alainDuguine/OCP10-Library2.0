@@ -191,5 +191,15 @@ th, td, tbody{
 .redBorder {
     border: 2px solid red;
     border-radius: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.15rem;
+    margin-bottom: 0.5rem;
+}
+
+.historyHeader {
+    background-color: rgba(242, 242, 240, 0.90);
+    padding: 0.2rem;
+}
+
+.historyBody {
+    font-size: larger;
 }

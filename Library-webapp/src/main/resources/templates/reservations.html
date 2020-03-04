@@ -35,15 +35,30 @@
                             <span th:case="CANCELED" th:text="|Annulée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
                         </div>
                     </div>
-<!--                    <div>-->
-<!--                        <span th:text="|${reservation..size() == 1 ? 'Une personne' : book.getActiveReservations().size() + ' personnes'} en attente|">2 personnes en attente</span>-->
-<!--                        <br>-->
-<!--                        <span th:text="|Prochain retour prévu le ${book.getEarliestReturn()}|">Prochain retour prévu le 12 février<br></span>-->
-<!--                    </div>-->
-<!--                    </p>-->
-<!--                    <button class="align-middle btn btn-round mt-2 mb-0 btnLoan"><a class="extendButton" th:href="@{/extend(loanId=${loan.getId()})}">Prolonger</a></button>-->
+                    <br>
+                    <!-- History Collapse -->
+                    <div th:if="${reservation.getReservationDto().getStatuses().size() > 1}" th:with="reservationId=${reservation.getReservationDto().getId()}" class="accordion" th:id="|historyAccordion${reservationId}|">
+                        <div class="card">
+                            <div class="card-header historyHeader" th:id="|header${reservationId}|">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" th:data-target="|#historyCollapse${reservationId}|" aria-expanded="false" th:aria-controls="|historyCollapse${reservationId}|">
+                                        Historique
+                                    </button>
+                                </h5>
+                            </div>
+                        </div>
 
-
+                        <div th:id=|historyCollapse${reservationId}| class="collapse" th:aria-labelledby="|header${reservationId}|" th:data-parent="|#historyAccordion${reservationId}|">
+                            <div class="card-body historyBody" th:each="status:${reservation.getReservationDto().getStatuses()}">
+                                <div th:switch="${status.getStatus()}">
+                                    <span th:case="PENDING" th:text="|Réservation créée le ${status.getDate()}|"></span>
+                                    <span th:case="RESERVED" th:text="|En attente de retrait le ${status.getDate()}|"></span>
+                                    <span th:case="TERMINATED" th:text="|Réservation terminée le ${status.getDate()}|"></span>
+                                    <span th:case="CANCELED" th:text="|Réservation annulée le ${status.getDate()}|"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
