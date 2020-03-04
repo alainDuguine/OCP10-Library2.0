@@ -1,6 +1,9 @@
 package org.alain.library.api.model.loan;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.alain.library.api.model.book.BookCopy;
 import org.alain.library.api.model.user.User;
 
@@ -8,12 +11,15 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table
 public class Loan {
 

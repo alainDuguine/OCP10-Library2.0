@@ -10,9 +10,13 @@ import org.alain.library.api.consumer.repository.BookRepository;
 import org.alain.library.api.model.book.Author;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
+import org.alain.library.api.model.loan.Loan;
+import org.alain.library.api.model.loan.StatusDesignation;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -92,6 +96,59 @@ public class BookManagementImpl extends CrudManagementImpl<Book> implements Book
         }else{
             throw new UnknownBookException("The book number"+id+"doesn't exists");
         }
+    }
+
+    /**
+     * This method retrieve the {@link LocalDate}
+     * which correspond to the next planned return of a book
+     * in a {@link Loan}.
+     * All {@link Loan} in the {@link Book} will be retrieved and parsed
+     * @param id the id of the {@link Book}
+     * @return the next return date
+     */
+    @Override
+    public LocalDate getNextReturnDate(Long id) {
+        log.info("Retrieving loans for bookId {}", id);
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isPresent()){
+            log.info("One book found : {}", book.get().getTitle());
+            List<Loan> loans = this.getActiveLoansFromBook(book.get());
+            log.info("{} active loans found", loans.size());
+            return this.findNextReturnInLoanList(loans);
+        }
+        throw new UnknownBookException("Book "+id+" doesn't exists");
+    }
+
+    /**
+     * parse a list of {@link Loan}
+     * and return the earliest {@link LocalDate} for next return
+     * @param loans the {@link Loan} list
+     * @return the {@link LocalDate} of next return
+     */
+    private LocalDate findNextReturnInLoanList(List<Loan> loans) {
+        log.info("Retrieving date earliest return from {} loans", loans.size());
+        return loans.stream()
+                .map(Loan::getEndDate)
+                .min(LocalDate::compareTo)
+                .orElse(null);
+    }
+
+    /**
+     * Parse all {@link BookCopy} from {@link Book}
+     * and retrieve all {@link Loan} with {@link StatusDesignation}
+     * considered as Active
+     * @param book {@link Book} element from which to retrieve loans
+     * @return Loan arraylist
+     */
+    private List<Loan> getActiveLoansFromBook(Book book) {
+        log.info("Parsing book {} to find all active loans", book.getId());
+        List<String> activeStatuses = Arrays.asList(StatusDesignation.LOANED.name(),StatusDesignation.PROLONGED.name());
+        log.info("Active statuses : {}", activeStatuses.toString());
+        return book.getCopyList()
+                .stream()
+                .flatMap(bookCopy -> bookCopy.getLoanList().stream())
+                .filter(loan -> activeStatuses.contains(loan.getCurrentStatus()))
+                .collect(Collectors.toList());
     }
 
     @Override

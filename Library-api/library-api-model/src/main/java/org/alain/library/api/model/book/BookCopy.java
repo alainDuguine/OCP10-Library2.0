@@ -31,6 +31,7 @@ public class BookCopy {
 
     @JsonIgnore
     @OneToMany(mappedBy = "bookCopy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Loan> loanList = new ArrayList<>();
 
     public BookCopy() {

@@ -272,6 +272,8 @@ class Converters {
         reservationDto.setCurrentStatusDate(dateFormatter.format(reservation.getCurrentStatusDate()));
         reservationDto.setStatuses(convertListReservationStatusModelToListReservationStatusDto(reservation.getStatuses()));
         reservationDto.setUserPositionInList(reservation.getUserPositionInList());
+        if(reservation.getNextReturnDate()!=null)
+            reservationDto.setDateNextReturnBook(dateFormatter.format(reservation.getNextReturnDate()));
         return reservationDto;
     }
 

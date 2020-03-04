@@ -144,6 +144,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
                 List<Reservation> reservationForBook = reservationRepository.findByCurrentStatusAndUserIdAndBookId(null, reservation.getBook().getId(),null);
                 log.info("Calculating user position in reservation pending list");
                 reservation.setUserPositionInList(calculateUserPositionInReservationList(reservationForBook, user.get().getId()));
+                reservation.setNextReturnDate(bookManagement.getNextReturnDate(reservation.getBook().getId()));
             }
             return user.get().getReservations();
         }
