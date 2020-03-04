@@ -1074,6 +1074,27 @@ paths:
             type: "array"
             items:
               $ref: '#/definitions/ReservationDto'
+  /reservations/findByUser:
+    get:
+      tags:
+      - "reservation"
+      summary: "Get a list of all reservations for user presente in session"
+      operationId: "getReservationByUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "User identification"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Reservations found"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/ReservationDto'
               
 definitions:
 
