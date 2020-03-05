@@ -19,20 +19,46 @@
                 <i class="far fa-bookmark fa-2x"></i>
                 <div class="media-body pl-2 pb-2 mb-0 small lh-125 border-bottom border-dark">
                     <div>
-                        <u class="h4 d-block text-capitalize text-gray-dark pb-2" th:each="author:${reservation.getExtendedBook().getBookDto().getAuthors()}"
+
+                        <div class="reservationTitle">
+                            <div>
+                                <u class="h4 d-block text-capitalize text-gray-dark pb-2" th:each="author:${reservation.getReservationDto().getBookAuthors()}"
                            th:with="authorName=${author.getFirstName()} + ' ' + ${author.getLastName()}  + ${authorStat.count != authorStat.size ? ', ' : ''}"
-                           th:text="|${reservation.getExtendedBook().getBookDto().getTitle()} - ${authorName}|">Titre livre - Auteur</u>
-                        <div class="lead" th:switch="${reservation.getReservationDto().getCurrentStatus()}">
+                           th:text="|${reservation.getReservationDto().getBookTitle()} - ${authorName}|">Titre livre - Auteur</u>
+                            </div>
+                            <div th:if="${reservation.isActive()}">
+                                <a onclick="confirm('Etes vous sûr de vouloir annuler cette réservation?')" th:href="@{/reservations/cancel(id=${reservation.getReservationDto().getId()})}">Annuler la réservation</a>
+                            </div>
+                        </div>
+
+                        <div th:if="${#strings.equals(param.id, reservation.getReservationDto().getId())}">
+                            <br>
+                            <span th:if="${param.success}" class="alert alert-success">
+                                La réservation a bien été annulée
+                            </span>
+                            <br>
+                            <span th:if="${not param.success}" class="alert alert-warning">
+                                La réservation ne peut pas être annulée. Merci de réessayer ultérieurement.
+                            </span>
+                            <br>
+                        </div>
+
+                        <div class="reservationBody" th:switch="${reservation.getReservationDto().getCurrentStatus()}">
                             <div th:case="PENDING">
                                 <span th:text="|En attente depuis le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
                                 <br>
-                                <span th:text="|${reservation.getExtendedBook().getActiveReservations().size() == 1 ? 'Une personne' : reservation.getExtendedBook().getActiveReservations().size() + ' personnes'} en attente|"></span>
-                                <br>
-                                <span th:text="|Prochain retour prévu le ${reservation.getExtendedBook().getEarliestReturn()}|">Prochain retour prévu le 12 février<br></span>
+                                <div th:if="${reservation.getReservationDto().getUserPositionInList() != 0}" th:switch="${reservation.getReservationDto().getUserPositionInList()-1}">
+                                    <span th:case="0" th:text="|Vous êtes la première personne sur la liste d'attente|"></span>
+                                    <span th:case="1" th:text="Il y a une personne en attente avant vous"></span>
+                                    <span th:case="*" th:text="|Il y a ${reservation.getReservationDto().getUserPositionInList()-1} personnes en attente avant vous|"></span>
+                                </div>
+                                <span th:text="|Prochain retour prévu le ${#temporals.format(reservation.getNextReturnDate())}|">Prochain retour prévu le 12 février<br></span>
                             </div>
-                            <span class="redBorder" th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher au plus tard le ${#temporals.format(reservation.getCurrentStatusDate().plusDays(2))}.|"></span>
-                            <span th:case="TERMINATED" th:text="|Terminée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
-                            <span th:case="CANCELED" th:text="|Annulée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
+                            <div>
+                                <span class="redBorder" th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher au plus tard le ${#temporals.format(reservation.getCurrentStatusDate().plusDays(2))}.|"></span>
+                                <span th:case="TERMINATED" th:text="|Terminée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
+                                <span th:case="CANCELED" th:text="|Annulée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
+                            </div>
                         </div>
                     </div>
                     <br>
@@ -51,10 +77,10 @@
                         <div th:id=|historyCollapse${reservationId}| class="collapse" th:aria-labelledby="|header${reservationId}|" th:data-parent="|#historyAccordion${reservationId}|">
                             <div class="card-body historyBody" th:each="status:${reservation.getReservationDto().getStatuses()}">
                                 <div th:switch="${status.getStatus()}">
-                                    <span th:case="PENDING" th:text="|Réservation créée le ${status.getDate()}|"></span>
+                                    <span th:case="PENDING" th:text="|Créée le ${status.getDate()}|"></span>
                                     <span th:case="RESERVED" th:text="|En attente de retrait le ${status.getDate()}|"></span>
-                                    <span th:case="TERMINATED" th:text="|Réservation terminée le ${status.getDate()}|"></span>
-                                    <span th:case="CANCELED" th:text="|Réservation annulée le ${status.getDate()}|"></span>
+                                    <span th:case="TERMINATED" th:text="|Terminée le ${status.getDate()}|"></span>
+                                    <span th:case="CANCELED" th:text="|Annulée le ${status.getDate()}|"></span>
                                 </div>
                             </div>
                         </div>
