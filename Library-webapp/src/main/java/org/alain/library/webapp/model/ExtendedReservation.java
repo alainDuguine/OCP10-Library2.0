@@ -22,7 +22,8 @@ public class ExtendedReservation {
     public ExtendedReservation(ReservationDto reservationDto) {
         this.reservationDto = reservationDto;
         this.currentStatusDate = LocalDate.parse(reservationDto.getCurrentStatusDate(), DATE_FORMATTER);
-        this.nextReturnDate = LocalDate.parse(reservationDto.getDateNextReturnBook(), DATE_FORMATTER);
         this.isActive = ACTIVE_STATUS.contains(reservationDto.getCurrentStatus());
+        if(reservationDto.getDateNextReturnBook()!=null)
+            this.nextReturnDate = LocalDate.parse(reservationDto.getDateNextReturnBook(), DATE_FORMATTER);
     }
 }

@@ -19,7 +19,6 @@
                 <i class="far fa-bookmark fa-2x"></i>
                 <div class="media-body pl-2 pb-2 mb-0 small lh-125 border-bottom border-dark">
                     <div>
-
                         <div class="reservationTitle">
                             <div>
                                 <u class="h4 d-block text-capitalize text-gray-dark pb-2" th:each="author:${reservation.getReservationDto().getBookAuthors()}"
@@ -33,13 +32,17 @@
 
                         <div th:if="${#strings.equals(param.id, reservation.getReservationDto().getId())}">
                             <br>
-                            <span th:if="${param.success}" class="alert alert-success">
+                            <span th:if="${#strings.equals(param.canceled, 'true')}" class="alert alert-success">
                                 La réservation a bien été annulée
                             </span>
-                            <br>
-                            <span th:if="${not param.success}" class="alert alert-warning">
+                            <span th:if="${#strings.equals(param.canceled, 'false')}" class="alert alert-warning">
                                 La réservation ne peut pas être annulée. Merci de réessayer ultérieurement.
                             </span>
+                            <span th:if="${param.created}" class="alert alert-success">
+                                La réservation a bien été créée, vous serez averti par email lorsque le livre sera disponible.
+                                Vous disposerez alors de 48h pour le récupérer.
+                            </span>
+                            <br>
                             <br>
                         </div>
 
@@ -49,13 +52,13 @@
                                 <br>
                                 <div th:if="${reservation.getReservationDto().getUserPositionInList() != 0}" th:switch="${reservation.getReservationDto().getUserPositionInList()-1}">
                                     <span th:case="0" th:text="|Vous êtes la première personne sur la liste d'attente|"></span>
-                                    <span th:case="1" th:text="Il y a une personne en attente avant vous"></span>
+                                    <span th:case="1" th:text="|Il y a une personne en attente avant vous|"></span>
                                     <span th:case="*" th:text="|Il y a ${reservation.getReservationDto().getUserPositionInList()-1} personnes en attente avant vous|"></span>
                                 </div>
                                 <span th:text="|Prochain retour prévu le ${#temporals.format(reservation.getNextReturnDate())}|">Prochain retour prévu le 12 février<br></span>
                             </div>
                             <div>
-                                <span class="redBorder" th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher au plus tard le ${#temporals.format(reservation.getCurrentStatusDate().plusDays(2))}.|"></span>
+                                <span class="redBorder text-danger" th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher au plus tard le ${#temporals.format(reservation.getCurrentStatusDate().plusDays(2))}.|"></span>
                                 <span th:case="TERMINATED" th:text="|Terminée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
                                 <span th:case="CANCELED" th:text="|Annulée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
                             </div>

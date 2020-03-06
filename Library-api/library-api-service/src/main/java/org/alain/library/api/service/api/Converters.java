@@ -80,7 +80,8 @@ class Converters {
         bookDto.setCopiesAvailable(bookModel.getNbCopiesAvailable());
         bookDto.setReservations(convertListReservationModelToListReservationDto(bookModel.getReservations()));
         bookDto.setReservationListFull(bookModel.isReservationListFull());
-        bookDto.setReservationListFull(bookModel.getReservations().size() >= (bookModel.getCopyList().size()*2));
+        if(bookModel.getNextReturnDate()!=null)
+            bookDto.setDateNextReturnBook(dateFormatter.format(bookModel.getNextReturnDate()));
         return bookDto;
     }
 

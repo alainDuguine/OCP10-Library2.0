@@ -34,11 +34,6 @@ public class BookManagementImpl extends CrudManagementImpl<Book> implements Book
     }
 
     @Override
-    public List<Book> findByTitleAndAuthor(String title, String author) {
-        return bookRepository.findByTitleAndAuthor(title.toLowerCase(), author.toLowerCase());
-    }
-
-    @Override
     public Optional<BookCopy> findCopyInBook(Long bookId, Long copyId) {
         return bookCopyRepository.findOneByIdInBook(bookId, copyId);
     }
@@ -117,6 +112,17 @@ public class BookManagementImpl extends CrudManagementImpl<Book> implements Book
             return this.findNextReturnInLoanList(loans);
         }
         throw new UnknownBookException("Book "+id+" doesn't exists");
+    }
+
+
+    @Override
+    public List<Book> findByTitleAndAuthor(String title, String author) {
+        List<Book> bookList = bookRepository.findByTitleAndAuthor(title.toLowerCase(), author.toLowerCase());
+        bookList.forEach(book -> {
+            List<Loan> loans = this.getActiveLoansFromBook(book);
+            book.setNextReturnDate(this.findNextReturnInLoanList(loans));
+        });
+        return bookList;
     }
 
     /**

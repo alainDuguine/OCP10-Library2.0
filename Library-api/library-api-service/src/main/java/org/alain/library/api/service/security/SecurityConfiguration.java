@@ -46,6 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/books").permitAll()
                 .antMatchers(HttpMethod.GET,"/books/{id}").permitAll()
                 .antMatchers("/loans/{id}/extension").authenticated()
+                .antMatchers("/loans/{id}/").authenticated()
                 .antMatchers("/loans/findLate").hasRole(ADMIN_ROLE)
                 .antMatchers(HttpMethod.POST, "/reservations").authenticated()
                 .antMatchers(HttpMethod.PUT, "/reservations/{id}").authenticated()

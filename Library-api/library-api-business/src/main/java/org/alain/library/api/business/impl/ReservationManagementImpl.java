@@ -181,7 +181,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
             log.warn("Attempt to reserve book with available copies {}", book.getId());
             throw new BookStillAvailableException("Impossible to add reservation, book id " + book.getId() + " has " + book.getNbCopiesAvailable() + " copies available");
         }
-        if (book.getReservations().size() == book.getCopyList().size() * 2){
+        if (book.isReservationListFull()){
             log.warn("Attempt to reserve book with full pending list {}", book.getId());
             throw new FullReservationListException("Reservation List full : size:"+book.getReservations().size()+", book copies:"+ book.getCopyList().size());
         }

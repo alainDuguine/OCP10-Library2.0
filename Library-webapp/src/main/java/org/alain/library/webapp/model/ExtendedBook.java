@@ -6,29 +6,34 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.alain.library.webapp.WebAppUtilities.ACTIVE_STATUS;
+import static org.alain.library.webapp.WebAppUtilities.DATE_FORMATTER;
 
 @Data
 @AllArgsConstructor
 @Builder
 public class ExtendedBook {
 
-    private static List<String> Active_Statuses = Arrays.asList("PENDING","RESERVED");
     private final BookDto bookDto;
     private List<ReservationDto> activeReservations;
-    private String earliestReturn;
+    private LocalDate earliestReturn;
 
     public ExtendedBook(BookDto bookDto) {
         this.bookDto = bookDto;
         activeReservations = this.setActiveReservations();
+        if(bookDto.getDateNextReturnBook()!=null){
+            this.earliestReturn = LocalDate.parse(bookDto.getDateNextReturnBook(), DATE_FORMATTER);
+        }
     }
 
     private List<ReservationDto> setActiveReservations() {
         return bookDto.getReservations()
                 .stream()
-                .filter(reservation -> Active_Statuses.contains(reservation.getCurrentStatus()))
+                .filter(reservation -> ACTIVE_STATUS.contains(reservation.getCurrentStatus()))
                 .collect(Collectors.toList());
     }
 }

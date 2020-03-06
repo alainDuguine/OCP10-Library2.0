@@ -189,7 +189,7 @@ th, td, tbody{
 }
 
 .redBorder {
-    border: 2px solid red;
+    border: 1px solid red;
     border-radius: 0.5rem;
     padding: 0.15rem;
     margin-bottom: 0.5rem;
@@ -212,4 +212,8 @@ th, td, tbody{
 
 .reservationBody {
     font-size: 1rem;
+}
+
+#navbarDropdown {
+    cursor: pointer;
 }

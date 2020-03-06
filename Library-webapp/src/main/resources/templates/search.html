@@ -9,6 +9,12 @@
 <body>
     <div layout:fragment="content">
         <div class="container">
+
+            <p th:if="${param.error}" class="text-center p-2 m-2">
+                <br>
+                <span class="alert alert-danger" th:text="|Impossible de réserver le livre : ${param.error}|"></span>
+            </p>
+
             <div class="searchDiv my-3 p-3 rounded">
                 <!-- Underlined search bars -->
                 <form th:action="@{/books}" method="get">
@@ -47,11 +53,12 @@
                             <td th:if="${book.getBookDto().getCopiesAvailable() == 0}" class="tableLineWithButton">
                                 <div>
                                     <span th:text="|Aucun exemplaire disponible|"></span><br>
-                                    <span th:if="${!book.getBookDto().isReservationListFull()}"><button class="mt-0 mb-0 btn-round btnReservation">Réserver</button><br></span>
+                                    <span th:if="${!book.getBookDto().isReservationListFull()}"><button class="mt-0 mb-0 btn-round btnReservation"><a th:href="@{/reservations/add(bookId=${book.getBookDto().getId()})}">Réserver</a></button><br></span>
                                     <span th:if="${book.getBookDto().isReservationListFull()}"><i>Liste d'attente complète</i><br></span>
-                                    <span th:text="|${book.getActiveReservations().size() == 1 ? 'Une personne' : book.getActiveReservations().size() + ' personnes'} en attente|">2 personnes en attente</span>
+                                    <span th:if="${book.getActiveReservations().size() == 0}" th:text="'Aucune personne en attente'"></span>
+                                    <span th:if="${book.getActiveReservations().size() >= 1}" th:text="|${book.getActiveReservations().size() == 1 ? 'Une personne' : book.getActiveReservations().size() + ' personnes'} en attente|">2 personnes en attente</span>
                                     <br>
-                                    <span th:text="|Prochain retour prévu le ${book.getEarliestReturn()}|">Prochain retour prévu le 12 février<br></span>
+                                    <span th:text="|Prochain retour prévu le ${#temporals.format(book.getEarliestReturn())}|">Prochain retour prévu le 12 février<br></span>
                                 </div>
                             </td>
                             <td th:if="${book.getBookDto().getCopiesAvailable() != 0}" th:text="${book.getBookDto().getCopiesAvailable()}"></td>

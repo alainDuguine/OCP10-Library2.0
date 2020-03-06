@@ -8,6 +8,7 @@ import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,9 @@ public class Book {
     @Formula("(SELECT COUNT(r.id) FROM book b left join reservation r on r.book_id = b.id WHERE (r.current_status = 'PENDING' or r.current_status = 'RESERVED') and b.id = id)")
     private Long nbActiveReservations;
 
+    @Transient
+    private LocalDate nextReturnDate;
+
     public Book(String title) {
         this.title = title;
         this.isbn = RandomStringUtils.randomAlphanumeric(10);
@@ -96,7 +100,7 @@ public class Book {
     }
 
     public boolean isReservationListFull(){
-        return nbActiveReservations >= (nbCopiesAvailable * 2);
+        return (nbActiveReservations >= (this.getCopyList().size() * 2));
     }
 
     @Override

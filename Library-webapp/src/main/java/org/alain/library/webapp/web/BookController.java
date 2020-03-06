@@ -3,7 +3,7 @@ package org.alain.library.webapp.web;
 import io.swagger.client.api.BookApi;
 import io.swagger.client.model.BookDto;
 import lombok.extern.slf4j.Slf4j;
-import org.alain.library.webapp.business.BookManagement;
+import org.alain.library.webapp.business.impl.BookManagementImpl;
 import org.alain.library.webapp.model.ExtendedBook;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,11 +20,11 @@ import static org.alain.library.webapp.WebAppUtilities.*;
 public class BookController {
 
     private final BookApi bookApi;
-    private final BookManagement bookManagement;
+    private final BookManagementImpl bookManagementImpl;
 
-    public BookController(BookApi bookApi, BookManagement bookManagement) {
+    public BookController(BookApi bookApi, BookManagementImpl bookManagementImpl) {
         this.bookApi = bookApi;
-        this.bookManagement = bookManagement;
+        this.bookManagementImpl = bookManagementImpl;
     }
 
     @GetMapping({"/search", "/books"})
@@ -39,12 +39,7 @@ public class BookController {
                 List<BookDto> bookDtoList = bookApi.getBooks(title, author).execute().body();
                 if(bookDtoList != null) {
                     log.info("Book list : {}", bookDtoList.size());
-                    List<ExtendedBook> extendedBookList = bookManagement.getExtendedBookDtoList(bookDtoList);
-                    for (ExtendedBook book : extendedBookList) {
-                        if (book.getBookDto().getCopiesAvailable() == 0) {
-                            book.setEarliestReturn(bookManagement.getDateNextReturn(session, book.getBookDto()));
-                        }
-                    }
+                    List<ExtendedBook> extendedBookList = bookManagementImpl.getExtendedBookDtoList(bookDtoList);
                     model.addAttribute("title", title);
                     model.addAttribute("author", author);
                     model.addAttribute("books", extendedBookList);
