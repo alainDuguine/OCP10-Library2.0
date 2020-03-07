@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-03-02T08:23:40.643+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-03-07T07:05:32.575+01:00")
 
 @Api(value = "loans", description = "the loans API")
 public interface LoansApi {
@@ -30,6 +30,15 @@ public interface LoansApi {
         consumes = { "application/json" },
         method = RequestMethod.POST)
     ResponseEntity<LoanDto> addLoan(@ApiParam(value = "Loan that needs to be added to the database", required = true) @Valid @RequestBody LoanForm loanForm);
+
+
+    @ApiOperation(value = "check and get loan list that will be late within a day limit", nickname = "checkAndGetFutureLateLoans", notes = "trigger a checkup for all loan's and send an email to those concerned", response = LoanDto.class, responseContainer = "List", tags={ "loan", })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Loans found", response = LoanDto.class, responseContainer = "List") })
+    @RequestMapping(value = "/loans/findFutureLate",
+        produces = { "application/json" },
+        method = RequestMethod.GET)
+    ResponseEntity<List<LoanDto>> checkAndGetFutureLateLoans(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "the day limit to check the loans", defaultValue = "1") @Valid @RequestParam(value = "days", required = false, defaultValue = "1") Integer days);
 
 
     @ApiOperation(value = "check and get loan list that are late", nickname = "checkAndGetLateLoans", notes = "trigger a checkup for all loan's and add late status to expired one's", response = LoanDto.class, responseContainer = "List", tags={ "loan", })

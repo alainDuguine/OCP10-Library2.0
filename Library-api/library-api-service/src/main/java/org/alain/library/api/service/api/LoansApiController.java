@@ -137,4 +137,20 @@ public class LoansApiController implements LoansApi {
             return new ResponseEntity<List<LoanDto>>(HttpStatus.UNAUTHORIZED);
         }
     }
+
+    public ResponseEntity<List<LoanDto>> checkAndGetFutureLateLoans(@ApiParam(value = "User identification" ,required=true)
+                                                                    @RequestHeader(value="Authorization", required=true) String authorization,
+                                                                    @ApiParam(value = "the day limit to check the loans", defaultValue = "1")
+                                                                    @Valid @RequestParam(value = "days", required = false, defaultValue="1") Integer days) {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Batch call to retrieve future late Loans within {} day(s), user : {}", days, userPrincipal.getUsername());
+        if(userPrincipal.hasRole("ADMIN")){
+            List<Loan> loanList = loanManagement.updateAndFindFutureLateLoans(days);
+            log.info("{} loans retrieved", loanList.size());
+            return new ResponseEntity<List<LoanDto>>(convertListLoanModelToListLoanDto(loanList),HttpStatus.OK);
+        }else{
+            log.warn("Unauthorized batch call " + userPrincipal.getId());
+            return new ResponseEntity<List<LoanDto>>(HttpStatus.UNAUTHORIZED);
+        }
+    }
 }

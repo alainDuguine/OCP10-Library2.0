@@ -118,6 +118,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
             if(reservation.getCurrentStatusDate().plusDays(2).isBefore(LocalDateTime.now())){
                 reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.CANCELED).build());
                 reservationRepository.save(reservation);
+                // TODO check new reservation and send mail
                 reservationListExpired.add(reservation);
                 log.info("Reservation expired : {}, status : {}, date : {}", reservation.getId(), reservation.getCurrentStatus(), reservation.getCurrentStatusDate());
             }
@@ -149,6 +150,15 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
             return user.get().getReservations();
         }
         throw new UnknownUserException("User "+id+" doesn't exists");
+    }
+
+    @Override
+    public void checkPendingList(Book book) {
+        // TODO how to check that a mail should be sent
+        // get list reservations
+        // calculateUserPosition foreach
+        // send mail to first ?
+        List<Reservation> reservationList = book.getReservations();
     }
 
     /**

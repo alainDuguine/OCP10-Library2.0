@@ -88,10 +88,21 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
 
 .btnReservation{
     margin: 0;
-    padding: 0.15rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding: 0.15rem 0.5rem;
 }
+
+.btnReservation a{
+    margin:0;
+    padding: 0;
+    color: #364259;
+    text-decoration: none;
+}
+
+.btnReservation a:hover{
+    color: white;
+    text-decoration: none;
+}
+
 
 .registerForm .btnCancel, .registerForm .btnSubmit{
     margin-top: 0;

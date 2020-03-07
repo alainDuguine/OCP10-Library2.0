@@ -1,7 +1,6 @@
 package org.alain.library.api.mail;
 
 import org.alain.library.api.model.reservation.Reservation;
-import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,12 +22,10 @@ public class EmailBuilder {
     public String buildForReservation(Reservation reservation){
         Context context = new Context();
         context.setVariable("reservation", reservation);
-        String dateCreation = reservation.getStatuses()
-                .stream()
+        reservation.getStatuses().stream()
                 .filter(reservationStatus -> reservationStatus.getStatus() == StatusEnum.PENDING)
-                .map(ReservationStatus::getDate)
-                .toString();
-        context.setVariable("dateCreation", dateCreation);
+                .findFirst()
+                .ifPresent(statusCreated -> context.setVariable("dateCreation", statusCreated.getDate()));
         context.setVariable("webapp", webAppUrl);
         return templateEngine.process("reservationMailTemplate", context);
     }

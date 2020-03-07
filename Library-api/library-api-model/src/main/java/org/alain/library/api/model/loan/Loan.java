@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +23,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Table
 public class Loan {
+    public static final List<String> ACTIVE_STATUSES = Arrays.asList(StatusDesignation.PROLONGED.name(), StatusDesignation.LOANED.name());
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
