@@ -784,6 +784,35 @@ paths:
             items:
               $ref: '#/definitions/LoanDto'
 
+  /loans/findFutureLate:
+    get:
+      tags:
+      - "loan"
+      summary: "check and get loan list that will be late within a day limit"
+      description: "trigger a checkup for all loan's and send an email to those concerned"
+      operationId: "checkAndGetFutureLateLoans"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "User identification"
+          required: true
+          type: "string"
+        - name: "days"
+          in: "query"
+          description: "the day limit to check the loans"
+          required: false
+          default: 1
+          type: "integer"
+      responses:
+        200:
+          description: "Loans found"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/LoanDto'
+
   /loans/findByBook:
     get:
       tags:
