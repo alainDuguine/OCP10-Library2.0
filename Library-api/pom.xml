@@ -10,8 +10,8 @@
   </parent>
 
   <artifactId>library-api</artifactId>
-  <packaging>pom</packaging>
   <name>library-api</name>
+  <packaging>pom</packaging>
 
   <modules>
     <module>library-api-business</module>
@@ -24,6 +24,7 @@
   <properties>
     <java.version>1.8</java.version>
     <spring.version>2.2.4.RELEASE</spring.version>
+    <maven.version>2.22.2</maven.version>
   </properties>
 
   <profiles>
@@ -77,14 +78,6 @@
   <dependencyManagement>
     <dependencies>
 
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>2.2.4.RELEASE</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
-
       <!--=========================================================================
       ===== Modules ===============================================================
       ==========================================================================-->
@@ -92,27 +85,27 @@
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-business</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-consumer</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-model</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-service</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-mail</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
 
 
@@ -123,6 +116,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-test</artifactId>
+        <version>${spring.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -159,7 +153,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.22.2</version>
+        <version>${maven.version}</version>
         <executions>
           <execution>
             <goals>
@@ -172,7 +166,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.2</version>
+        <version>${maven.version}</version>
       </plugin>
     </plugins>
   </build>
