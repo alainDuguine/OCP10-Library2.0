@@ -3,6 +3,7 @@ package org.alain.library.api.mail;
 import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,7 +28,7 @@ class EmailBuilderTest {
     @InjectMocks
     EmailBuilder emailBuilder;
 
-//    @Test
+    @Test
     void buildForReservation() {
         ReservationStatus status1 = ReservationStatus.builder().id(1L).status(StatusEnum.PENDING).date(LocalDateTime.now().minusDays(1)).build();
         ReservationStatus status2 = ReservationStatus.builder().id(2L).status(StatusEnum.RESERVED).date(LocalDateTime.now()).build();
