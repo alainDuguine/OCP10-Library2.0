@@ -24,6 +24,12 @@
       <artifactId>library-api-model</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.alain</groupId>
+      <artifactId>library-api-mail</artifactId>
+    </dependency>
+
+
   </dependencies>
 
 </project>

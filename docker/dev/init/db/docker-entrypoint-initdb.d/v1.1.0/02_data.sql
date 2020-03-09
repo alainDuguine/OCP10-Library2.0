@@ -237,6 +237,7 @@ INSERT INTO public.loan_status VALUES (12, 1, '2020-02-26 08:31:59.575');
 -- Data for Name: reservation; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
+INSERT INTO public.reservation VALUES (82, 'PENDING', '2020-02-23 07:49:29.177', 16, 1);
 INSERT INTO public.reservation VALUES (83, 'PENDING', '2020-02-26 07:49:29.177', 16, 4);
 INSERT INTO public.reservation VALUES (84, 'RESERVED', '2020-02-26 08:08:21.002', 16, 3);
 INSERT INTO public.reservation VALUES (89, 'PENDING', '2020-02-26 08:36:49.74', 17, 3);
@@ -250,6 +251,7 @@ INSERT INTO public.reservation VALUES (79, 'CANCELED', '2020-01-22 19:00:07.74',
 -- Data for Name: reservation_status; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
+INSERT INTO public.reservation_status VALUES (85, '2020-02-23 07:49:29.177', 'PENDING', 82);
 INSERT INTO public.reservation_status VALUES (86, '2020-02-26 07:49:29.177', 'PENDING', 83);
 INSERT INTO public.reservation_status VALUES (87, '2020-02-26 07:52:20.021', 'PENDING', 84);
 INSERT INTO public.reservation_status VALUES (92, '2020-02-26 07:56:09.148', 'RESERVED', 84);
@@ -259,6 +261,7 @@ INSERT INTO public.reservation_status VALUES (80, '2019-09-24 14:22:58.74', 'RES
 INSERT INTO public.reservation_status VALUES (81, '2019-09-25 08:36:49.74', 'TERMINATED', 75);
 INSERT INTO public.reservation_status VALUES (50, '2020-02-26 08:36:49.74', 'PENDING', 79);
 INSERT INTO public.reservation_status VALUES (55, '2020-01-22 19:00:07.74','CANCELED', 79);
+
 
 
 --

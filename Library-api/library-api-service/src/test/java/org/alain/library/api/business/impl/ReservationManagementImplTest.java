@@ -248,26 +248,26 @@ class ReservationManagementImplTest {
 
     @Test
     void updateAndGetExpiredReservation() {
-        ReservationStatus reservationStatusOk = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now()).build();
-        ReservationStatus reservationStatusExpired = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now().minusDays(2)).build();
+        ReservationStatus reservationStatus1 = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now().minusDays(4)).build();
+        ReservationStatus reservationStatus2 = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now().minusDays(3)).build();
 
         Reservation reservation1 = Reservation.builder().id(1L).build();
-        reservation1.addStatus(reservationStatusOk);
+        reservation1.addStatus(reservationStatus1);
 
         Reservation reservation2 = Reservation.builder().id(2L).build();
-        reservation2.addStatus(reservationStatusExpired);
+        reservation2.addStatus(reservationStatus2);
 
         List<Reservation> reservationList = new ArrayList<>();
         reservationList.add(reservation1);
         reservationList.add(reservation2);
 
-        given(reservationRepository.findByCurrentStatusAndUserIdAndBookId(anyString(), any(), any())).willReturn(reservationList);
+        given(reservationRepository.findExpired(any(),any())).willReturn(reservationList);
 
         List<Reservation> reservationListResult = service.updateAndGetExpiredReservation();
 
-        assertThat(reservationListResult.size()).isEqualTo(1);
+        assertThat(reservationListResult.size()).isEqualTo(2);
         assertThat(reservationListResult.get(0).getCurrentStatus()).isEqualTo(StatusEnum.CANCELED.name());
-        assertThat(reservationListResult.get(0).getCurrentStatusDate().isAfter(reservationStatusExpired.getDate())).isTrue();
+        assertThat(reservationListResult.get(0).getCurrentStatusDate().isAfter(reservationStatus1.getDate())).isTrue();
     }
 
     @Test
@@ -300,10 +300,10 @@ class ReservationManagementImplTest {
         user.addReservation(reservation1);
 
         given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
-        given(reservationRepository.findByCurrentStatusAndUserIdAndBookId(any(),any(),any())).willReturn(reservationList);
+        given(reservationRepository.findActiveReservationForBookOrderByDate(any())).willReturn(reservationList);
 
         List<Reservation> reservationsResultList = service.getReservationsByUser(1L);
-        assertThat(reservationsResultList.get(0).getUserPositionInList()).isEqualTo(3);
+        assertThat(reservationsResultList.get(0).getUserPositionInList()).isEqualTo(1);
     }
 
     @Test

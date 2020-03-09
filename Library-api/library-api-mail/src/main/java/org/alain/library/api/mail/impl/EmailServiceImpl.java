@@ -1,18 +1,20 @@
-package org.alain.library.api.mail;
+package org.alain.library.api.mail.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.alain.library.api.mail.EmailBuilder;
+import org.alain.library.api.mail.contract.EmailService;
 import org.alain.library.api.model.reservation.Reservation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @Slf4j
-public class EmailService {
+public class EmailServiceImpl implements EmailService {
 
     private EmailBuilder emailBuilder;
     private JavaMailSender mailSender;
@@ -22,12 +24,13 @@ public class EmailService {
     @Value("${email.password}")
     private String EMAIL_PASSWORD;
 
-    public EmailService(EmailBuilder emailBuilder, JavaMailSender mailSender) {
+    public EmailServiceImpl(EmailBuilder emailBuilder, JavaMailSender mailSender) {
         this.emailBuilder = emailBuilder;
         this.mailSender = mailSender;
     }
 
-    private void prepareAndSendEmailForReservationAvailable(Reservation reservation){
+    @Override
+    public void sendEmailForReservationAvailable(Reservation reservation){
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setFrom(EMAIL_USERNAME);

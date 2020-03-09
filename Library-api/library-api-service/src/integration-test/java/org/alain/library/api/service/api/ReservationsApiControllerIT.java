@@ -165,7 +165,7 @@ class ReservationsApiControllerIT {
         ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations", ReservationDto[].class);
 
         assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(reservations.getBody().length).isEqualTo(3);
+        assertThat(reservations.getBody().length).isEqualTo(6);
     }
 
     @Test

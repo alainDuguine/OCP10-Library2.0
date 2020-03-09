@@ -3,12 +3,14 @@ package org.alain.library.api.business.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.alain.library.api.business.contract.BookManagement;
 import org.alain.library.api.business.contract.ReservationManagement;
-import org.alain.library.api.business.contract.UserManagement;
 import org.alain.library.api.business.exceptions.ReservationException;
 import org.alain.library.api.business.exceptions.UnauthorizedException;
 import org.alain.library.api.business.exceptions.UnknowStatusException;
 import org.alain.library.api.business.exceptions.UnknownUserException;
+import org.alain.library.api.consumer.repository.BookRepository;
 import org.alain.library.api.consumer.repository.ReservationRepository;
+import org.alain.library.api.consumer.repository.UserRepository;
+import org.alain.library.api.mail.contract.EmailService;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.exceptions.BookAlreadyLoanedException;
 import org.alain.library.api.model.exceptions.BookStillAvailableException;
@@ -19,32 +21,48 @@ import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
+
+/**
+ * Main class to manage the {@see Reservation} objects
+ */
 
 @Service
 @Slf4j
 public class ReservationManagementImpl extends CrudManagementImpl<Reservation> implements ReservationManagement {
 
+    @Value("reservation.expiration.days")
+    private static int RESERVATION_EXPIRATION_DAYS;
+
     private final ReservationRepository reservationRepository;
     private final BookManagement bookManagement;
-    private final UserManagement userManagement;
+    private final UserRepository userRepository;
+    private final BookRepository bookRepository;
+    private final EmailService emailService;
 
 
-    public ReservationManagementImpl(ReservationRepository reservationRepository, BookManagement bookManagement, UserManagement userManagement) {
+    public ReservationManagementImpl(ReservationRepository reservationRepository, BookManagement bookManagement, UserRepository userRepository, BookRepository bookRepository, EmailService emailService) {
         super(reservationRepository);
         this.reservationRepository = reservationRepository;
         this.bookManagement = bookManagement;
-        this.userManagement = userManagement;
+        this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
+        this.emailService = emailService;
     }
 
+    /**
+     * Returns a list of {@see Reservation} with filters
+     * @param status currentStatus of the reservation {@see StatusEnum}
+     * @param userId user id concerned by the reservation {@see User}
+     * @param bookId book id concerned by the reservation {@see Book}
+     * @return list od reservations {@see Reservation}
+     */
     @Override
     public List<Reservation> getReservationsByStatusAndUserIdAndBookId(String status, Long userId, Long bookId) {
         log.info("GetReservation : status: {}, userId: {}, bookId: {}", status, userId, bookId);
@@ -53,11 +71,18 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         return reservationRepository.findByCurrentStatusAndUserIdAndBookId(status, bookId, userId);
     }
 
+    /**
+     * Create and persist a new {@see Reservation} Object
+     * @param bookId book id concerned by the reservation
+     * @param userId user id concerned by the reservation
+     * @param userPrincipal user authentication requesting the creation
+     * @return created reservation
+     */
     @Override
     public Reservation createNewReservation(Long bookId, Long userId, UserPrincipal userPrincipal) {
         log.info("CreateNewReservation : bookId: {}, userId: {}, UserPrincipal: {}", bookId, userId, userPrincipal.getUsername());
-        Optional<Book> book = bookManagement.findOne(bookId);
-        Optional<User> user = userManagement.findOne(userId);
+        Optional<Book> book = bookRepository.findById(bookId);
+        Optional<User> user = userRepository.findById(userId);
         Reservation reservation = new Reservation();
         if(book.isPresent() && user.isPresent() && (userPrincipal.getId().equals(userId) || userPrincipal.hasRole("ADMIN"))){
             try{
@@ -85,6 +110,13 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         return reservation;
     }
 
+    /**
+     * Add a new status to an existing reservation
+     * @param reservationId id of the reservation
+     * @param status new status that should be added {@see StatusEnum}
+     * @param userPrincipal authentication of the user requesting the update
+     * @return updated reservation {@see Reservation}
+     */
     @Override
     public Optional<Reservation> updateReservation(Long reservationId, String status, UserPrincipal userPrincipal) {
         log.info("UpdateReservation : reservationId: {}, status: {}, userPrincipal: {}",reservationId, status, userPrincipal.getUsername());
@@ -109,42 +141,41 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         return Optional.empty();
     }
 
+    /**
+     * check expired reservations,
+     * update their status to 'CANCELED' {@see StatusEnum}
+     * and call pending list check
+     * @return list of reservations expired and modified
+     */
     @Override
     public List<Reservation> updateAndGetExpiredReservation() {
         log.info("Request for expired reservations");
-        List<Reservation> reservationList = reservationRepository.findByCurrentStatusAndUserIdAndBookId(StatusEnum.RESERVED.name(), null, null);
-        List<Reservation> reservationListExpired = new ArrayList<>();
+        LocalDateTime expirationDate = LocalDateTime.now().minusDays(RESERVATION_EXPIRATION_DAYS);
+        List<Reservation> reservationList = reservationRepository.findExpired(StatusEnum.RESERVED.name(), expirationDate);
+        log.info("{} expired reservations found", reservationList.size());
         reservationList.forEach(reservation -> {
-            if(reservation.getCurrentStatusDate().plusDays(2).isBefore(LocalDateTime.now())){
-                reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.CANCELED).build());
-                reservationRepository.save(reservation);
-                // TODO check new reservation and send mail
-                reservationListExpired.add(reservation);
-                log.info("Reservation expired : {}, status : {}, date : {}", reservation.getId(), reservation.getCurrentStatus(), reservation.getCurrentStatusDate());
-            }
+            reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.CANCELED).build());
+            reservationRepository.save(reservation);
+            this.checkPendingListAndNotify(reservation.getBook().getId());
+            log.info("Reservation expired : {}, status : {}, date : {}", reservation.getId(), reservation.getCurrentStatus(), reservation.getCurrentStatusDate());
         });
-        log.info("{} expired reservations found", reservationListExpired.size());
-        return reservationListExpired;
+        return reservationList;
     }
 
     /**
      * Will look for reservations for user with <b>id</b>
-     * Will retrieve all reservations for each book concerned by user's reservations
-     * in order to calculate his position in the reservation book pending list.
+     * call method {@see getUserPositionInReservationList} to retrieve user position in the reservation book pending list.
      * @param id user having reservations
-     * @return reservation list
+     * @return reservation list with user position.
      */
     @Override
     public List<Reservation> getReservationsByUser(Long id) {
         log.info("Retrieving reservations for user {}", id);
-        Optional<User> user = userManagement.findOne(id);
+        Optional<User> user = userRepository.findById(id);
         if(user.isPresent()){
             log.info("One user found : {}", user.get().getEmail());
             for (Reservation reservation:user.get().getReservations()) {
-                log.info("Retrieving all reservations for book {}, concerned by reservation {}", reservation.getBook().getId(), reservation.getId());
-                List<Reservation> reservationForBook = reservationRepository.findByCurrentStatusAndUserIdAndBookId(null, reservation.getBook().getId(),null);
-                log.info("Calculating user position in reservation pending list");
-                reservation.setUserPositionInList(calculateUserPositionInReservationList(reservationForBook, user.get().getId()));
+                reservation.setUserPositionInList(getUserPositionInReservationList(reservation.getBook().getId(),id));
                 reservation.setNextReturnDate(bookManagement.getNextReturnDate(reservation.getBook().getId()));
             }
             return user.get().getReservations();
@@ -152,40 +183,53 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         throw new UnknownUserException("User "+id+" doesn't exists");
     }
 
+    /**
+     * Check if a reservation is pending
+     * select first one in pending list
+     * update and save status to RESERVED {@see StatusEnum}
+     * and call EmailService {@see EmailService}
+     * @param bookId
+     */
     @Override
-    public void checkPendingList(Book book) {
-        // TODO how to check that a mail should be sent
-        // get list reservations
-        // calculateUserPosition foreach
-        // send mail to first ?
-        List<Reservation> reservationList = book.getReservations();
+    public void checkPendingListAndNotify(Long bookId) {
+        log.info("Checking if a pending reservation exists for book {}", bookId);
+        List<Reservation> reservationList = reservationRepository.findActiveReservationForBookOrderByDate(bookId);
+        log.info("{} pending reservatiosn for book {}", reservationList.size(), bookId);
+        if(!reservationList.isEmpty()){
+            Reservation reservation = reservationList.get(0);
+            reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.RESERVED).build());
+            reservationRepository.save(reservation);
+            log.info("Added status 'RESERVED' to reservation {}, and sending email to {}", reservation.getId(), reservation.getUser().getEmail());
+            emailService.sendEmailForReservationAvailable(reservation);
+        }
     }
 
     /**
-     * Filter pending reservations, sort them by date ascending
-     * and return the position of <b>userId</b> in this filtered and sorted list
-     * @param reservations list of reservations in which to search for user's position
+     * Get active (pending) reservations, for book
+     * and return the position of <b>userId</b> in thislist
+     * @param bookId book concerned by reservations
      * @param userId id of user that we want the position from the list
-     * @return the user's position
+     * @return the user's position if user not present or reservation not pending will return o.
      */
-    private int calculateUserPositionInReservationList(List<Reservation> reservations, Long userId) {
-        log.info("Filtering and sorting {} active reservations", reservations.size());
-        List<Reservation> activeReservationsSorted = reservations
-                .stream()
-                .filter(reservation -> reservation.getCurrentStatus().equals("PENDING"))
-                .sorted(Comparator.comparing(Reservation::getCurrentStatusDate))
-                .collect(Collectors.toList());
-        log.info("{} reservations still present", activeReservationsSorted.size());
-
-        log.info("Calculating user position");
-        int index  = IntStream.range(0, activeReservationsSorted.size())
-                .filter(i -> activeReservationsSorted.get(i).getUser().getId().equals(userId))
-                .findFirst()
-                .orElse(-1);
-        log.info("User position calculated : {}", index+1);
-        return index+1;
+    private int getUserPositionInReservationList(Long bookId, Long userId){
+        log.info("Retrieving all active reservations for book {}", bookId);
+        List<Reservation> reservationList = reservationRepository.findActiveReservationForBookOrderByDate(bookId);
+        log.info("{} reservations found", reservationList.size());
+        int index = 1;
+        log.info("Retrieving user position in reservation pending list");
+        for (Reservation reservation : reservationList) {
+            if (reservation.getUser().getId().equals(userId)) {
+                return index;
+            }
+            index++;
+        }
+        return 0;
     }
 
+    /**
+     * Check if a Reservation can be added to the book
+     * @param book to check reservations from
+     */
     private void checkBookReservation(Book book){
         if (book.getNbCopiesAvailable() != 0){
             log.warn("Attempt to reserve book with available copies {}", book.getId());
@@ -197,8 +241,12 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         }
     }
 
+    /**
+     * check if a user already have a copy of the book in loan or in reservation
+     * @param user we want to check
+     * @param bookId to check loan and reservations
+     */
     private void checkUserReservation(User user, Long bookId){
-        // check if user does not have already a copy of the book
         user.getLoans().forEach(loan -> {
             if(loan.getBookCopy().getBook().getId().equals(bookId)
                     && !loan.getCurrentStatus().equals(StatusDesignation.RETURNED.toString())){
