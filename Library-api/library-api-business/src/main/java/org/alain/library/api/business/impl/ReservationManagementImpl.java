@@ -192,18 +192,16 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
      */
     @Override
     public void checkPendingListAndNotify(Long bookId) {
-        List<Reservation> reservations = reservationRepository.findAll();
-        emailService.sendEmailForReservationAvailable(reservations.get(0));
-//        log.info("Checking if a pending reservation exists for book {}", bookId);
-//        List<Reservation> reservationList = reservationRepository.findActiveReservationForBookOrderByDate(bookId);
-//        log.info("{} pending reservatiosn for book {}", reservationList.size(), bookId);
-//        if(!reservationList.isEmpty()){
-//            Reservation reservation = reservationList.get(0);
-//            reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.RESERVED).build());
-//            reservationRepository.save(reservation);
-//            log.info("Added status 'RESERVED' to reservation {}, and sending email to {}", reservation.getId(), reservation.getUser().getEmail());
-//            emailService.sendEmailForReservationAvailable(reservation);
-//        }
+        log.info("Checking if a pending reservation exists for book {}", bookId);
+        List<Reservation> reservationList = reservationRepository.findActiveReservationForBookOrderByDate(bookId);
+        log.info("{} pending reservation for book {}", reservationList.size(), bookId);
+        if(!reservationList.isEmpty()){
+            Reservation reservation = reservationList.get(0);
+            reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.RESERVED).build());
+            reservationRepository.save(reservation);
+            log.info("Added status 'RESERVED' to reservation {}, and sending email to {}", reservation.getId(), reservation.getUser().getEmail());
+            emailService.sendEmailForReservationAvailable(reservation);
+        }
     }
 
     /**

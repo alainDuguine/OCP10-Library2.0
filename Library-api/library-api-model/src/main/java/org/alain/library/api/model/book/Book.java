@@ -58,7 +58,7 @@ public class Book {
     @Formula("(SELECT COUNT(r.id) FROM book b left join reservation r on r.book_id = b.id WHERE (r.current_status = 'PENDING' or r.current_status = 'RESERVED') and b.id = id)")
     private Long nbActiveReservations;
 
-    @Transient
+    @Formula("(SELECT MIN(l.end_date) FROM book b left join book_copy bc on bc.book_id = b.id left join loan l on l.book_copy_id = bc.id WHERE (l.current_status = 'LOANED' OR l.current_status = 'PROLONGED') and b.id = id)")
     private LocalDate nextReturnDate;
 
     public Book(String title) {
