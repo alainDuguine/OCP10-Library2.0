@@ -4,6 +4,7 @@ import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.consumer.repository.BookRepository;
 import org.alain.library.api.consumer.repository.ReservationRepository;
 import org.alain.library.api.consumer.repository.UserRepository;
+import org.alain.library.api.mail.contract.EmailService;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.StatusEnum;
@@ -35,6 +36,8 @@ class ReservationManagementIT {
     private UserRepository userRepository;
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private EmailService emailService;
 
     List<Reservation> reservationList;
 
@@ -84,5 +87,11 @@ class ReservationManagementIT {
 
         assertThat(reservationListUser1.get(0).getUserPositionInList()).isEqualTo(1);
         assertThat(reservationListUser4.get(0).getUserPositionInList()).isEqualTo(2);
+    }
+
+    @Test
+    @Transactional
+    void checkPendingListAndNotify() {
+        reservationManagement.checkPendingListAndNotify(1L);
     }
 }

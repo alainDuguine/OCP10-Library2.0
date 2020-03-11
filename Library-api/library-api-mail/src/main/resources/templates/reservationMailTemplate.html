@@ -34,9 +34,9 @@
           <h1 class="display-4">Bonjour !</h1>
           <p class="lead">Un livre vous attend à la bibliothèque !</p>
           <hr class="my-4" style="border-bottom: 1px solid black;">
-            <p>Le <span th:text="${dateCreation}">21/12/2019</span>, vous avez réservé le livre suivant :<br>
+            <p>Le <span th:text="${#temporals.format(dateCreation)}">21/12/2019</span>, vous avez réservé le livre suivant :<br>
                     <dd>Titre : <span class="font-weight-bold" th:text="${reservation.getBook().getTitle()}">Notre Dame de paris</span><br>
-                  Le livre est disponible, et vous pouvez le retirer jusqu'au <b th:text="${#temporals.format(reservation.getCurrentStatusDate().plusDays(2))}">02 février 2020</b></p>
+                  Le livre est disponible, et vous pouvez le retirer jusqu'au <b th:text="${#temporals.format(reservation.getCurrentStatusDate().plusDays(2).toLocalDate())}">02 février 2020</b></p>
           <a th:href="|${webapp}/login|" href="#">Vous connecter à votre compte pour vérifier vos emprunts</a>
         </div>
     </div>

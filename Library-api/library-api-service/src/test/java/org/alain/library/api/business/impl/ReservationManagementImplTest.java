@@ -1,10 +1,11 @@
 package org.alain.library.api.business.impl;
 
 import org.alain.library.api.business.contract.BookManagement;
-import org.alain.library.api.business.contract.UserManagement;
 import org.alain.library.api.business.exceptions.ReservationException;
 import org.alain.library.api.business.exceptions.UnauthorizedException;
+import org.alain.library.api.consumer.repository.BookRepository;
 import org.alain.library.api.consumer.repository.ReservationRepository;
+import org.alain.library.api.consumer.repository.UserRepository;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
 import org.alain.library.api.model.loan.Loan;
@@ -35,7 +36,9 @@ class ReservationManagementImplTest {
     @Mock
     BookManagement bookManagement;
     @Mock
-    UserManagement userManagement;
+    BookRepository bookRepository;
+    @Mock
+    UserRepository userRepository;
     @InjectMocks
     ReservationManagementImpl service;
 
@@ -72,10 +75,10 @@ class ReservationManagementImplTest {
         BookCopy copy = BookCopy.builder().id(1L).build();
         book.addCopy(copy);
 
-        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+        given(bookRepository.findById(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@emmail.com").build();
-        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
         UserPrincipal userPrincipal = new UserPrincipal(user);
 
@@ -93,10 +96,10 @@ class ReservationManagementImplTest {
     @Test
     void RG1API_createNewReservationWithBookStillAvailable_throwsReservationException() {
         Book book = Book.builder().id(1L).nbCopiesAvailable(2L).title("test title").build();
-        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+        given(bookRepository.findById(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@emmail.com").build();
-        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
         UserPrincipal userPrincipal = new UserPrincipal(user);
 
@@ -110,10 +113,10 @@ class ReservationManagementImplTest {
     @Test
     void RG1API_createNewReservationWithListReservationFull_throwsReservationException() {
         Book book = Book.builder().id(1L).nbCopiesAvailable(0L).nbActiveReservations(2L).title("test title").build();
-        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+        given(bookRepository.findById(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@emmail.com").build();
-        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
         UserPrincipal userPrincipal = new UserPrincipal(user);
 
@@ -130,7 +133,7 @@ class ReservationManagementImplTest {
         BookCopy bookCopy = BookCopy.builder().id(1L).build();
         book.addCopy(bookCopy);
 
-        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+        given(bookRepository.findById(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@emmail.com").build();
         BookCopy copy = BookCopy.builder().id(1L).build();
@@ -140,7 +143,7 @@ class ReservationManagementImplTest {
         loan.setUser(user);
         loan.setCurrentStatus("LOANED");
         user.addLoan(loan);
-        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
         UserPrincipal userPrincipal = new UserPrincipal(user);
 
@@ -156,7 +159,7 @@ class ReservationManagementImplTest {
         Book book = Book.builder().id(1L).nbCopiesAvailable(0L).nbActiveReservations(0L).title("test title").build();
         BookCopy bookCopy = BookCopy.builder().id(1L).build();
         book.addCopy(bookCopy);
-        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+        given(bookRepository.findById(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@email.com").build();
         BookCopy copy = BookCopy.builder().id(1L).build();
@@ -166,7 +169,7 @@ class ReservationManagementImplTest {
         reservation.setCurrentStatus(StatusEnum.PENDING.name());
         user.addReservation(reservation);
 
-        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
         UserPrincipal userPrincipal = new UserPrincipal(user);
 
@@ -182,7 +185,7 @@ class ReservationManagementImplTest {
         Book book = Book.builder().id(1L).nbCopiesAvailable(0L).nbActiveReservations(0L).title("test title").build();
         BookCopy bookCopy = BookCopy.builder().id(1L).build();
         book.addCopy(bookCopy);
-        given(bookManagement.findOne(any())).willReturn(Optional.of(book));
+        given(bookRepository.findById(any())).willReturn(Optional.of(book));
 
         User user = User.builder().id(1L).roles("USER").email("test@email.com").build();
         BookCopy copy = BookCopy.builder().id(1L).build();
@@ -192,7 +195,7 @@ class ReservationManagementImplTest {
         reservation.setCurrentStatus(StatusEnum.TERMINATED.name());
         user.addReservation(reservation);
 
-        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
         UserPrincipal userPrincipal = new UserPrincipal(user);
 
@@ -248,13 +251,15 @@ class ReservationManagementImplTest {
 
     @Test
     void updateAndGetExpiredReservation() {
+        Book book = Book.builder().id(1L).build();
+
         ReservationStatus reservationStatus1 = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now().minusDays(4)).build();
         ReservationStatus reservationStatus2 = ReservationStatus.builder().status(StatusEnum.RESERVED).date(LocalDateTime.now().minusDays(3)).build();
 
-        Reservation reservation1 = Reservation.builder().id(1L).build();
+        Reservation reservation1 = Reservation.builder().id(1L).book(book).build();
         reservation1.addStatus(reservationStatus1);
 
-        Reservation reservation2 = Reservation.builder().id(2L).build();
+        Reservation reservation2 = Reservation.builder().id(2L).book(book).build();
         reservation2.addStatus(reservationStatus2);
 
         List<Reservation> reservationList = new ArrayList<>();
@@ -299,7 +304,7 @@ class ReservationManagementImplTest {
 
         user.addReservation(reservation1);
 
-        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
         given(reservationRepository.findActiveReservationForBookOrderByDate(any())).willReturn(reservationList);
 
         List<Reservation> reservationsResultList = service.getReservationsByUser(1L);
@@ -310,7 +315,7 @@ class ReservationManagementImplTest {
     void getReservationsByUser_WithEmptyList() {
         User user = User.builder().id(1L).build();
 
-        given(userManagement.findOne(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
         List<Reservation> reservationsResultList = service.getReservationsByUser(1L);
         assertThat(reservationsResultList.size()).isEqualTo(0);

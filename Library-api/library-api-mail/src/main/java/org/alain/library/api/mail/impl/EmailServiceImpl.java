@@ -2,7 +2,6 @@ package org.alain.library.api.mail.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.alain.library.api.mail.EmailBuilder;
 import org.alain.library.api.mail.contract.EmailService;
 import org.alain.library.api.model.reservation.Reservation;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,4 +46,5 @@ public class EmailServiceImpl implements EmailService {
             log.error(e.getMessage());
         }
     }
+
 }

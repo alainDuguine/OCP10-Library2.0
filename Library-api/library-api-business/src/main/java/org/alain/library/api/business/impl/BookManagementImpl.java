@@ -25,14 +25,12 @@ public class BookManagementImpl extends CrudManagementImpl<Book> implements Book
     private final BookRepository bookRepository;
     private final BookCopyRepository bookCopyRepository;
     private final AuthorRepository authorRepository;
-//    private final ReservationManagement reservationManagement;
 
     public BookManagementImpl(BookRepository bookRepository, BookCopyRepository bookCopyRepository, AuthorRepository authorRepository) {
         super(bookRepository);
         this.bookRepository = bookRepository;
         this.bookCopyRepository = bookCopyRepository;
         this.authorRepository = authorRepository;
-//        this.reservationManagement = reservationManagement;
     }
 
     @Override

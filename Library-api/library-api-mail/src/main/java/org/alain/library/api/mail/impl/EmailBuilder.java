@@ -1,4 +1,4 @@
-package org.alain.library.api.mail;
+package org.alain.library.api.mail.impl;
 
 import org.alain.library.api.model.reservation.Reservation;
 import org.alain.library.api.model.reservation.StatusEnum;
@@ -25,7 +25,7 @@ public class EmailBuilder {
         reservation.getStatuses().stream()
                 .filter(reservationStatus -> reservationStatus.getStatus() == StatusEnum.PENDING)
                 .findFirst()
-                .ifPresent(statusCreated -> context.setVariable("dateCreation", statusCreated.getDate()));
+                .ifPresent(statusCreated -> context.setVariable("dateCreation", statusCreated.getDate().toLocalDate()));
         context.setVariable("webapp", webAppUrl);
         return templateEngine.process("reservationMailTemplate", context);
     }

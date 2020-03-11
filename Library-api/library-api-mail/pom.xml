@@ -14,15 +14,16 @@
   <name>library-api-mail</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.alain</groupId>
-      <artifactId>library-api-business</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.alain</groupId>
       <artifactId>library-api-model</artifactId>
     </dependency>
+
+<!--    <dependency>-->
+<!--      <groupId>org.alain</groupId>-->
+<!--      <artifactId>library-api-service</artifactId>-->
+<!--    </dependency>-->
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
