@@ -29,7 +29,7 @@ public class Controller {
     private final ReservationApi reservationApi;
     private EmailBuilder emailBuilder;
     private JavaMailSender mailSender;
-    private final String encodedAuthorization;
+    private String encodedAuthorization;
 
     @Value("${batch.username}")
     private String BATCH_USERNAME;
@@ -41,11 +41,12 @@ public class Controller {
         this.reservationApi = reservationApi;
         this.emailBuilder = emailBuilder;
         this.mailSender = mailSender;
-        encodedAuthorization = "Basic " + Base64.getEncoder().encodeToString((BATCH_USERNAME+":"+BATCH_PASSWORD).getBytes());
     }
 
     @Scheduled(cron = "${mailScheduling.delay}" )
     public void getLateLoan() throws IOException, InterruptedException {
+        if (encodedAuthorization == null)
+            this.encodedAuthorization = getEncodedAuthorization();
         log.info("Launching of batch email for late loans");
         List<LoanDto> loanDtoList = loanApi.checkAndGetLateLoans(encodedAuthorization).execute().body();
         if (loanDtoList == null || loanDtoList.isEmpty()){
@@ -61,6 +62,8 @@ public class Controller {
 
     @Scheduled(cron = "${mailScheduling.delay}" )
     public void getFutureExpiredLoans() throws IOException, InterruptedException {
+        if (encodedAuthorization == null)
+            this.encodedAuthorization = getEncodedAuthorization();
         log.info("Launching of batch email for future late loans");
         List<LoanDto> loanDtoList = loanApi.checkAndGetFutureLateLoans(encodedAuthorization, 5).execute().body();
         if (loanDtoList == null || loanDtoList.isEmpty()){
@@ -76,6 +79,8 @@ public class Controller {
 
     @Scheduled(cron = "${mailScheduling.delay}" )
     public void getExpiredReservations() throws IOException, InterruptedException {
+        if (encodedAuthorization == null)
+            this.encodedAuthorization = getEncodedAuthorization();
         log.info("Launching of batch email for late reservations");
         List<ReservationDto> reservationDtoList = reservationApi.checkAndGetExpiredReservation(encodedAuthorization).execute().body();
         if (reservationDtoList == null || reservationDtoList.isEmpty()){
@@ -138,6 +143,10 @@ public class Controller {
         }catch (MailException e){
             log.error("Error while sending email about loan " + loanDto.getId() + "\n"+ e.getMessage());
         }
+    }
+
+    private String getEncodedAuthorization(){
+        return "Basic " + Base64.getEncoder().encodeToString((BATCH_USERNAME+":"+BATCH_PASSWORD).getBytes());
     }
 
 }

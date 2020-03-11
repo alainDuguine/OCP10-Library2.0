@@ -22,6 +22,8 @@ public class EmailServiceImpl implements EmailService {
     private String EMAIL_USERNAME;
     @Value("${email.password}")
     private String EMAIL_PASSWORD;
+    @Value("${spring.mail.default-encoding}")
+    private String encoding;
 
     public EmailServiceImpl(EmailBuilder emailBuilder, JavaMailSender mailSender) {
         this.emailBuilder = emailBuilder;
@@ -31,12 +33,13 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendEmailForReservationAvailable(Reservation reservation){
         MimeMessagePreparator messagePreparator = mimeMessage -> {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, encoding);
             messageHelper.setFrom(EMAIL_USERNAME);
             messageHelper.setTo(reservation.getUser().getEmail());
             messageHelper.setSubject("OpenLibrary.fr : Votre réservation est disponible !");
             String content = emailBuilder.buildForReservation(reservation);
             messageHelper.setText(content, true);
+            log.info("Mail Encoding: {}", messageHelper.getEncoding());
         };
         try{
             log.info("Sending email to {}, for available reservation {}", reservation.getUser().getEmail(), reservation.getId());
