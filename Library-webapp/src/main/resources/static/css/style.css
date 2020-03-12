@@ -80,7 +80,7 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
     color: #364259;
 }
 
-.loginArea button, .registerForm .btnSubmit, .btnLoan, .btnReservation{
+.loginArea button, .registerForm .btnSubmit, .btnLoan, .btnReservation, .btnModal{
     background-color: #f2f2f0;
     color: #364259;
     border: 1px solid #364259;
@@ -127,7 +127,7 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
     border: 1px solid #364259;
 }
 
-.loginArea button:hover, .registerForm .btnSubmit:hover, .btnLoan:hover, .btnReservation:hover{
+.loginArea button:hover, .registerForm .btnSubmit:hover, .btnLoan:hover, .btnReservation:hover, .btnModal:hover{
     background-color: #364259;
     color: #f2f2f0;
 }
@@ -228,3 +228,28 @@ th, td, tbody{
 #navbarDropdown {
     cursor: pointer;
 }
+
+/* MODAL USER PARAMETER */
+
+.modal-body{
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-content{
+    background-color: rgba(242,242,240,1);
+    padding:0;
+}
+
+.modal-header{
+    border-bottom: 1px solid #dee2e6;
+}
+
+.md-form{
+    align-items: center;
+}
+
+.modal-footer{
+    margin: 0;
+    padding-bottom: 1rem;
+}
+

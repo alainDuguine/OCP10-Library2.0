@@ -47,7 +47,7 @@
                         UserName
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Mon Compte</a>
+                        <a class="dropdown-item" data-toggle="modal" data-target="#modalUserParameter" href="#">Mes paramètres</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/logout}">Logout</a>
                     </div>
@@ -57,6 +57,34 @@
     </nav>
     <section layout:fragment="content">
     </section>
+<!-- Modal for users parameters -->
+    <div class="modal fade" id="modalUserParameter" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Mes paramètres</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <hr>
+                </div>
+                <div class="modal-body">
+                    <div class="md-form">
+                        <div class="md-form justify-content-center">
+                            <div class="custom-control custom-switch text-center">
+                                <input type="checkbox" class="custom-control-input" id="customSwitches">
+                                <label class="custom-control-label" for="customSwitches">Notifications de fin de prêt</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-round mb-0 btnModal">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <!-- Fragment #3 : Javascript Links For Bootstrap -->
     <footer th:fragment="linkscripts">
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
