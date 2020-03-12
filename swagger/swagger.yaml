@@ -1199,6 +1199,9 @@ definitions:
       lastName:
         type: string
         description: User last name
+      notification:
+        type: boolean
+        description: Users email notifications for future late loan y/n
       roles:
         type: string
         description: User roles list
