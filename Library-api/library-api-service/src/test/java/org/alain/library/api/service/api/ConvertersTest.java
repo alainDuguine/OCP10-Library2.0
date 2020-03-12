@@ -30,7 +30,7 @@ class ConvertersTest {
     @BeforeEach
     void setUp() {
         user = User.builder().id(1L).email("testuser@email.com").build();
-        book = Book.builder().id(1L).nbActiveReservations(0L).title("Test Book").nbCopiesAvailable(0L).build();
+        book = Book.builder().id(1L).nbActiveReservations(0L).title("Test Book").nbCopiesAvailable(0L).nbCopiesReserved(0L).build();
         BookCopy copy = BookCopy.builder().id(1L).build();
         book.addCopy(copy);
 

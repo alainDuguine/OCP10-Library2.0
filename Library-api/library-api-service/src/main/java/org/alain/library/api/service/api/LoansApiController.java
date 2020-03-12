@@ -25,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,11 +99,11 @@ public class LoansApiController implements LoansApi {
     }
 
     public ResponseEntity<Void> updateLoan(@ApiParam(value = "Id of loan to update",required=true) @PathVariable("id") Long id,
-                                           @ApiParam(value = "Status values to add to loan history" ,required=true )  @Valid @RequestBody String status) {
+                                           @NotNull @ApiParam(value = "Status values to add to loan history", required = true, allowableValues = "loaned, returned, prolonged, late")
+                                           @Valid @RequestParam(value = "status", required = true) String status) {
         try {
             log.info("Update loan : " + id + " - " + status);
-            String cleanedStatus = status.substring(1, status.length()-1);
-            Optional<Loan> loan = loanManagement.updateLoan(id, cleanedStatus);
+            Optional<Loan> loan = loanManagement.updateLoan(id, status);
             // TODO check
             reservationManagement.checkPendingListAndNotify(loan.get().getBookCopy().getBook().getId());
             return new ResponseEntity<Void>(HttpStatus.OK);

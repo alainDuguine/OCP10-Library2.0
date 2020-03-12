@@ -13,9 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-03-07T07:05:32.575+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-03-12T12:38:48.919+01:00")
 
 @Api(value = "loans", description = "the loans API")
 public interface LoansApi {
@@ -111,6 +112,6 @@ public interface LoansApi {
         produces = { "application/json" },
         consumes = { "application/json" },
         method = RequestMethod.PUT)
-    ResponseEntity<Void> updateLoan(@ApiParam(value = "Id of loan to update", required = true) @PathVariable("id") Long id, @ApiParam(value = "Status values to add to loan history", required = true) @Valid @RequestBody String status);
+    ResponseEntity<Void> updateLoan(@ApiParam(value = "Id of loan to update", required = true) @PathVariable("id") Long id, @NotNull @ApiParam(value = "Status values to add to loan history", required = true, allowableValues = "loaned, returned, prolonged, late") @Valid @RequestParam(value = "status", required = true) String status);
 
 }
