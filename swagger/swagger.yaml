@@ -882,16 +882,15 @@ paths:
           type: "integer"
           format: "int64"
         - name: "status"
-          in: "body"
+          in: "query"
           description: "Status values to add to loan history"
           required: true
-          schema:
-            type: "string"
-            enum:
-              - "loaned"
-              - "returned"
-              - "prolonged"
-              - "late"
+          type: "string"
+          enum:
+            - "loaned"
+            - "returned"
+            - "prolonged"
+            - "late"
       responses:
         200:
           description: "Loan updated"
