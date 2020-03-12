@@ -88,9 +88,11 @@ public class ReservationsApiController implements ReservationsApi {
                                                   @Valid @RequestParam(value = "status", required = true) String status) {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("Requesting updating reservation : {}, status: {}, user: {}", id, status, userPrincipal.getId());
-        Optional<Reservation> reservationStatus = reservationManagement.updateReservation(id, status, userPrincipal);
-        if(reservationStatus.isPresent()){
-            log.info("Reservation update : {}", reservationStatus.get().toString());
+        Optional<Reservation> reservation = reservationManagement.updateReservation(id, status, userPrincipal);
+        if(reservation.isPresent()){
+            log.info("Reservation update : {}", reservation.get().toString());
+            // TODO check
+            reservationManagement.checkPendingListAndNotify(reservation.get().getBook().getId());
             return new ResponseEntity<Void>(HttpStatus.OK);
         }else{
             log.warn("Unauthorized update request : {}", userPrincipal.getId());

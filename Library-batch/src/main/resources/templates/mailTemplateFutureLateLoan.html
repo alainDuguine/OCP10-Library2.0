@@ -38,14 +38,13 @@
             <br>
             <div th:each="loan:${loans}">
                 <p>
-                    <span th:text="|'Titre <b>: '${loan.getBookCopy().getBook().getTitle()}'</b>'|">Titre : <b>Notre Dame de paris</b></span>
+                    <span th:utext="|Titre : <b>${loan.getBookCopy().getBook().getTitle()}</b>|">Titre : <b>Notre Dame de paris</b></span>
                     <br>
-                    <span th:text="|'Numéro <b>'${loan.getBookCopy().getBarcode()}'</b>'|">Numéro: <b>123456789</b></span>
+                    <span th:utext="|Numéro : <b>${loan.getBookCopy().getBarcode()}</b>|">Numéro: <b>123456789</b></span>
                     <br>
-                    <span th:text="|'L''emprunt se terminera le : '${loan.getEndDate()}|">L'emprunt se terminera le <b>21/12/2019</b></span>
+                    <span th:utext="|L'emprunt se terminera le : ${loan.getEndDate()}|">L'emprunt se terminera le <b>21/12/2019</b></span>
                 </p>
             </div>
-            <br>
             <a th:href="|${webapp}/login|" href="#">Vous connecter à votre compte pour vérifier ou prolonger vos emprunts</a>
         </div>
     </div>

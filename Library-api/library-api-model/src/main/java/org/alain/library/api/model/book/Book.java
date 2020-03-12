@@ -55,6 +55,10 @@ public class Book {
     @Formula("(SELECT COUNT(bc.id) FROM book b left join book_copy bc on bc.book_id = b.id WHERE bc.available = 'true' and b.id = id)")
     private Long nbCopiesAvailable;
 
+    // TODO CHECK
+    @Formula("(SELECT COUNT(r.id) FROM book b left join reservation r on r.book_id = b.id WHERE r.current_status = 'RESERVED' and b.id = id)")
+    private Long nbCopiesReserved;
+
     @Formula("(SELECT COUNT(r.id) FROM book b left join reservation r on r.book_id = b.id WHERE (r.current_status = 'PENDING' or r.current_status = 'RESERVED') and b.id = id)")
     private Long nbActiveReservations;
 

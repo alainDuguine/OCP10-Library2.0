@@ -12,8 +12,8 @@ public interface LoanManagement extends CrudManagement<Loan> {
     List<Loan> findLoansByBookId(Long bookId);
     List<LoanStatus> getLoanStatusList(Long id);
     Loan createNewLoan(Long bookCopyId, Long userId);
-    Optional<LoanStatus> updateLoan(Long id, String status);
+    Optional<Loan> updateLoan(Long id, String status);
     Optional<LoanStatus> extendLoan(Long id, Long userId, boolean isAdmin);
     List<Loan> updateAndFindLateLoans();
-    List<Loan> updateAndFindFutureLateLoans(@Valid Integer days);
+    List<Loan> findFutureLateLoans(@Valid Integer days);
 }

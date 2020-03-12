@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.alain.library.api.business.contract.BookManagement;
+import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.business.exceptions.UnknownAuthorException;
 import org.alain.library.api.business.exceptions.UnknownBookException;
 import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
-import org.alain.library.api.service.dto.*;
+import org.alain.library.api.service.dto.BookCopyDto;
+import org.alain.library.api.service.dto.BookDto;
+import org.alain.library.api.service.dto.BookForm;
+import org.alain.library.api.service.dto.CopyForm;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,12 +36,14 @@ public class BooksApiController implements BooksApi {
 
     private final ObjectMapper objectMapper;
     private final BookManagement bookManagement;
+    private final ReservationManagement reservationManagement;
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public BooksApiController(ObjectMapper objectMapper, BookManagement bookManagement, HttpServletRequest request) {
+    public BooksApiController(ObjectMapper objectMapper, BookManagement bookManagement, ReservationManagement reservationManagement, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.bookManagement = bookManagement;
+        this.reservationManagement = reservationManagement;
         this.request = request;
     }
 
@@ -115,6 +121,8 @@ public class BooksApiController implements BooksApi {
         Optional<BookCopy> bookCopyModel = bookManagement.saveBookCopy(id, convertBookCopyFormToBookCopyModel(copyForm));
         if(bookCopyModel.isPresent()){
             log.info("New book copy created " + bookCopyModel.get().getId());
+            // TODO check
+            reservationManagement.checkPendingListAndNotify(bookCopyModel.get().getBook().getId());
             return new ResponseEntity<BookCopyDto>(convertBookCopyModelToBookCopyDto(bookCopyModel.get()), HttpStatus.OK);
         }
         log.warn("Book doesn't exists " + id);

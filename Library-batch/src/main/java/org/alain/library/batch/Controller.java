@@ -18,12 +18,12 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class Controller {
+
 
     private final LoanApi loanApi;
     private final ReservationApi reservationApi;
@@ -31,6 +31,8 @@ public class Controller {
     private JavaMailSender mailSender;
     private String encodedAuthorization;
 
+    @Value("${reservation.notification.days}")
+    private int DAYS_NOTIFICATION_RESERVATION;
     @Value("${batch.username}")
     private String BATCH_USERNAME;
     @Value("${batch.password}")
@@ -43,7 +45,7 @@ public class Controller {
         this.mailSender = mailSender;
     }
 
-    @Scheduled(cron = "${mailScheduling.delay}" )
+//    @Scheduled(cron = "${mailScheduling.delay}" )
     public void getLateLoan() throws IOException, InterruptedException {
         if (encodedAuthorization == null)
             this.encodedAuthorization = getEncodedAuthorization();
@@ -55,7 +57,8 @@ public class Controller {
             log.info("Number of email to be sent :" + loanDtoList.size());
             for (LoanDto loan : loanDtoList){
                 this.prepareAndSendLateLoan(loan);
-                TimeUnit.SECONDS.sleep(5);
+                // TODO remove sleep for production
+//                TimeUnit.SECONDS.sleep(5);
             }
         }
     }
@@ -65,11 +68,10 @@ public class Controller {
         if (encodedAuthorization == null)
             this.encodedAuthorization = getEncodedAuthorization();
         log.info("Launching of batch email for future late loans");
-        List<LoanDto> loanDtoList = loanApi.checkAndGetFutureLateLoans(encodedAuthorization, 5).execute().body();
+        List<LoanDto> loanDtoList = loanApi.checkAndGetFutureLateLoans(encodedAuthorization, DAYS_NOTIFICATION_RESERVATION).execute().body();
         if (loanDtoList == null || loanDtoList.isEmpty()){
             log.info("No future expired loans to send email to");
         }else {
-            // TODO group loans by user and send one email for each.
             Map<String, List<LoanDto>> listMap = loanDtoList.stream()
                     .collect(Collectors.groupingBy(LoanDto::getUserEmail));
             log.info("Number of email to be sent :" + listMap.size());
@@ -89,7 +91,7 @@ public class Controller {
             log.info("Number of email to be sent :" + reservationDtoList.size());
             for (ReservationDto reservationDto : reservationDtoList){
                 this.prepareAndSendExpiredReservation(reservationDto);
-                TimeUnit.SECONDS.sleep(5);
+//                TimeUnit.SECONDS.sleep(5);
             }
         }
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.alain.library.api.business.contract.LoanManagement;
+import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.business.exceptions.UnknowStatusException;
 import org.alain.library.api.business.exceptions.UnknownLoanException;
 import org.alain.library.api.business.impl.UserPrincipal;
@@ -37,12 +38,14 @@ public class LoansApiController implements LoansApi {
 
     private final ObjectMapper objectMapper;
     private final LoanManagement loanManagement;
+    private final ReservationManagement reservationManagement;
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LoansApiController(ObjectMapper objectMapper, LoanManagement loanManagement, HttpServletRequest request) {
+    public LoansApiController(ObjectMapper objectMapper, LoanManagement loanManagement, ReservationManagement reservationManagement, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.loanManagement = loanManagement;
+        this.reservationManagement = reservationManagement;
         this.request = request;
     }
 
@@ -99,7 +102,9 @@ public class LoansApiController implements LoansApi {
         try {
             log.info("Update loan : " + id + " - " + status);
             String cleanedStatus = status.substring(1, status.length()-1);
-            Optional<LoanStatus> loanStatus = loanManagement.updateLoan(id, cleanedStatus);
+            Optional<Loan> loan = loanManagement.updateLoan(id, cleanedStatus);
+            // TODO check
+            reservationManagement.checkPendingListAndNotify(loan.get().getBookCopy().getBook().getId());
             return new ResponseEntity<Void>(HttpStatus.OK);
         }catch (UnknowStatusException ex){
             log.info("Impossible to update loan : " + id + " - " + status);
@@ -145,7 +150,7 @@ public class LoansApiController implements LoansApi {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("Batch call to retrieve future late Loans within {} day(s), user : {}", days, userPrincipal.getUsername());
         if(userPrincipal.hasRole("ADMIN")){
-            List<Loan> loanList = loanManagement.updateAndFindFutureLateLoans(days);
+            List<Loan> loanList = loanManagement.findFutureLateLoans(days);
             log.info("{} loans retrieved", loanList.size());
             return new ResponseEntity<List<LoanDto>>(convertListLoanModelToListLoanDto(loanList),HttpStatus.OK);
         }else{

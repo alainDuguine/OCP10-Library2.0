@@ -2,7 +2,6 @@ package org.alain.library.api.business.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.alain.library.api.business.contract.LoanManagement;
-import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.business.exceptions.*;
 import org.alain.library.api.consumer.repository.BookCopyRepository;
 import org.alain.library.api.consumer.repository.LoanRepository;
@@ -20,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -30,15 +28,13 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
     private final LoanStatusRepository loanStatusRepository;
     private final StatusRepository statusRepository;
     private final BookCopyRepository bookCopyRepository;
-    private final ReservationManagement reservationManagement;
 
-    public LoanManagementImpl(LoanRepository loanRepository, LoanStatusRepository loanStatusRepository, StatusRepository statusRepository, BookCopyRepository bookCopyRepository, ReservationManagement reservationManagement) {
+    public LoanManagementImpl(LoanRepository loanRepository, LoanStatusRepository loanStatusRepository, StatusRepository statusRepository, BookCopyRepository bookCopyRepository) {
         super(loanRepository);
         this.loanRepository = loanRepository;
         this.loanStatusRepository = loanStatusRepository;
         this.statusRepository = statusRepository;
         this.bookCopyRepository = bookCopyRepository;
-        this.reservationManagement = reservationManagement;
     }
 
     @Override
@@ -66,6 +62,7 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
             }
             Loan loan = new Loan();
             loan.setBookCopy(bookCopy.get());
+            bookCopy.get().setAvailable(false);
             loan.setUser(User.builder().id(userId).build());
             loan.setStartDate(LocalDate.now());
             loan.setEndDate(LocalDate.now().plusWeeks(4));
@@ -82,11 +79,12 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
     }
 
     @Override
-    public Optional<LoanStatus> updateLoan(Long id, String status) {
+    public Optional<Loan> updateLoan(Long id, String status) {
         try {
             Optional<Loan> loan = loanRepository.findById(id);
             StatusDesignation statusDesignation = StatusDesignation.valueOf(status.toUpperCase());
-            return loan.map(value -> this.addLoanStatusToLoan(value, statusDesignation));
+            loan.ifPresent(value -> this.addLoanStatusToLoan(value, statusDesignation));
+            return loan;
         }catch(IllegalArgumentException ex){
             log.warn("Wrong status on updateLoan : " + status + " - " + ex.getMessage());
             throw new UnknowStatusException("Unknown status "+status);
@@ -98,8 +96,7 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
         Status status = statusRepository.findStatusByDesignation(statusDesignation);
         if(statusDesignation == StatusDesignation.RETURNED){
             loan.getBookCopy().setAvailable(true);
-            // TODO check reservation list
-//            reservationManagement.checkPendingList(loan.getBookCopy().getBook());
+//   TODO         reservationManagement.checkPendingListAndNotify(loan.getBookCopy().getBook().getId());
         }
         loan.setCurrentStatus(status.getDesignation().toString());
         loan.setCurrentStatusDate(LocalDateTime.now());
@@ -144,26 +141,11 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
      * @return the list of loans who will expired within this date limit
      */
     @Override
-    public List<Loan> updateAndFindFutureLateLoans(Integer days) {
-        List<Loan> loanList = loanRepository.findLateLoans();
-        log.info("Retrieving full loan list : {}", loanList.size());
-        return loanList.stream()
-                .filter(loan -> Loan.ACTIVE_STATUSES.contains(loan.getCurrentStatus()))
-                .filter(loan -> LocalDate.now().plusDays(days + 1).isAfter(loan.getEndDate()))
-                .collect(Collectors.toList());
-
-//        List<Loan> futureLateLoans = new ArrayList<>();
-//        for (Loan loan : loanList){
-//            if (Loan.ACTIVE_STATUSES.contains(loan.getCurrentStatus()) && LocalDate.now().plusDays(days).isAfter(loan.getEndDate())){
-//                futureLateLoans.add(loan);
-//            }
-//        }
-//        return futureLateLoans;
-
-//        List<Loan> futureLateLoans = loanList.stream()
-//                .filter(loan -> Loan.ACTIVE_STATUSES.contains(loan.getCurrentStatus()) && LocalDate.now().plusDays(days+1).isAfter(loan.getEndDate()))
-//                .collect(Collectors.toList());
-//        return futureLateLoans;
+    public List<Loan> findFutureLateLoans(Integer days) {
+        LocalDate futureExpiration = LocalDate.now().plusDays(days);
+        List<Loan> loanList = loanRepository.findFutureLateLoans(futureExpiration);
+        log.info("Retrieving {} loan that will expire within {}", loanList.size(), futureExpiration);
+        return loanList;
     }
 
     @Override

@@ -17,6 +17,7 @@
             <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vos Réservations</h4>
             <div th:each="reservation:${reservations}" class="media pt-3" >
                 <i class="far fa-bookmark fa-2x"></i>
+                <div hidden th:text="${reservation.getReservationDto().getId()}"></div>
                 <div class="media-body pl-2 pb-2 mb-0 small lh-125 border-bottom border-dark">
                     <div>
                         <div class="reservationTitle">

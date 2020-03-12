@@ -1,7 +1,6 @@
 package org.alain.library.api.business.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.alain.library.api.business.contract.BookManagement;
 import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.business.exceptions.ReservationException;
 import org.alain.library.api.business.exceptions.UnauthorizedException;
@@ -41,16 +40,14 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
     private static int RESERVATION_EXPIRATION_DAYS;
 
     private final ReservationRepository reservationRepository;
-    private final BookManagement bookManagement;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final EmailService emailService;
 
 
-    public ReservationManagementImpl(ReservationRepository reservationRepository, BookManagement bookManagement, UserRepository userRepository, BookRepository bookRepository, EmailService emailService) {
+    public ReservationManagementImpl(ReservationRepository reservationRepository, UserRepository userRepository, BookRepository bookRepository, EmailService emailService) {
         super(reservationRepository);
         this.reservationRepository = reservationRepository;
-        this.bookManagement = bookManagement;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.emailService = emailService;
@@ -135,7 +132,10 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
             }
             ReservationStatus reservationStatus = ReservationStatus.builder().status(statusEnum).date(LocalDateTime.now()).build();
             reservation.get().addStatus(reservationStatus);
-            return Optional.of(reservationRepository.save(reservation.get()));
+            Reservation updatedReservation = reservationRepository.save(reservation.get());
+//   TODO check         if(reservationStatus.getStatus().equals(StatusEnum.CANCELED))
+//                this.checkPendingListAndNotify(reservation.get().getBook().getId());
+            return Optional.of(updatedReservation);
         }
         log.warn("Reservation update failed");
         return Optional.empty();
@@ -176,7 +176,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
             log.info("One user found : {}", user.get().getEmail());
             for (Reservation reservation:user.get().getReservations()) {
                 reservation.setUserPositionInList(getUserPositionInReservationList(reservation.getBook().getId(),id));
-                reservation.setNextReturnDate(bookManagement.getNextReturnDate(reservation.getBook().getId()));
+                reservation.setNextReturnDate(reservation.getBook().getNextReturnDate());
             }
             return user.get().getReservations();
         }

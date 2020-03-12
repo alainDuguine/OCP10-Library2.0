@@ -77,7 +77,7 @@ class Converters {
         bookDto.setTitle(bookModel.getTitle());
         List<Author> authorsList = new ArrayList<>(bookModel.getAuthors());
         bookDto.setAuthors(convertListAuthorModelToListAuthorDto(authorsList));
-        bookDto.setCopiesAvailable(bookModel.getNbCopiesAvailable());
+        bookDto.setCopiesAvailable(bookModel.getNbCopiesAvailable()-bookModel.getNbCopiesReserved());
         bookDto.setReservations(convertListReservationModelToListReservationDto(bookModel.getReservations()));
         bookDto.setReservationListFull(bookModel.isReservationListFull());
         if(bookModel.getNextReturnDate()!=null)

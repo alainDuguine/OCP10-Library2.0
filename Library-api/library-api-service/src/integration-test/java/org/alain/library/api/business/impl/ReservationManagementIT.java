@@ -13,6 +13,7 @@ import org.alain.library.api.service.LibraryApiServiceApplication;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -28,6 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(locations = {"classpath:/ReservationIT.properties","classpath:/application.properties"})
 class ReservationManagementIT {
 
+    @Mock
+    private EmailService emailService;
     @Autowired
     private ReservationManagement reservationManagement;
     @Autowired
@@ -36,8 +39,7 @@ class ReservationManagementIT {
     private UserRepository userRepository;
     @Autowired
     private BookRepository bookRepository;
-    @Autowired
-    private EmailService emailService;
+
 
     List<Reservation> reservationList;
 

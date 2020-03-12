@@ -29,7 +29,7 @@ public class Reservation {
     private User user;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Book book;
 
     private String currentStatus;
