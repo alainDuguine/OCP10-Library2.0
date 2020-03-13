@@ -240,7 +240,28 @@ paths:
           description: "You are not allowed to perform this request"
         404:
           description: "User not found"
-
+          
+  /users/notification:
+    put:
+      tags:
+      - "user"
+      summary: "Update notification parameter for user"
+      operationId: "setNotification"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "User identification"
+        required: true
+        type: "string"
+      - in: "query"
+        name: "isNotified"
+        description: "Boolean value for notification"
+        type: "boolean"
+      responses:
+        200: 
+          description: "Notification parameter updated"
+        403:
+          description: "Unauthorized"
   /books:
     get:
       tags:
