@@ -254,7 +254,7 @@ paths:
         required: true
         type: "string"
       - in: "query"
-        name: "isNotified"
+        name: "notified"
         description: "Boolean value for notification"
         type: "boolean"
       responses:
