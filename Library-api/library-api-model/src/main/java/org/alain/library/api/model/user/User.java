@@ -52,6 +52,9 @@ public class User {
 
     private int active=1;
 
+    @NotNull
+    private boolean notification=true;
+
     private String roles = "";
 
     @Builder.Default

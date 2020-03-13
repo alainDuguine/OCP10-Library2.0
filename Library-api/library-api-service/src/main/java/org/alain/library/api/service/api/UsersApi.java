@@ -6,7 +6,10 @@
 package org.alain.library.api.service.api;
 
 import io.swagger.annotations.*;
-import org.alain.library.api.service.dto.*;
+import org.alain.library.api.service.dto.UserCredentials;
+import org.alain.library.api.service.dto.UserDto;
+import org.alain.library.api.service.dto.UserForm;
+import org.alain.library.api.service.dto.UserFormUpdate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +17,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-11-19T09:35:39.403+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-03-13T09:43:28.562+01:00")
 
 @Api(value = "users", description = "the users API")
 public interface UsersApi {
@@ -42,6 +45,7 @@ public interface UsersApi {
         produces = { "application/json" },
         method = RequestMethod.DELETE)
     ResponseEntity<Void> deleteUser(@ApiParam(value = "User id to delete", required = true) @PathVariable("id") Long id);
+
 
     @ApiOperation(value = "Get user by Id", nickname = "getUser", notes = "", response = UserDto.class, tags={ "user", })
     @ApiResponses(value = {
@@ -81,6 +85,15 @@ public interface UsersApi {
         consumes = { "application/json" },
         method = RequestMethod.POST)
     ResponseEntity<Void> login(@ApiParam(value = "User email and password", required = true) @Valid @RequestBody UserCredentials userCredentials);
+
+
+    @ApiOperation(value = "Update notification parameter for user", nickname = "setNotification", notes = "", tags={ "user", })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Notification parameter updated"),
+        @ApiResponse(code = 403, message = "Unauthorized") })
+    @RequestMapping(value = "/users/notification",
+        method = RequestMethod.PUT)
+    ResponseEntity<Void> setNotification(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "Boolean value for notification") @Valid @RequestParam(value = "isNotified", required = false) Boolean isNotified);
 
 
     @ApiOperation(value = "Update a user", nickname = "updateUser", notes = "", response = UserDto.class, authorizations = {

@@ -2,6 +2,7 @@ package org.alain.library.webapp.web;
 
 import io.swagger.client.api.UserApi;
 import io.swagger.client.model.UserCredentials;
+import io.swagger.client.model.UserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,6 +54,9 @@ public class IndexController {
             if(userApi.login(userCredentials).execute().code() == 200){
                 session.setAttribute(EMAIL_FIELD, username);
                 session.setAttribute(PASSWORD_FIELD, password);
+                UserDto user = userApi.getUserByEmail(username, getEncodedAuthorization(session)).execute().body();
+                assert user != null;
+                session.setAttribute("userNotification", user.isNotification());
                 return "redirect:/loans";
             }
         }catch (Exception ex){
@@ -61,4 +65,18 @@ public class IndexController {
         }
         return "redirect:/login?error";
     }
+
+    @PostMapping("/notification")
+    public String notification(HttpSession session, @RequestParam(value = "notification", required = false) boolean notification){
+        log.info("Notification parameter update request {} to {}", session.getAttribute(EMAIL_FIELD), notification);
+        try {
+            userApi.setNotification(getEncodedAuthorization(session), notification).execute();
+            session.setAttribute("userNotification", notification);
+        }catch (Exception ex){
+            log.error(CONNEXION_FAILED);
+            return CONNEXION_FAILED;
+        }
+        return "redirect:/loans";
+    }
+
 }

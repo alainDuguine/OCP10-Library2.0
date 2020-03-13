@@ -7,7 +7,10 @@ import org.alain.library.api.business.contract.UserManagement;
 import org.alain.library.api.business.exceptions.UnauthorizedException;
 import org.alain.library.api.business.impl.UserPrincipal;
 import org.alain.library.api.model.user.User;
-import org.alain.library.api.service.dto.*;
+import org.alain.library.api.service.dto.UserCredentials;
+import org.alain.library.api.service.dto.UserDto;
+import org.alain.library.api.service.dto.UserForm;
+import org.alain.library.api.service.dto.UserFormUpdate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -115,6 +118,17 @@ public class UsersApiController implements UsersApi {
             log.warn("Unauthorized updateUser : " + id);
             return new ResponseEntity<UserDto>(HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    public ResponseEntity<Void> setNotification(@ApiParam(value = "User identification" ,required=true)
+                                                @RequestHeader(value="Authorization", required=true) String authorization,
+                                                @ApiParam(value = "Boolean value for notification")
+                                                @Valid @RequestParam(value = "isNotified", required = false) Boolean isNotified) {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Updating notification parameter for user {} to {}",userPrincipal.getUsername(), isNotified);
+        User user = userManagement.setNotification(userPrincipal.getId(), isNotified);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+
     }
 
     public ResponseEntity<Void> login(@ApiParam(value = "User email and password" ,required=true )  @Valid @RequestBody UserCredentials userCredentials) {

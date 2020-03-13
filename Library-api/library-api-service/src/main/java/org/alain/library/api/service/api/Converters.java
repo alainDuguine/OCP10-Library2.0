@@ -227,6 +227,7 @@ class Converters {
         userDto.setPassword(userModel.getPassword());
         userDto.setFirstName(userModel.getFirstName());
         userDto.setLastName(userModel.getLastName());
+        userDto.setNotification(userModel.isNotification());
         userDto.setRoles(userModel.getRoles());
         userDto.setLoans(convertListLoanModelToListLoanDto(userModel.getLoans()));
         userDto.setReservations(convertListReservationModelToListReservationDto(userModel.getReservations()));

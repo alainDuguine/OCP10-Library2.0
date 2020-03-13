@@ -1,9 +1,4 @@
 body{
-    /*background-image: url('../img/background.jpg');*/
-    /*background-repeat: no-repeat;*/
-    /*background-attachment: fixed;*/
-    /*background-position: top;*/
-    /*background-size: cover;*/
     font-family: 'Literata', serif;
 }
 
@@ -116,12 +111,12 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
     justify-content: space-between;
 }
 
-.registerForm .btnCancel{
-    background-color: #735C60;
+.registerForm .btnCancel, .btnModalClose{
+    background-color: #364259;
     color: #f2f2f0;
 }
 
-.registerForm .btnCancel:hover{
+.registerForm .btnCancel:hover, .btnModalClose:hover{
     background-color: #f2f2f0;
     color: #364259;
     border: 1px solid #364259;

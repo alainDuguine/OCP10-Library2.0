@@ -15,4 +15,5 @@ public interface UserManagement extends CrudManagement<User>{
     Optional<User> updateUser(Long id, User userForm);
     void deleteUser(Long id);
     boolean login(String email, String password);
+    User setNotification(Long id, Boolean isNotified);
 }

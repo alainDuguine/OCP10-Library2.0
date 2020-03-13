@@ -61,6 +61,27 @@ public class UserManagementImpl extends CrudManagementImpl<User> implements User
         return false;
     }
 
+    /**
+     * Update email notification parameter for user
+     * @param id userId
+     * @param isNotified boolean value
+     * @return Optional user
+     */
+    @Override
+    public User setNotification(Long id, Boolean isNotified) {
+        log.info("request setting up notification parameter for user {} to {}", id, isNotified);
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()){
+            log.info("User {} found", id);
+            user.get().setNotification(isNotified);
+            userRepository.save(user.get());
+            log.info("User {} updated", id);
+            return user.get();
+        }
+        log.warn("Unauthorized request for user {}", id);
+        throw new UnauthorizedException("Unauthorized to change notification");
+    }
+
     @Override
     public Optional<User> saveUser(User user) {
         if (!this.getUserByEmail(user.getEmail()).isPresent()){
