@@ -893,8 +893,6 @@ paths:
       operationId: "updateLoan"
       produces:
       - "application/json"
-      consumes:
-        - "application/json"
       parameters:
         - name: "id"
           in: "path"
