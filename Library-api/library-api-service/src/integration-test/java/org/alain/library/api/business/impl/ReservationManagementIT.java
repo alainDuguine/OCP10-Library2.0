@@ -26,7 +26,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = LibraryApiServiceApplication.class)
-@TestPropertySource(locations = {"classpath:/ReservationIT.properties","classpath:/application.properties"})
+@TestPropertySource(locations = {"classpath:/application-test.properties"})
 class ReservationManagementIT {
 
     @Mock

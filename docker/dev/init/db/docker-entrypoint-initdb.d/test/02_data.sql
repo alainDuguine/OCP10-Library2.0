@@ -166,10 +166,10 @@ INSERT INTO public.book_copy VALUES (71, false, '0774689167280', 'La pléïade',
 -- Data for Name: library_user; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
-INSERT INTO public.library_user VALUES (2, 1, 'admin@openlibrary.fr', 'Admin', 'Library', '$2a$10$3dY.jEP/Qpc86pTfDXbRze.C9Q7/LmUMP8mFj20Uh215RZ.kSXvuS', 'USER,ADMIN');
-INSERT INTO public.library_user VALUES (1, 1, 'alain_duguine@hotmail.fr', 'Jean', 'Duguine', '$2a$10$cPiv1wG6yhgG0GnqYzMmh.iVjlBn8ebIZphRE7TWMJyocwik5kMqG', 'USER');
-INSERT INTO public.library_user VALUES (3, 1, 'audrey.duguine@gmail.com', 'Audrey', 'Duguine', '$2a$10$74kAd8fc6.O7wA7eszEiF.0IBaZvPvfOcihNtCQB/b37aNpCNiEpC', 'USER');
-INSERT INTO public.library_user VALUES (4, 1, 'agnes.duguine@gmail.com', 'Agnès', 'Duguine', '$2a$10$.pXWR1Q5/0RsVSkfwg/Wae/ztEQxxxOpmtvYzr/HPmFNOZ8fWvVj6', 'USER');
+INSERT INTO public.library_user VALUES (2, 1, 'admin@openlibrary.fr', 'Admin', 'Library', '$2a$10$3dY.jEP/Qpc86pTfDXbRze.C9Q7/LmUMP8mFj20Uh215RZ.kSXvuS', 'USER,ADMIN',true);
+INSERT INTO public.library_user VALUES (1, 1, 'alain_duguine@hotmail.fr', 'Jean', 'Duguine', '$2a$10$cPiv1wG6yhgG0GnqYzMmh.iVjlBn8ebIZphRE7TWMJyocwik5kMqG', 'USER',true);
+INSERT INTO public.library_user VALUES (3, 1, 'audrey.duguine@gmail.com', 'Audrey', 'Duguine', '$2a$10$74kAd8fc6.O7wA7eszEiF.0IBaZvPvfOcihNtCQB/b37aNpCNiEpC', 'USER',true);
+INSERT INTO public.library_user VALUES (4, 1, 'agnes.duguine@gmail.com', 'Agnès', 'Duguine', '$2a$10$.pXWR1Q5/0RsVSkfwg/Wae/ztEQxxxOpmtvYzr/HPmFNOZ8fWvVj6', 'USER',true);
 
 
 --
@@ -245,7 +245,7 @@ INSERT INTO public.loan_status VALUES (15, 1, '2020-03-11 14:47:50.203');
 
 INSERT INTO public.reservation VALUES (82, 'PENDING', '2020-02-23 07:49:29.177', 16, 1);
 INSERT INTO public.reservation VALUES (83, 'PENDING', '2020-02-26 07:49:29.177', 16, 4);
-INSERT INTO public.reservation VALUES (84, 'RESERVED', '2020-02-26 08:08:21.002', 16, 3);
+INSERT INTO public.reservation VALUES (84, 'PENDING', '2020-02-26 08:08:21.002', 16, 3);
 INSERT INTO public.reservation VALUES (89, 'PENDING', '2020-02-26 08:36:49.74', 17, 3);
 INSERT INTO public.reservation VALUES (75, 'TERMINATED', '2019-09-25 08:36:49.74', 5, 3);
 INSERT INTO public.reservation VALUES (79, 'CANCELED', '2020-01-22 19:00:07.74', 8, 3);
@@ -259,8 +259,7 @@ INSERT INTO public.reservation VALUES (79, 'CANCELED', '2020-01-22 19:00:07.74',
 
 INSERT INTO public.reservation_status VALUES (85, '2020-02-23 07:49:29.177', 'PENDING', 82);
 INSERT INTO public.reservation_status VALUES (86, '2020-02-26 07:49:29.177', 'PENDING', 83);
-INSERT INTO public.reservation_status VALUES (87, '2020-02-26 07:52:20.021', 'PENDING', 84);
-INSERT INTO public.reservation_status VALUES (92, '2020-02-26 07:56:09.148', 'RESERVED', 84);
+INSERT INTO public.reservation_status VALUES (87, '2020-02-26 08:08:21.002', 'PENDING', 84);
 INSERT INTO public.reservation_status VALUES (94, '2020-02-26 08:36:49.74', 'PENDING', 89);
 INSERT INTO public.reservation_status VALUES (63, '2019-09-19 10:11:58.74', 'PENDING', 75);
 INSERT INTO public.reservation_status VALUES (80, '2019-09-24 14:22:58.74', 'RESERVED', 75);

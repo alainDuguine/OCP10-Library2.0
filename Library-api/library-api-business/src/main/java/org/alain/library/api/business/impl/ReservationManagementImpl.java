@@ -21,7 +21,9 @@ import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.reservation.StatusEnum;
 import org.alain.library.api.model.user.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,7 +38,7 @@ import java.util.Optional;
 @Slf4j
 public class ReservationManagementImpl extends CrudManagementImpl<Reservation> implements ReservationManagement {
 
-    @Value("reservation.expiration.days")
+    @Value("${reservation.expiration.days}")
     private static int RESERVATION_EXPIRATION_DAYS;
 
     private final ReservationRepository reservationRepository;
@@ -133,8 +135,6 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
             ReservationStatus reservationStatus = ReservationStatus.builder().status(statusEnum).date(LocalDateTime.now()).build();
             reservation.get().addStatus(reservationStatus);
             Reservation updatedReservation = reservationRepository.save(reservation.get());
-//   TODO check         if(reservationStatus.getStatus().equals(StatusEnum.CANCELED))
-//                this.checkPendingListAndNotify(reservation.get().getBook().getId());
             return Optional.of(updatedReservation);
         }
         log.warn("Reservation update failed");
@@ -191,6 +191,8 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
      * @param bookId that we want to check the pending list
      */
     @Override
+    @Async
+    @Transactional
     public void checkPendingListAndNotify(Long bookId) {
         log.info("Checking if a pending reservation exists for book {}", bookId);
         List<Reservation> reservationList = reservationRepository.findActiveReservationForBookOrderByDate(bookId);

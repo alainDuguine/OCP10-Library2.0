@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 
@@ -14,6 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EntityScan(basePackages = {"org.alain.library.api"})
 @EnableJpaRepositories(basePackages = {"org.alain.library.api"})
 @PropertySource("classpath:application-mail.properties")
+@EnableAsync
 @EnableSwagger2
 public class LibraryApiServiceApplication{
 
