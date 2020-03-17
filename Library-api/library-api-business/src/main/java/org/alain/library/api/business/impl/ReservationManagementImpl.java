@@ -148,6 +148,7 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
      * @return list of reservations expired and modified
      */
     @Override
+    @Transactional
     public List<Reservation> updateAndGetExpiredReservation() {
         log.info("Request for expired reservations");
         LocalDateTime expirationDate = LocalDateTime.now().minusDays(RESERVATION_EXPIRATION_DAYS);

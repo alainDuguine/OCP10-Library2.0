@@ -70,7 +70,7 @@ class ReservationManagementIT {
         LocalDateTime expirationDate = LocalDateTime.now().minusDays(RESERVATION_EXPIRATION_DAYS);
         List<Reservation> expired = reservationRepository.findExpired(StatusEnum.RESERVED.name(), expirationDate);
 
-        assertThat(expired.size()).isEqualTo(2);
+        assertThat(expired.size()).isEqualTo(3);
         assertThat(expired).extracting(Reservation::getCurrentStatus).contains("RESERVED");
         assertThat(expired).allMatch(el -> el.getCurrentStatusDate().isBefore(expirationDate));
 

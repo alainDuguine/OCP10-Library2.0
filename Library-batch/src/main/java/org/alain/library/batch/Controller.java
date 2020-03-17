@@ -57,13 +57,11 @@ public class Controller {
             log.info("Number of email to be sent :" + loanDtoList.size());
             for (LoanDto loan : loanDtoList){
                 this.prepareAndSendLateLoan(loan);
-                // TODO remove sleep for production
-//                TimeUnit.SECONDS.sleep(5);
             }
         }
     }
 
-    @Scheduled(cron = "${mailScheduling.delay}" )
+//    @Scheduled(cron = "${mailScheduling.delay}" )
     public void getFutureExpiredLoans() throws IOException, InterruptedException {
         if (encodedAuthorization == null)
             this.encodedAuthorization = getEncodedAuthorization();
@@ -91,7 +89,6 @@ public class Controller {
             log.info("Number of email to be sent :" + reservationDtoList.size());
             for (ReservationDto reservationDto : reservationDtoList){
                 this.prepareAndSendExpiredReservation(reservationDto);
-//                TimeUnit.SECONDS.sleep(5);
             }
         }
     }
@@ -106,7 +103,7 @@ public class Controller {
             messageHelper.setText(content, true);
         };
         try{
-            log.info("Sending email to :" + emailAddress + ", loans : " + loanList.size());
+            log.info("Sending email to : {}, loans: {}", emailAddress, loanList.size());
             mailSender.send(messagePreparator);
         }catch (MailException e){
             log.error("Error while sending email about future latre loans " + emailAddress + "\n"+ e.getMessage());

@@ -15,12 +15,11 @@ import org.alain.library.api.service.dto.ReservationForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -45,14 +44,14 @@ class ReservationsApiControllerIT {
     String password;
     String apiURL;
 
-    @Mock
-    private final EmailService emailService;
+    @MockBean
+    private EmailService emailService;
+
 
     private final BookManagement bookManagement;
     private final UserManagement userManagement;
     private final ReservationRepository reservationRepository;
     private final ReservationStatusRepository reservationStatusRepository;
-    @InjectMocks
     private final ReservationManagement reservationManagement;
 
     private TestRestTemplate restTemplate;
@@ -61,8 +60,7 @@ class ReservationsApiControllerIT {
     int randomServerPort;
 
     @Autowired
-    ReservationsApiControllerIT(EmailService emailService, BookManagement bookManagement, UserManagement userManagement, ReservationRepository reservationRepository, ReservationStatusRepository reservationStatusRepository, ReservationManagement reservationManagement) {
-        this.emailService = emailService;
+    ReservationsApiControllerIT(BookManagement bookManagement, UserManagement userManagement, ReservationRepository reservationRepository, ReservationStatusRepository reservationStatusRepository, ReservationManagement reservationManagement) {
         this.bookManagement = bookManagement;
         this.userManagement = userManagement;
         this.reservationRepository = reservationRepository;
@@ -177,11 +175,11 @@ class ReservationsApiControllerIT {
     }
 
     @Test
-    void whenGetAllReservations_shouldReturn6() {
+    void whenGetAllReservations_shouldReturn() {
         ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations", ReservationDto[].class);
 
         assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(reservations.getBody().length).isEqualTo(6);
+        assertThat(reservations.getBody().length).isEqualTo(7);
     }
 
 
@@ -190,7 +188,7 @@ class ReservationsApiControllerIT {
         ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations/findByUser", ReservationDto[].class);
 
         assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(reservations.getBody().length).isEqualTo(0);
+        assertThat(reservations.getBody().length).isEqualTo(1);
 
         TestRestTemplate restTemplate2 = new TestRestTemplate("audrey.duguine@gmail.com","user");
         ResponseEntity<ReservationDto[]> reservations2 = restTemplate2.getForEntity(apiURL+"/reservations/findByUser", ReservationDto[].class);
@@ -200,8 +198,8 @@ class ReservationsApiControllerIT {
     }
 
     @Test
-    void givenReservationParameters_whenGetReservation_shouldReturn1() {
-        ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations?currentStatus=pending&user=3&book=17", ReservationDto[].class);
+    void givenReservationParameters_whenGetReservation_shouldReturn() {
+        ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations?currentStatus=pending&user=4&book=16", ReservationDto[].class);
 
         assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(reservations.getBody().length).isEqualTo(1);
@@ -256,7 +254,7 @@ class ReservationsApiControllerIT {
         Reservation reservationAfterUpdate = reservationRepository.findById(89L).get();
 
         assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(reservations.getBody().length).isEqualTo(1);
+        assertThat(reservations.getBody().length).isEqualTo(2);
         assertThat(reservationAfterUpdate.getCurrentStatus()).isEqualTo(StatusEnum.CANCELED.name());
 
         // Putting back to original state

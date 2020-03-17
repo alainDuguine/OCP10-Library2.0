@@ -245,6 +245,7 @@ INSERT INTO public.loan_status VALUES (15, 1, '2020-03-11 14:47:50.203');
 
 INSERT INTO public.reservation VALUES (82, 'PENDING', '2020-02-23 07:49:29.177', 16, 1);
 INSERT INTO public.reservation VALUES (83, 'PENDING', '2020-02-26 07:49:29.177', 16, 4);
+INSERT INTO public.reservation VALUES (85, 'RESERVED', '2020-03-14 07:49:29.177', 16, 2);
 INSERT INTO public.reservation VALUES (84, 'PENDING', '2020-02-26 08:08:21.002', 16, 3);
 INSERT INTO public.reservation VALUES (89, 'PENDING', '2020-02-26 08:36:49.74', 17, 3);
 INSERT INTO public.reservation VALUES (75, 'TERMINATED', '2019-09-25 08:36:49.74', 5, 3);
@@ -258,6 +259,7 @@ INSERT INTO public.reservation VALUES (79, 'CANCELED', '2020-01-22 19:00:07.74',
 --
 
 INSERT INTO public.reservation_status VALUES (85, '2020-02-23 07:49:29.177', 'PENDING', 82);
+INSERT INTO public.reservation_status VALUES (88,'2020-03-14 07:49:29.177', 'RESERVED', 85);
 INSERT INTO public.reservation_status VALUES (86, '2020-02-26 07:49:29.177', 'PENDING', 83);
 INSERT INTO public.reservation_status VALUES (87, '2020-02-26 08:08:21.002', 'PENDING', 84);
 INSERT INTO public.reservation_status VALUES (94, '2020-02-26 08:36:49.74', 'PENDING', 89);
