@@ -233,7 +233,6 @@ class ReservationsApiControllerIT {
 
     @Test
     void checkAndGetExpiredReservationWithNoExpired() {
-        ReflectionTestUtils.setField(reservationManagement, "RESERVATION_EXPIRATION_DAYS",2);
         ResponseEntity<ReservationDto[]> reservations = restTemplate.getForEntity(apiURL+"/reservations/expired", ReservationDto[].class);
 
         assertThat(reservations.getStatusCode()).isEqualTo(HttpStatus.OK);

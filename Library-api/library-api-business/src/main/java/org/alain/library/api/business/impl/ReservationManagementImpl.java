@@ -39,7 +39,7 @@ import java.util.Optional;
 public class ReservationManagementImpl extends CrudManagementImpl<Reservation> implements ReservationManagement {
 
     @Value("${reservation.expiration.days}")
-    private static int RESERVATION_EXPIRATION_DAYS;
+    private int RESERVATION_EXPIRATION_DAYS;
 
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
@@ -148,7 +148,6 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
      * @return list of reservations expired and modified
      */
     @Override
-    @Transactional
     public List<Reservation> updateAndGetExpiredReservation() {
         log.info("Request for expired reservations");
         LocalDateTime expirationDate = LocalDateTime.now().minusDays(RESERVATION_EXPIRATION_DAYS);
@@ -157,7 +156,6 @@ public class ReservationManagementImpl extends CrudManagementImpl<Reservation> i
         reservationList.forEach(reservation -> {
             reservation.addStatus(ReservationStatus.builder().date(LocalDateTime.now()).status(StatusEnum.CANCELED).build());
             reservationRepository.save(reservation);
-            this.checkPendingListAndNotify(reservation.getBook().getId());
             log.info("Reservation expired : {}, status : {}, date : {}", reservation.getId(), reservation.getCurrentStatus(), reservation.getCurrentStatusDate());
         });
         return reservationList;

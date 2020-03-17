@@ -36,7 +36,7 @@
         <hr class="my-4" style="border-bottom: 1px solid black;">
         <div>Vous aviez le livre suivant à retirer sous 48h, depuis le <span th:text="${dateStatus}">21/12/2019</span>
             <br>
-            <p>Titre : <span class="font-weight-bold" th:text="${reservation.getBook().getTitle()}">Notre Dame de paris</span><br>
+            <p>Titre : <span class="font-weight-bold" th:text="${reservation.getBookTitle()}">Notre Dame de paris</span><br>
             Malheureusement, ce délai étant écoulé, nous avons dû annuler votre réservation, afin de ne pas faire attendre les autres personnes en attente.
             <br>Merci de votre compréhension, et n'hésitez pas à vous remettre en liste d'attente ou à venir emprunter un autre livre !
             </p>

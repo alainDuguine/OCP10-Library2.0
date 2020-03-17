@@ -105,6 +105,7 @@ public class ReservationsApiController implements ReservationsApi {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(userPrincipal.hasRole("ADMIN")){
             List<Reservation> reservationList = reservationManagement.updateAndGetExpiredReservation();
+            reservationList.forEach(reservation -> reservationManagement.checkPendingListAndNotify(reservation.getBook().getId()));
             log.info("Reservation List : {}", reservationList.size());
             return new ResponseEntity<List<ReservationDto>>(convertListReservationModelToListReservationDto(reservationList),HttpStatus.OK);
         }else{
