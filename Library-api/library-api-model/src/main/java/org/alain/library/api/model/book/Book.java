@@ -2,11 +2,13 @@ package org.alain.library.api.model.book;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.alain.library.api.model.reservation.Reservation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,19 +30,39 @@ public class Book {
     private String title;
 
     @JsonIgnore
+    @Builder.Default
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookCopy> copyList = new ArrayList<>();
 
-    //Owning side
+    @Builder.Default
+    @OneToMany(
+            mappedBy = "book",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("currentStatusDate desc")
+    private List<Reservation> reservations=new ArrayList<>();
+
     @NotNull
+    @Builder.Default
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "book_author",
                joinColumns = @JoinColumn(name = "book_id"),
                inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<Author> authors = new HashSet<>();
 
+
     @Formula("(SELECT COUNT(bc.id) FROM book b left join book_copy bc on bc.book_id = b.id WHERE bc.available = 'true' and b.id = id)")
     private Long nbCopiesAvailable;
+
+    @Formula("(SELECT COUNT(r.id) FROM book b left join reservation r on r.book_id = b.id WHERE r.current_status = 'RESERVED' and b.id = id)")
+    private Long nbCopiesReserved;
+
+    @Formula("(SELECT COUNT(r.id) FROM book b left join reservation r on r.book_id = b.id WHERE (r.current_status = 'PENDING' or r.current_status = 'RESERVED') and b.id = id)")
+    private Long nbActiveReservations;
+
+    @Formula("(SELECT MIN(l.end_date) FROM book b left join book_copy bc on bc.book_id = b.id left join loan l on l.book_copy_id = bc.id WHERE (l.current_status = 'LOANED' OR l.current_status = 'PROLONGED') and b.id = id)")
+    private LocalDate nextReturnDate;
 
     public Book(String title) {
         this.title = title;
@@ -48,6 +70,9 @@ public class Book {
     }
 
     public void addAuthor(Author author){
+        if(this.authors==null){
+            this.authors= new HashSet<>();
+        }
         this.authors.add(author);
         author.getBooks().add(this);
     }
@@ -65,6 +90,20 @@ public class Book {
     public void removeCopy(BookCopy bookCopy){
         this.copyList.remove(bookCopy);
         bookCopy.setBook(null);
+    }
+
+    public void addReservation(Reservation reservation){
+        this.reservations.add(reservation);
+        reservation.setBook(this);
+    }
+
+    public void removeReservation(Reservation reservation){
+        this.reservations.remove(reservation);
+        reservation.setBook(null);
+    }
+
+    public boolean isReservationListFull(){
+        return (nbActiveReservations >= (this.getCopyList().size() * 2));
     }
 
     @Override

@@ -13,9 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-11-25T07:35:05.950+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-03-12T12:38:48.919+01:00")
 
 @Api(value = "loans", description = "the loans API")
 public interface LoansApi {
@@ -30,6 +31,15 @@ public interface LoansApi {
         consumes = { "application/json" },
         method = RequestMethod.POST)
     ResponseEntity<LoanDto> addLoan(@ApiParam(value = "Loan that needs to be added to the database", required = true) @Valid @RequestBody LoanForm loanForm);
+
+
+    @ApiOperation(value = "check and get loan list that will be late within a day limit", nickname = "checkAndGetFutureLateLoans", notes = "trigger a checkup for all loan's and send an email to those concerned", response = LoanDto.class, responseContainer = "List", tags={ "loan", })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Loans found", response = LoanDto.class, responseContainer = "List") })
+    @RequestMapping(value = "/loans/findFutureLate",
+        produces = { "application/json" },
+        method = RequestMethod.GET)
+    ResponseEntity<List<LoanDto>> checkAndGetFutureLateLoans(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "the day limit to check the loans", defaultValue = "1") @Valid @RequestParam(value = "days", required = false, defaultValue = "1") Integer days);
 
 
     @ApiOperation(value = "check and get loan list that are late", nickname = "checkAndGetLateLoans", notes = "trigger a checkup for all loan's and add late status to expired one's", response = LoanDto.class, responseContainer = "List", tags={ "loan", })
@@ -84,6 +94,15 @@ public interface LoansApi {
     ResponseEntity<List<LoanDto>> getLoans(@ApiParam(value = "Status values as filter in research", allowableValues = "loaned, returned, prolonged, late") @Valid @RequestParam(value = "status", required = false) String status, @ApiParam(value = "User id as filter in research") @Valid @RequestParam(value = "user", required = false) Long user);
 
 
+    @ApiOperation(value = "Get a list of all loans by book id", nickname = "getLoansByBookId", notes = "", response = LoanDto.class, responseContainer = "List", tags={ "loan", })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Loans found", response = LoanDto.class, responseContainer = "List") })
+    @RequestMapping(value = "/loans/findByBook",
+        produces = { "application/json" },
+        method = RequestMethod.GET)
+    ResponseEntity<List<LoanDto>> getLoansByBookId(@ApiParam(value = "User identification", required = true) @RequestHeader(value = "Authorization", required = true) String authorization, @ApiParam(value = "BookId as filter in research") @Valid @RequestParam(value = "bookId", required = false) Long bookId);
+
+
     @ApiOperation(value = "Update a loan by adding a status to it", nickname = "updateLoan", notes = "", tags={ "loan", })
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Loan updated"),
@@ -93,6 +112,6 @@ public interface LoansApi {
         produces = { "application/json" },
         consumes = { "application/json" },
         method = RequestMethod.PUT)
-    ResponseEntity<Void> updateLoan(@ApiParam(value = "Id of loan to update", required = true) @PathVariable("id") Long id, @ApiParam(value = "Status values to add to loan history", required = true) @Valid @RequestBody String status);
+    ResponseEntity<Void> updateLoan(@ApiParam(value = "Id of loan to update", required = true) @PathVariable("id") Long id, @NotNull @ApiParam(value = "Status values to add to loan history", required = true, allowableValues = "loaned, returned, prolonged, late") @Valid @RequestParam(value = "status", required = true) String status);
 
 }

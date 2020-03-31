@@ -10,19 +10,70 @@
   </parent>
 
   <artifactId>library-api</artifactId>
-  <packaging>pom</packaging>
   <name>library-api</name>
+  <packaging>pom</packaging>
 
   <modules>
     <module>library-api-business</module>
     <module>library-api-consumer</module>
     <module>library-api-model</module>
     <module>library-api-service</module>
+    <module>library-api-mail</module>
   </modules>
 
   <properties>
     <java.version>1.8</java.version>
+    <spring.version>2.2.4.RELEASE</spring.version>
+    <maven.version>2.22.2</maven.version>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>integration-test</id>
+      <properties>
+        <skip.integration.tests>false</skip.integration.tests>
+        <skip.unit.tests>true</skip.unit.tests>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>add-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/integration-test/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+        <testResources>
+          <testResource>
+            <directory>src/test/resources</directory>
+          </testResource>
+          <testResource>
+            <directory>src/integration-test/resources</directory>
+          </testResource>
+        </testResources>
+      </build>
+    </profile>
+  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -34,23 +85,29 @@
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-business</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-consumer</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-model</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.alain</groupId>
         <artifactId>library-api-service</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.alain</groupId>
+        <artifactId>library-api-mail</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
 
       <!--========================================================================
       ===== Spring ===============================================================
@@ -59,13 +116,26 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-test</artifactId>
+        <version>${spring.version}</version>
         <scope>test</scope>
       </dependency>
 
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-data-jpa</artifactId>
-        <version>2.2.0.RELEASE</version>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-mail</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        <version>${spring.version}</version>
       </dependency>
 
       <dependency>
@@ -77,5 +147,28 @@
 
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.version}</version>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

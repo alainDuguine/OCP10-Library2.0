@@ -14,6 +14,7 @@
   <name>library-api-business</name>
 
   <dependencies>
+
     <dependency>
       <groupId>org.alain</groupId>
       <artifactId>library-api-consumer</artifactId>
@@ -24,10 +25,10 @@
       <artifactId>library-api-model</artifactId>
     </dependency>
 
-<!--    <dependency>-->
-<!--      <groupId>org.springframework.boot</groupId>-->
-<!--      <artifactId>spring-boot-starter-security</artifactId>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>org.alain</groupId>
+      <artifactId>library-api-mail</artifactId>
+    </dependency>
 
   </dependencies>
 

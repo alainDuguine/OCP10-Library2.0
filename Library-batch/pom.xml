@@ -61,6 +61,7 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -143,9 +144,7 @@
                         </goals>
                         <configuration>
                             <!-- specify the swagger yaml -->
-                            <inputSpec>
-                                https://app.swaggerhub.com/apiproxy/schema/file/apis/al26/Library/1.0.0
-                            </inputSpec>
+                            <inputSpec>${swagger.file.url}</inputSpec>
 
                             <!-- target to generate java client code -->
                             <language>java</language>

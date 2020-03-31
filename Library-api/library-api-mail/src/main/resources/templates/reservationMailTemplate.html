@@ -32,14 +32,12 @@
         </div>
         <div class="jumbotron mx-5 text-center">
           <h1 class="display-4">Bonjour !</h1>
-          <p class="lead">Vous avez un emprunt de livre en retard !</p>
+          <p class="lead">Un livre vous attend à la bibliothèque !</p>
           <hr class="my-4" style="border-bottom: 1px solid black;">
-            <p>Le <span th:text="${loan.getStartDate()}">21/12/2019</span>, vous avez emprunté le livre suivant :<br>
-                    <dd>Titre : <span class="font-weight-bold" th:text="${loan.getBookCopy().getBook().getTitle()}">Notre Dame de paris</span>
-                    <dd>Numéro : <span class="font-weight-bold" th:text="${loan.getBookCopy().getBarcode()}">123456789</span><br><br>
-                  L'emprunt est malheureusement terminé depuis le : <span class="font-weight-bold" th:text="${loan.getEndDate()}">21/12/2019</span> et le livre ne nous a pas encore été retourné.<br>
-                    Merci de nous retourner ce livre dès que possible, afin que d'autres personnes puissent en profiter !</p>
-          <a href="http://localhost:9090/login">Vous connecter à votre compte pour vérifier vos emprunts</a>
+            <p>Le <span class="font-weight-bold" th:text="${#temporals.format(dateCreation)}">21/12/2019</span>, vous avez réservé le livre suivant :<br>
+                    <dd>Titre : <span class="font-weight-bold" th:text="${reservation.getBook().getTitle()}">Notre Dame de paris</span><br>
+                  Le livre est disponible, et vous pouvez le retirer jusqu'au <b th:text="${#temporals.format(reservation.getCurrentStatusDate().plusDays(2).toLocalDate())}">02 février 2020</b></p>
+          <a th:href="|${webapp}/login|" href="#">Vous connecter à votre compte pour vérifier vos emprunts</a>
         </div>
     </div>
 </body>

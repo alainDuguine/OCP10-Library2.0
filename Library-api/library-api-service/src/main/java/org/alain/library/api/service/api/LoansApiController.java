@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.alain.library.api.business.contract.LoanManagement;
+import org.alain.library.api.business.contract.ReservationManagement;
 import org.alain.library.api.business.exceptions.UnknowStatusException;
 import org.alain.library.api.business.exceptions.UnknownLoanException;
 import org.alain.library.api.business.impl.UserPrincipal;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,12 +39,14 @@ public class LoansApiController implements LoansApi {
 
     private final ObjectMapper objectMapper;
     private final LoanManagement loanManagement;
+    private final ReservationManagement reservationManagement;
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LoansApiController(ObjectMapper objectMapper, LoanManagement loanManagement, HttpServletRequest request) {
+    public LoansApiController(ObjectMapper objectMapper, LoanManagement loanManagement, ReservationManagement reservationManagement, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.loanManagement = loanManagement;
+        this.reservationManagement = reservationManagement;
         this.request = request;
     }
 
@@ -75,6 +79,13 @@ public class LoansApiController implements LoansApi {
         }
     }
 
+    public ResponseEntity<List<LoanDto>> getLoansByBookId(@ApiParam(value = "User identification" ,required=true) @RequestHeader(value="Authorization", required=true) String authorization,@ApiParam(value = "BookId as filter in research") @Valid @RequestParam(value = "bookId", required = false) Long bookId) {
+        log.info("Retrieving loans for bookId {}", bookId);
+        List<Loan> loanList = loanManagement.findLoansByBookId(bookId);
+        log.info("Found {} loans for bookId {}", loanList.size(), bookId);
+        return new ResponseEntity<List<LoanDto>>(convertListLoanModelToListLoanDto(loanList),HttpStatus.OK);
+    }
+
     public ResponseEntity<LoanDto> addLoan(@ApiParam(value = "Loan that needs to be added to the database" ,required=true )  @Valid @RequestBody LoanForm loanForm) {
         try {
             log.info("creating new loan : user - " + loanForm.getUserId() + "bookCopy - " + loanForm.getCopyId());
@@ -88,10 +99,13 @@ public class LoansApiController implements LoansApi {
     }
 
     public ResponseEntity<Void> updateLoan(@ApiParam(value = "Id of loan to update",required=true) @PathVariable("id") Long id,
-                                           @ApiParam(value = "Status values to add to loan history" ,required=true )  @Valid @RequestBody String status) {
+                                           @NotNull @ApiParam(value = "Status values to add to loan history", required = true, allowableValues = "loaned, returned, prolonged, late")
+                                           @Valid @RequestParam(value = "status", required = true) String status) {
         try {
             log.info("Update loan : " + id + " - " + status);
-            Optional<LoanStatus> loanStatus = loanManagement.updateLoan(id, status);
+            Optional<Loan> loan = loanManagement.updateLoan(id, status);
+            // TODO check
+            reservationManagement.checkPendingListAndNotify(loan.get().getBookCopy().getBook().getId());
             return new ResponseEntity<Void>(HttpStatus.OK);
         }catch (UnknowStatusException ex){
             log.info("Impossible to update loan : " + id + " - " + status);
@@ -123,6 +137,22 @@ public class LoansApiController implements LoansApi {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(userPrincipal.hasRole("ADMIN")){
             List<Loan> loanList = loanManagement.updateAndFindLateLoans();
+            return new ResponseEntity<List<LoanDto>>(convertListLoanModelToListLoanDto(loanList),HttpStatus.OK);
+        }else{
+            log.warn("Unauthorized batch call " + userPrincipal.getId());
+            return new ResponseEntity<List<LoanDto>>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public ResponseEntity<List<LoanDto>> checkAndGetFutureLateLoans(@ApiParam(value = "User identification" ,required=true)
+                                                                    @RequestHeader(value="Authorization", required=true) String authorization,
+                                                                    @ApiParam(value = "the day limit to check the loans", defaultValue = "1")
+                                                                    @Valid @RequestParam(value = "days", required = false, defaultValue="1") Integer days) {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Batch call to retrieve future late Loans within {} day(s), user : {}", days, userPrincipal.getUsername());
+        if(userPrincipal.hasRole("ADMIN")){
+            List<Loan> loanList = loanManagement.findFutureLateLoans(days);
+            log.info("{} loans retrieved", loanList.size());
             return new ResponseEntity<List<LoanDto>>(convertListLoanModelToListLoanDto(loanList),HttpStatus.OK);
         }else{
             log.warn("Unauthorized batch call " + userPrincipal.getId());

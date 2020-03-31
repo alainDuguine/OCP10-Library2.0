@@ -139,4 +139,7 @@ Desktop.ini
 # ESLint
 ######################
 .eslintcache
-
+*/logs/*
+logs/
+target/
+java\

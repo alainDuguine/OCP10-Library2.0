@@ -30,11 +30,6 @@ public class BookManagementImpl extends CrudManagementImpl<Book> implements Book
     }
 
     @Override
-    public List<Book> findByTitleAndAuthor(String title, String author) {
-        return bookRepository.findByTitleAndAuthor(title.toLowerCase(), author.toLowerCase());
-    }
-
-    @Override
     public Optional<BookCopy> findCopyInBook(Long bookId, Long copyId) {
         return bookCopyRepository.findOneByIdInBook(bookId, copyId);
     }
@@ -95,11 +90,18 @@ public class BookManagementImpl extends CrudManagementImpl<Book> implements Book
     }
 
     @Override
+    public List<Book> findByTitleAndAuthor(String title, String author) {
+        return bookRepository.findByTitleAndAuthor(title.toLowerCase(), author.toLowerCase());
+    }
+
+    @Override
     public Optional<BookCopy> saveBookCopy(Long id, BookCopy bookCopy) {
         Optional<Book> book = bookRepository.findById(id);
         if(book.isPresent()){
             book.get().addCopy(bookCopy);
-            return Optional.of(bookCopyRepository.save(bookCopy));
+            BookCopy copy = bookCopyRepository.save(bookCopy);
+//   TODO check         reservationManagement.checkPendingListAndNotify(book.get().getId());
+            return Optional.of(copy);
         }
         return Optional.empty();
     }
@@ -113,7 +115,6 @@ public class BookManagementImpl extends CrudManagementImpl<Book> implements Book
         }
         return Optional.empty();
     }
-
 
     /**
      * Check if author exists, extract them as Set, and add association between book and author

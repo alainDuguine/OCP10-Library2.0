@@ -13,6 +13,8 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Author {
 
     @Id
@@ -29,6 +31,7 @@ public class Author {
     private String lastName;
 
     @JsonIgnore
+    @Builder.Default
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books = new HashSet<>();
 

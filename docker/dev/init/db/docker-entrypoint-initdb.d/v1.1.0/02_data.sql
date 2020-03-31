@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.5
--- Dumped by pg_dump version 11.5
+-- Dumped from database version 11.6
+-- Dumped by pg_dump version 11.6
 
--- Started on 2019-11-27 11:03:09
+-- Started on 2020-02-26 08:40:25
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,9 +19,9 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 2877 (class 0 OID 84013)
+-- TOC entry 2898 (class 0 OID 100941)
 -- Dependencies: 197
--- Data for Name: author; Type: TABLE DATA; Schema: public; Owner: adm_library
+-- Data for Name: author; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
 INSERT INTO public.author VALUES (1, 'Jules', 'Verne');
@@ -32,9 +32,9 @@ INSERT INTO public.author VALUES (5, 'Georges', 'Sand');
 
 
 --
--- TOC entry 2879 (class 0 OID 84021)
+-- TOC entry 2900 (class 0 OID 100949)
 -- Dependencies: 199
--- Data for Name: book; Type: TABLE DATA; Schema: public; Owner: adm_library
+-- Data for Name: book; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
 INSERT INTO public.book VALUES (1, '3qy69XMvx0', 'Voyage au centre de la terre');
@@ -52,12 +52,14 @@ INSERT INTO public.book VALUES (12, '7GvjFYtbFx', 'La reine Margot');
 INSERT INTO public.book VALUES (13, 'IYUiN3WGqB', 'Les misérables');
 INSERT INTO public.book VALUES (14, 'LcMoaXTDFe', 'Notre Dame de Paris');
 INSERT INTO public.book VALUES (15, 'HYTFW02rE2', 'Le dernier jour d''un condamné');
+INSERT INTO public.book VALUES (16, 'VSVR4WvyEa', 'Quatrevingt-treize');
+INSERT INTO public.book VALUES (17, 'YSKmGHI00Y', 'La Mare au diable');
 
 
 --
--- TOC entry 2880 (class 0 OID 84030)
+-- TOC entry 2901 (class 0 OID 100958)
 -- Dependencies: 200
--- Data for Name: book_author; Type: TABLE DATA; Schema: public; Owner: adm_library
+-- Data for Name: book_author; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
 INSERT INTO public.book_author VALUES (1, 1);
@@ -75,12 +77,14 @@ INSERT INTO public.book_author VALUES (12, 3);
 INSERT INTO public.book_author VALUES (13, 4);
 INSERT INTO public.book_author VALUES (14, 4);
 INSERT INTO public.book_author VALUES (15, 4);
+INSERT INTO public.book_author VALUES (16, 4);
+INSERT INTO public.book_author VALUES (17, 5);
 
 
 --
--- TOC entry 2882 (class 0 OID 84037)
+-- TOC entry 2903 (class 0 OID 100965)
 -- Dependencies: 202
--- Data for Name: book_copy; Type: TABLE DATA; Schema: public; Owner: adm_library
+-- Data for Name: book_copy; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
 INSERT INTO public.book_copy VALUES (2, true, '3045336767775', 'Editions du seuil', 1);
@@ -122,7 +126,6 @@ INSERT INTO public.book_copy VALUES (36, true, '3363675091850', 'Editions du seu
 INSERT INTO public.book_copy VALUES (37, true, '2760543078410', 'Editions du seuil', 6);
 INSERT INTO public.book_copy VALUES (38, true, '3903000892003', 'Editions du seuil', 6);
 INSERT INTO public.book_copy VALUES (39, true, '1934376963850', 'Editions du seuil', 6);
-INSERT INTO public.book_copy VALUES (40, true, '6058924221907', 'Editions du seuil', 7);
 INSERT INTO public.book_copy VALUES (41, true, '1086264897664', 'Editions du seuil', 8);
 INSERT INTO public.book_copy VALUES (42, true, '1378713012603', 'Editions du seuil', 8);
 INSERT INTO public.book_copy VALUES (43, true, '2829950545193', 'Editions du seuil', 8);
@@ -151,12 +154,16 @@ INSERT INTO public.book_copy VALUES (65, true, '7152615045017', 'Editions du seu
 INSERT INTO public.book_copy VALUES (66, true, '3332732333270', 'Editions du seuil', 15);
 INSERT INTO public.book_copy VALUES (67, true, '6769204264991', 'Editions du seuil', 15);
 INSERT INTO public.book_copy VALUES (68, true, '0956736388254', 'Editions du seuil', 15);
+INSERT INTO public.book_copy VALUES (40, false, '6058924221907', 'Editions du seuil', 7);
+INSERT INTO public.book_copy VALUES (69, false, '1193379266239', 'Editions du seuil', 16);
+INSERT INTO public.book_copy VALUES (70, false, '5649883972521', 'Pléiade', 16);
+INSERT INTO public.book_copy VALUES (71, false, '0774689167280', 'La pléïade', 17);
 
 
 --
--- TOC entry 2884 (class 0 OID 84048)
+-- TOC entry 2905 (class 0 OID 100976)
 -- Dependencies: 204
--- Data for Name: library_user; Type: TABLE DATA; Schema: public; Owner: adm_library
+-- Data for Name: library_user; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
 INSERT INTO public.library_user VALUES (2, 1, 'admin@openlibrary.fr', 'Admin', 'Library', '$2a$10$3dY.jEP/Qpc86pTfDXbRze.C9Q7/LmUMP8mFj20Uh215RZ.kSXvuS', 'USER,ADMIN');
@@ -166,9 +173,9 @@ INSERT INTO public.library_user VALUES (4, 1, 'agnes.duguine@gmail.com', 'Agnès
 
 
 --
--- TOC entry 2886 (class 0 OID 84059)
+-- TOC entry 2907 (class 0 OID 100987)
 -- Dependencies: 206
--- Data for Name: loan; Type: TABLE DATA; Schema: public; Owner: adm_library
+-- Data for Name: loan; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
 INSERT INTO public.loan VALUES (3, 'LATE', '2019-11-21 16:43:53.647', '2019-11-21', '2019-11-21', 4, 1);
@@ -179,12 +186,16 @@ INSERT INTO public.loan VALUES (5, 'LATE', '2019-11-22 15:01:51.131', '2019-11-2
 INSERT INTO public.loan VALUES (6, 'PROLONGED', '2019-11-26 08:16:12.168', '2020-01-20', '2019-11-25', 14, 1);
 INSERT INTO public.loan VALUES (7, 'LOANED', '2019-11-27 09:29:26.558', '2019-12-25', '2019-11-27', 24, 1);
 INSERT INTO public.loan VALUES (8, 'LOANED', '2019-11-27 09:30:22.722', '2019-12-25', '2019-11-27', 23, 1);
+INSERT INTO public.loan VALUES (9, 'LOANED', '2020-02-25 10:57:27.744', '2020-03-24', '2020-02-25', 40, 1);
+INSERT INTO public.loan VALUES (10, 'LOANED', '2020-02-25 16:17:10.24', '2020-03-24', '2020-02-25', 69, 1);
+INSERT INTO public.loan VALUES (11, 'LOANED', '2020-02-25 16:17:19.902', '2020-03-24', '2020-02-25', 70, 2);
+INSERT INTO public.loan VALUES (12, 'LOANED', '2020-02-26 08:31:59.575', '2020-03-25', '2020-02-26', 71, 2);
 
 
 --
--- TOC entry 2889 (class 0 OID 84072)
--- Dependencies: 209
--- Data for Name: status; Type: TABLE DATA; Schema: public; Owner: adm_library
+-- TOC entry 2914 (class 0 OID 101016)
+-- Dependencies: 213
+-- Data for Name: status; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
 INSERT INTO public.status VALUES (1, 'LOANED');
@@ -194,9 +205,9 @@ INSERT INTO public.status VALUES (4, 'LATE');
 
 
 --
--- TOC entry 2887 (class 0 OID 84065)
+-- TOC entry 2908 (class 0 OID 100993)
 -- Dependencies: 207
--- Data for Name: loan_status; Type: TABLE DATA; Schema: public; Owner: adm_library
+-- Data for Name: loan_status; Type: TABLE DATA; Schema: public; Owner: usr_library
 --
 
 INSERT INTO public.loan_status VALUES (1, 1, '2019-11-21 16:38:23.035');
@@ -214,63 +225,118 @@ INSERT INTO public.loan_status VALUES (6, 1, '2019-11-25 09:42:46.821');
 INSERT INTO public.loan_status VALUES (6, 3, '2019-11-26 08:16:12.168');
 INSERT INTO public.loan_status VALUES (7, 1, '2019-11-27 09:29:26.558');
 INSERT INTO public.loan_status VALUES (8, 1, '2019-11-27 09:30:23.509');
+INSERT INTO public.loan_status VALUES (9, 1, '2020-02-25 10:57:27.744');
+INSERT INTO public.loan_status VALUES (10, 1, '2020-02-25 16:17:10.241');
+INSERT INTO public.loan_status VALUES (11, 1, '2020-02-25 16:17:19.902');
+INSERT INTO public.loan_status VALUES (12, 1, '2020-02-26 08:31:59.575');
 
 
 --
--- TOC entry 2895 (class 0 OID 0)
+-- TOC entry 2910 (class 0 OID 101000)
+-- Dependencies: 209
+-- Data for Name: reservation; Type: TABLE DATA; Schema: public; Owner: usr_library
+--
+
+INSERT INTO public.reservation VALUES (82, 'PENDING', '2020-02-23 07:49:29.177', 16, 1);
+INSERT INTO public.reservation VALUES (83, 'PENDING', '2020-02-26 07:49:29.177', 16, 4);
+INSERT INTO public.reservation VALUES (84, 'RESERVED', '2020-02-26 08:08:21.002', 16, 3);
+INSERT INTO public.reservation VALUES (89, 'PENDING', '2020-02-26 08:36:49.74', 17, 3);
+INSERT INTO public.reservation VALUES (75, 'TERMINATED', '2019-09-25 08:36:49.74', 05, 3);
+INSERT INTO public.reservation VALUES (79, 'CANCELED', '2020-01-22 19:00:07.74', 08, 3);
+
+
+--
+-- TOC entry 2912 (class 0 OID 101008)
+-- Dependencies: 211
+-- Data for Name: reservation_status; Type: TABLE DATA; Schema: public; Owner: usr_library
+--
+
+INSERT INTO public.reservation_status VALUES (85, '2020-02-23 07:49:29.177', 'PENDING', 82);
+INSERT INTO public.reservation_status VALUES (86, '2020-02-26 07:49:29.177', 'PENDING', 83);
+INSERT INTO public.reservation_status VALUES (87, '2020-02-26 07:52:20.021', 'PENDING', 84);
+INSERT INTO public.reservation_status VALUES (92, '2020-02-26 07:56:09.148', 'RESERVED', 84);
+INSERT INTO public.reservation_status VALUES (94, '2020-02-26 08:36:49.74', 'PENDING', 89);
+INSERT INTO public.reservation_status VALUES (63, '2019-09-19 10:11:58.74', 'PENDING', 75);
+INSERT INTO public.reservation_status VALUES (80, '2019-09-24 14:22:58.74', 'RESERVED', 75);
+INSERT INTO public.reservation_status VALUES (81, '2019-09-25 08:36:49.74', 'TERMINATED', 75);
+INSERT INTO public.reservation_status VALUES (50, '2020-02-26 08:36:49.74', 'PENDING', 79);
+INSERT INTO public.reservation_status VALUES (55, '2020-01-22 19:00:07.74','CANCELED', 79);
+
+
+
+--
+-- TOC entry 2920 (class 0 OID 0)
 -- Dependencies: 196
--- Name: author_id_seq; Type: SEQUENCE SET; Schema: public; Owner: adm_library
+-- Name: author_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
 SELECT pg_catalog.setval('public.author_id_seq', 5, true);
 
 
 --
--- TOC entry 2896 (class 0 OID 0)
+-- TOC entry 2921 (class 0 OID 0)
 -- Dependencies: 201
--- Name: book_copy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: adm_library
+-- Name: book_copy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
-SELECT pg_catalog.setval('public.book_copy_id_seq', 68, true);
+SELECT pg_catalog.setval('public.book_copy_id_seq', 71, true);
 
 
 --
--- TOC entry 2897 (class 0 OID 0)
+-- TOC entry 2922 (class 0 OID 0)
 -- Dependencies: 198
--- Name: book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: adm_library
+-- Name: book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
-SELECT pg_catalog.setval('public.book_id_seq', 15, true);
+SELECT pg_catalog.setval('public.book_id_seq', 17, true);
 
 
 --
--- TOC entry 2898 (class 0 OID 0)
+-- TOC entry 2923 (class 0 OID 0)
 -- Dependencies: 203
--- Name: library_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: adm_library
+-- Name: library_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
 SELECT pg_catalog.setval('public.library_user_id_seq', 4, true);
 
 
 --
--- TOC entry 2899 (class 0 OID 0)
+-- TOC entry 2924 (class 0 OID 0)
 -- Dependencies: 205
--- Name: loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: adm_library
+-- Name: loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
-SELECT pg_catalog.setval('public.loan_id_seq', 8, true);
+SELECT pg_catalog.setval('public.loan_id_seq', 12, true);
 
 
 --
--- TOC entry 2900 (class 0 OID 0)
+-- TOC entry 2925 (class 0 OID 0)
 -- Dependencies: 208
--- Name: status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: adm_library
+-- Name: reservation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
+--
+
+SELECT pg_catalog.setval('public.reservation_id_seq', 89, true);
+
+
+--
+-- TOC entry 2926 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: reservation_status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
+--
+
+SELECT pg_catalog.setval('public.reservation_status_id_seq', 94, true);
+
+
+--
+-- TOC entry 2927 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usr_library
 --
 
 SELECT pg_catalog.setval('public.status_id_seq', 4, true);
 
 
--- Completed on 2019-11-27 11:03:09
+-- Completed on 2020-02-26 08:40:26
 
 --
 -- PostgreSQL database dump complete

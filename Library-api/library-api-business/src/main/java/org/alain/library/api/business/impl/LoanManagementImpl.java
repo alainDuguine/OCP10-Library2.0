@@ -29,7 +29,6 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
     private final StatusRepository statusRepository;
     private final BookCopyRepository bookCopyRepository;
 
-
     public LoanManagementImpl(LoanRepository loanRepository, LoanStatusRepository loanStatusRepository, StatusRepository statusRepository, BookCopyRepository bookCopyRepository) {
         super(loanRepository);
         this.loanRepository = loanRepository;
@@ -63,6 +62,7 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
             }
             Loan loan = new Loan();
             loan.setBookCopy(bookCopy.get());
+            bookCopy.get().setAvailable(false);
             loan.setUser(User.builder().id(userId).build());
             loan.setStartDate(LocalDate.now());
             loan.setEndDate(LocalDate.now().plusWeeks(4));
@@ -79,11 +79,12 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
     }
 
     @Override
-    public Optional<LoanStatus> updateLoan(Long id, String status) {
+    public Optional<Loan> updateLoan(Long id, String status) {
         try {
             Optional<Loan> loan = loanRepository.findById(id);
             StatusDesignation statusDesignation = StatusDesignation.valueOf(status.toUpperCase());
-            return loan.map(value -> this.addLoanStatusToLoan(value, statusDesignation));
+            loan.ifPresent(value -> this.addLoanStatusToLoan(value, statusDesignation));
+            return loan;
         }catch(IllegalArgumentException ex){
             log.warn("Wrong status on updateLoan : " + status + " - " + ex.getMessage());
             throw new UnknowStatusException("Unknown status "+status);
@@ -93,7 +94,10 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
 
     private LoanStatus addLoanStatusToLoan(Loan loan, StatusDesignation statusDesignation) {
         Status status = statusRepository.findStatusByDesignation(statusDesignation);
-        loan.getBookCopy().setAvailable(statusDesignation == StatusDesignation.RETURNED);
+        if(statusDesignation == StatusDesignation.RETURNED){
+            loan.getBookCopy().setAvailable(true);
+//   TODO         reservationManagement.checkPendingListAndNotify(loan.getBookCopy().getBook().getId());
+        }
         loan.setCurrentStatus(status.getDesignation().toString());
         loan.setCurrentStatusDate(LocalDateTime.now());
         LoanStatus loanStatus = loan.addLoanStatus(status);
@@ -129,5 +133,24 @@ public class LoanManagementImpl extends CrudManagementImpl<Loan> implements Loan
             }
         }
         return loanList;
+    }
+
+    /**
+     * Returns loans which will end within the LocalDate.now() + days (including last day)
+     * @param days the value of days added to LocalDate.now()
+     * @return the list of loans who will expired within this date limit
+     */
+    @Override
+    public List<Loan> findFutureLateLoans(Integer days) {
+        LocalDate futureExpiration = LocalDate.now().plusDays(days);
+        List<Loan> loanList = loanRepository.findFutureLateLoans(futureExpiration);
+        log.info("Retrieving {} loan that will expire within {}", loanList.size(), futureExpiration);
+        return loanList;
+    }
+
+    @Override
+    public List<Loan> findLoansByBookId(Long bookId) {
+        log.info("Service : Retrieving loans for bookId {}", bookId);
+        return loanRepository.findByBookId(bookId);
     }
 }

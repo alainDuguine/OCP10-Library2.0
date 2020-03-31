@@ -7,6 +7,8 @@ import org.alain.library.api.model.book.Book;
 import org.alain.library.api.model.book.BookCopy;
 import org.alain.library.api.model.loan.Loan;
 import org.alain.library.api.model.loan.LoanStatus;
+import org.alain.library.api.model.reservation.Reservation;
+import org.alain.library.api.model.reservation.ReservationStatus;
 import org.alain.library.api.model.user.User;
 import org.alain.library.api.service.dto.*;
 
@@ -17,8 +19,8 @@ import java.util.List;
 @Slf4j
 class Converters {
 
-    private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY 'à' HH:mm");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY 'à' HH:mm");
 
     private Converters() {
     }
@@ -75,7 +77,12 @@ class Converters {
         bookDto.setTitle(bookModel.getTitle());
         List<Author> authorsList = new ArrayList<>(bookModel.getAuthors());
         bookDto.setAuthors(convertListAuthorModelToListAuthorDto(authorsList));
-        bookDto.setCopiesAvailable(bookModel.getNbCopiesAvailable());
+        long bookCopies = bookModel.getNbCopiesAvailable()-bookModel.getNbCopiesReserved();
+        bookDto.setCopiesAvailable(bookCopies < 0 ? 0 : bookCopies);
+        bookDto.setReservations(convertListReservationModelToListReservationDto(bookModel.getReservations()));
+        bookDto.setReservationListFull(bookModel.isReservationListFull());
+        if(bookModel.getNextReturnDate()!=null)
+            bookDto.setDateNextReturnBook(dateFormatter.format(bookModel.getNextReturnDate()));
         return bookDto;
     }
 
@@ -115,7 +122,7 @@ class Converters {
 
 /*
     ===============================================================
-    ========== BOOK COPIE =========================================
+    ========== BOOK COPY ==========================================
     ===============================================================
  */
 
@@ -210,7 +217,7 @@ class Converters {
 
 /*
     ===============================================================
-    ========== Users ============================================
+    ========== USER ===============================================
     ===============================================================
  */
 
@@ -221,8 +228,10 @@ class Converters {
         userDto.setPassword(userModel.getPassword());
         userDto.setFirstName(userModel.getFirstName());
         userDto.setLastName(userModel.getLastName());
+        userDto.setNotification(userModel.isNotification());
         userDto.setRoles(userModel.getRoles());
         userDto.setLoans(convertListLoanModelToListLoanDto(userModel.getLoans()));
+        userDto.setReservations(convertListReservationModelToListReservationDto(userModel.getReservations()));
         return userDto;
     }
 
@@ -248,4 +257,54 @@ class Converters {
         userModel.setLastName(userFormUpdate.getLastName());
         return userModel;
     }
+
+/*
+    ===============================================================
+    ========== RESERVATION ========================================
+    ===============================================================
+ */
+
+    static ReservationDto convertReservationModelToReservationDto(Reservation reservation){
+        ReservationDto reservationDto = new ReservationDto();
+        reservationDto.setId(reservation.getId());
+        reservationDto.setUserId(reservation.getUser().getId());
+        reservationDto.setUserEmail(reservation.getUser().getEmail());
+        reservationDto.setBookId(reservation.getBook().getId());
+        reservationDto.setBookTitle(reservation.getBook().getTitle());
+        List<Author> authorsList = new ArrayList<>(reservation.getBook().getAuthors());
+        reservationDto.setBookAuthors(convertListAuthorModelToListAuthorDto(authorsList));
+        reservationDto.setCurrentStatus(reservation.getCurrentStatus());
+        reservationDto.setCurrentStatusDate(dateFormatter.format(reservation.getCurrentStatusDate()));
+        reservationDto.setStatuses(convertListReservationStatusModelToListReservationStatusDto(reservation.getStatuses()));
+        reservationDto.setUserPositionInList(reservation.getUserPositionInList());
+        if(reservation.getNextReturnDate()!=null)
+            reservationDto.setDateNextReturnBook(dateFormatter.format(reservation.getNextReturnDate()));
+        return reservationDto;
+    }
+
+    static List<ReservationDto> convertListReservationModelToListReservationDto(List<Reservation> reservationList){
+        List<ReservationDto> reservationDtoList = new ArrayList<>();
+        reservationList.forEach(reservation -> reservationDtoList.add(convertReservationModelToReservationDto(reservation)));
+        return reservationDtoList;
+    }
+
+/*
+    ===============================================================
+    ========== RESERVATION STATUS =================================
+    ===============================================================
+ */
+    static ReservationStatusDto convertReservationStatusModelToReservationStatusDto(ReservationStatus reservationStatus){
+        ReservationStatusDto reservationStatusDto = new ReservationStatusDto();
+        reservationStatusDto.setId(reservationStatus.getId());
+        reservationStatusDto.setDate(dateFormatter.format(reservationStatus.getDate()));
+        reservationStatusDto.setStatus(reservationStatus.getStatus().name());
+        return reservationStatusDto;
+    }
+
+    static List<ReservationStatusDto> convertListReservationStatusModelToListReservationStatusDto(List<ReservationStatus> statuses) {
+        List<ReservationStatusDto> reservationStatusDtoList = new ArrayList<>();
+        statuses.forEach(status -> reservationStatusDtoList.add(convertReservationStatusModelToReservationStatusDto(status)));
+        return reservationStatusDtoList;
+    }
+
 }

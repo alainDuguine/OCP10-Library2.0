@@ -9,12 +9,12 @@
 <body>
     <div layout:fragment="content">
         <div class="container">
-            <div th:if="${loanList.isEmpty()}" class="loanDiv my-3 p-3 rounded">
+            <div th:if="${loans.isEmpty()}" class="loanDiv my-3 p-3 rounded">
                 <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vous n'avez aucun emprunt enregistré</h4>
             </div>
-            <div th:if="${not loanList.isEmpty()}"  class="loanDiv my-3 p-3 rounded">
+            <div th:if="${not loans.isEmpty()}" class="loanDiv my-3 p-3 rounded">
                 <h4 class="border-bottom border-dark pb-2 mb-0 text-center">Vos emprunts</h4>
-                <div class="media pt-3" th:each="loan:${loanList}"
+                <div class="media pt-3" th:each="loan:${loans}"
                                         th:with="bookCopy=${loan.getBookCopy()}">
                     <i class="far fa-bookmark fa-2x"></i>
 
@@ -26,15 +26,14 @@
                                th:text="|${loan.getBookCopy().getBook().getTitle()} - ${authorName}|">Titre livre - Auteur</u>
                         </p>
 
-                        <p th:if="${#strings.equals(param.loanId, loan.getId())}" class="text-center p-2 m-2">
-                            <span th:if="${param.error}" class="alert alert-danger">
+                        <div th:if="${#strings.equals(param.loanId, loan.getId())}" class="text-center p-2 m-2">
+                            <div th:if="${param.error}" class="alert alert-danger">
                                 Impossible de prolonger l'emprunt
-                            </span>
-
-                            <span th:if="${param.success}" class="alert alert-success">
+                            </div>
+                            <div th:if="${param.success}" class="alert alert-success">
                                 L'emprunt a été prolongé !
-                            </span>
-                        </p>
+                            </div>
+                        </div>
 
                         <p class="lead" th:text="|Emprunté le ${loan.getStartDate()}. Retour prévu avant le ${loan.getEndDate()}|"></p>
 

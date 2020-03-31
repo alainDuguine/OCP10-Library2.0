@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <!-- Fragment #1 : Headerfiles contains css and js references -->
 <head th:fragment="headerfiles">
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
     <meta charset="UTF-8"/>
     <title>Open Library</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -12,6 +12,15 @@
     <script src="https://kit.fontawesome.com/f1548314f6.js" th:src="@{https://kit.fontawesome.com/f1548314f6.js}" crossorigin="anonymous"></script>
     <link th:href="@{~/css/style.css}" rel="stylesheet">
     <link th:href="@{https://fonts.googleapis.com/css?family=Literata&display=swap}" rel="stylesheet">
+    <style>
+        body{
+            background-image: url('../img/background.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: top;
+            background-size: cover;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark nav-transparency">
@@ -23,13 +32,13 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav navbar-center">
                 <li class="nav-item mx-2 hover-underline">
-                    <a class="nav-link" th:href="@{/loans}">Mes Emprunt</a>
-                </li>
-                <li class="nav-item mx-2 hover-underline">
                     <a class="nav-link" th:href="@{/search}">Les Livres</a>
                 </li>
                 <li class="nav-item mx-2 hover-underline">
-                    <a class="nav-link" href="#">Mon Compte</a>
+                    <a class="nav-link" th:href="@{/loans}">Mes Emprunt</a>
+                </li>
+                <li class="nav-item mx-2 hover-underline">
+                    <a class="nav-link" th:href="@{/reservations}">Mes Réservations</a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-0">
@@ -38,7 +47,7 @@
                         UserName
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Mon Compte</a>
+                        <a class="dropdown-item" data-toggle="modal" data-target="#modalUserParameter" href="#">Mes paramètres</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/logout}">Logout</a>
                     </div>
@@ -48,6 +57,38 @@
     </nav>
     <section layout:fragment="content">
     </section>
+<!-- Modal for users parameters -->
+    <div class="modal fade" id="modalUserParameter" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <form action="#" th:action="@{/notification}" method="post">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">Mes paramètres</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <hr>
+                    </div>
+                    <div class="modal-body">
+                        <div class="md-form">
+                            <div class="md-form justify-content-center">
+                                <div class="custom-control custom-switch text-center form-group form-check">
+                                    <input type="checkbox" class="custom-control-input" id="notification" name="notification" th:checked="${session.userNotification}">
+                                    <label class="custom-control-label" for="notification">Notifications de fin de prêt</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center form-action">
+                        <button type="button" class="btn btn-round mb-0 btnModalClose" data-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-round mb-0 btnModal">Enregistrer</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
 <!-- Fragment #3 : Javascript Links For Bootstrap -->
     <footer th:fragment="linkscripts">
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

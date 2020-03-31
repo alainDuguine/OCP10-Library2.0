@@ -1,9 +1,4 @@
 body{
-    background-image: url('../img/background.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: top;
-    background-size: cover;
     font-family: 'Literata', serif;
 }
 
@@ -80,29 +75,55 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover{
     color: #364259;
 }
 
-.loginArea button, .registerForm .btnSubmit, .btnLoan{
+.loginArea button, .registerForm .btnSubmit, .btnLoan, .btnReservation, .btnModal{
     background-color: #f2f2f0;
-    color: #735C60;
-    border: 1px solid #735C60;
+    color: #364259;
+    border: 1px solid #364259;
 }
+
+.btnReservation{
+    margin: 0;
+    padding: 0.15rem 0.5rem;
+}
+
+.btnReservation a{
+    margin:0;
+    padding: 0;
+    color: #364259;
+    text-decoration: none;
+}
+
+.btnReservation a:hover{
+    color: white;
+    text-decoration: none;
+}
+
 
 .registerForm .btnCancel, .registerForm .btnSubmit{
     margin-top: 0;
 }
 
-.registerForm .btnCancel{
-    background-color: #735C60;
+.tableLineWithButton{
+    position: relative;
+    top: 1px;
+    display: flex;
+    vertical-align: middle;
+    justify-content: space-between;
+}
+
+.registerForm .btnCancel, .btnModalClose{
+    background-color: #364259;
     color: #f2f2f0;
 }
 
-.registerForm .btnCancel:hover{
+.registerForm .btnCancel:hover, .btnModalClose:hover{
     background-color: #f2f2f0;
-    color: #735C60;
-    border: 1px solid #735C60;
+    color: #364259;
+    border: 1px solid #364259;
 }
 
-.loginArea button:hover, .registerForm .btnSubmit:hover, .btnLoan:hover{
-    background-color: #735C60;
+.loginArea button:hover, .registerForm .btnSubmit:hover, .btnLoan:hover, .btnReservation:hover, .btnModal:hover{
+    background-color: #364259;
     color: #f2f2f0;
 }
 
@@ -164,7 +185,7 @@ th, td, tbody{
 }
 
 .extendButton{
-    color: #735C60;
+    color: #364259;
     text-decoration: none;
 }
 
@@ -172,3 +193,58 @@ th, td, tbody{
     color: white;
     text-decoration: none;
 }
+
+.redBorder {
+    border: 1px solid red;
+    border-radius: 0.5rem;
+    padding: 0.15rem;
+    margin-bottom: 0.5rem;
+}
+
+.historyHeader {
+    background-color: rgba(242, 242, 240, 0.90);
+    padding: 0.2rem;
+}
+
+.historyBody {
+    font-size: 100%;
+}
+
+.reservationTitle {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.reservationBody {
+    font-size: 1rem;
+}
+
+#navbarDropdown {
+    cursor: pointer;
+}
+
+/* MODAL USER PARAMETER */
+
+.modal-body{
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-content{
+    background-color: rgba(242,242,240,1);
+    padding:0;
+}
+
+.modal-header{
+    border-bottom: 1px solid #dee2e6;
+}
+
+.md-form{
+    align-items: center;
+}
+
+.modal-footer{
+    margin: 0;
+    padding-bottom: 1rem;
+}
+

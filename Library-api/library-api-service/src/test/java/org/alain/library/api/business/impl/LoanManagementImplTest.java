@@ -19,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,5 +85,32 @@ class LoanManagementImplTest {
         assertThat(loanStatus.isPresent()).isTrue();
         assertThat(loan.getCurrentStatus()).isEqualTo(StatusDesignation.PROLONGED.name());
         assertThat(loan.getEndDate()).isEqualTo(endDate.plusWeeks(4));
+    }
+
+    @Test
+    void findLoansByBookId() {
+        Loan loan1 = new Loan();
+        loan1.setUser(User.builder().id(1L).build());
+        loan1.setBookCopy(BookCopy.builder().id(1L).book(Book.builder().id(1L).build()).build());
+        loan1.setCurrentStatus(StatusDesignation.LATE.name());
+        loan1.setCurrentStatusDate(LocalDateTime.now());
+
+        Loan loan = new Loan();
+        loan.setUser(User.builder().id(1L).build());
+        loan.setBookCopy(BookCopy.builder().id(1L).book(Book.builder().id(1L).build()).build());
+        loan.setCurrentStatus(StatusDesignation.LOANED.name());
+        loan.setCurrentStatusDate(LocalDateTime.now().minusDays(1));
+        loan.setStartDate(LocalDate.now().minusDays(12));
+        loan.setEndDate(LocalDate.now());
+
+        List<Loan> loanList = new ArrayList<>();
+        loanList.add(loan);
+        loanList.add(loan1);
+
+        given(loanRepository.findByBookId(anyLong())).willReturn(loanList);
+
+        List<Loan> result = loanManagement.findLoansByBookId(1L);
+
+        assertThat(result.size()).isEqualTo(2);
     }
 }
