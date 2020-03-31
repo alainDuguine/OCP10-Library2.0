@@ -9,11 +9,10 @@
 <body>
     <div layout:fragment="content">
         <div class="container">
-
-            <p th:if="${param.error}" class="text-center p-2 m-2">
+            <div th:if="${param.error}" class="text-center p-2 m-2">
                 <br>
-                <span class="alert alert-danger" th:text="|Impossible de réserver le livre : ${param.error}|"></span>
-            </p>
+                <div class="alert alert-danger" th:text="|Impossible de réserver le livre : ${param.error}|"></div>
+            </div>
 
             <div class="searchDiv my-3 p-3 rounded">
                 <!-- Underlined search bars -->

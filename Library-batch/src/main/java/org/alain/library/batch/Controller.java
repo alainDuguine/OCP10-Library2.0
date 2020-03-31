@@ -53,7 +53,7 @@ public class Controller {
         List<LoanDto> loanDtoList = loanApi.checkAndGetLateLoans(encodedAuthorization).execute().body();
         if (loanDtoList == null || loanDtoList.isEmpty()){
             log.info("No late loans to send email to");
-        }else {
+        } else {
             log.info("Number of email to be sent :" + loanDtoList.size());
             for (LoanDto loan : loanDtoList){
                 this.prepareAndSendLateLoan(loan);
@@ -61,7 +61,7 @@ public class Controller {
         }
     }
 
-//    @Scheduled(cron = "${mailScheduling.delay}" )
+    @Scheduled(cron = "${mailScheduling.delay}" )
     public void getFutureExpiredLoans() throws IOException, InterruptedException {
         if (encodedAuthorization == null)
             this.encodedAuthorization = getEncodedAuthorization();
@@ -69,7 +69,7 @@ public class Controller {
         List<LoanDto> loanDtoList = loanApi.checkAndGetFutureLateLoans(encodedAuthorization, DAYS_NOTIFICATION_RESERVATION).execute().body();
         if (loanDtoList == null || loanDtoList.isEmpty()){
             log.info("No future expired loans to send email to");
-        }else {
+        } else {
             Map<String, List<LoanDto>> listMap = loanDtoList.stream()
                     .collect(Collectors.groupingBy(LoanDto::getUserEmail));
             log.info("Number of email to be sent :" + listMap.size());
@@ -85,7 +85,7 @@ public class Controller {
         List<ReservationDto> reservationDtoList = reservationApi.checkAndGetExpiredReservation(encodedAuthorization).execute().body();
         if (reservationDtoList == null || reservationDtoList.isEmpty()){
             log.info("No expired reservations to send email to");
-        }else {
+        } else {
             log.info("Number of email to be sent :" + reservationDtoList.size());
             for (ReservationDto reservationDto : reservationDtoList){
                 this.prepareAndSendExpiredReservation(reservationDto);
@@ -102,10 +102,10 @@ public class Controller {
             String content = emailBuilder.buildFutureLateLoan(loanList);
             messageHelper.setText(content, true);
         };
-        try{
+        try {
             log.info("Sending email to : {}, loans: {}", emailAddress, loanList.size());
             mailSender.send(messagePreparator);
-        }catch (MailException e){
+        } catch (MailException e){
             log.error("Error while sending email about future latre loans " + emailAddress + "\n"+ e.getMessage());
         }
     }

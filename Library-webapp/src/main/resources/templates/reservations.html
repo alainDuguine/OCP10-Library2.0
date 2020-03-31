@@ -33,18 +33,16 @@
 
                         <div th:if="${#strings.equals(param.id, reservation.getReservationDto().getId())}">
                             <br>
-                            <span th:if="${#strings.equals(param.canceled, 'true')}" class="alert alert-success">
+                            <div th:if="${#strings.equals(param.canceled, 'true')}" class="alert alert-success">
                                 La réservation a bien été annulée
-                            </span>
-                            <span th:if="${#strings.equals(param.canceled, 'false')}" class="alert alert-warning">
+                            </div>
+                            <div th:if="${#strings.equals(param.canceled, 'false')}" class="alert alert-warning">
                                 La réservation ne peut pas être annulée. Merci de réessayer ultérieurement.
-                            </span>
-                            <span th:if="${param.created}" class="alert alert-success">
+                            </div>
+                            <div th:if="${param.created}" class="alert alert-success">
                                 La réservation a bien été créée, vous serez averti par email lorsque le livre sera disponible.
                                 Vous disposerez alors de 48h pour le récupérer.
-                            </span>
-                            <br>
-                            <br>
+                            </div>
                         </div>
 
                         <div class="reservationBody" th:switch="${reservation.getReservationDto().getCurrentStatus()}">
@@ -59,7 +57,7 @@
                                 <span th:text="|Prochain retour prévu le ${#temporals.format(reservation.getNextReturnDate())}|">Prochain retour prévu le 12 février<br></span>
                             </div>
                             <div>
-                                <span class="redBorder text-danger" th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher au plus tard le ${#temporals.format(reservation.getCurrentStatusDate().plusDays(2))}.|"></span>
+                                <div class="alert alert-success" th:case="RESERVED" th:text="|Exemplaire disponible à venir chercher au plus tard le ${#temporals.format(reservation.getCurrentStatusDate().plusDays(2))}.|"></div>
                                 <span th:case="TERMINATED" th:text="|Terminée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
                                 <span th:case="CANCELED" th:text="|Annulée le ${#temporals.format(reservation.getCurrentStatusDate())}.|"></span>
                             </div>
